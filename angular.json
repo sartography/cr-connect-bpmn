@@ -3,32 +3,30 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "cr-connect-bpmn": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        }
-      },
+    "bpmn-js-angular": {
       "root": "",
       "sourceRoot": "src",
+      "projectType": "application",
       "prefix": "app",
+      "schematics": {},
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/cr-connect-bpmn",
+            "outputPath": "dist/bpmn-js-angular",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.app.json",
-            "aot": false,
+            "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "node_modules/bpmn-js/dist/assets/diagram-js.css",
+              "node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn.css",
+              "src/styles.css"
             ],
             "scripts": []
           },
@@ -54,11 +52,6 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "10kb"
                 }
               ]
             }
@@ -67,18 +60,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "cr-connect-bpmn:build"
+            "browserTarget": "bpmn-js-angular:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "cr-connect-bpmn:build:production"
+              "browserTarget": "bpmn-js-angular:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "cr-connect-bpmn:build"
+            "browserTarget": "bpmn-js-angular:build"
           }
         },
         "test": {
@@ -86,44 +79,72 @@
           "options": {
             "main": "src/test.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.js",
+            "tsConfig": "src/tsconfig.spec.json",
+            "karmaConfig": "src/karma.conf.js",
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "src/styles.css"
+            ],
+            "scripts": [],
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": []
+            "codeCoverageExclude": [
+              "src/testing/mocks/*.ts",
+              "src/app/_interfaces/*.ts",
+              "src/polyfills.ts",
+              "src/test.ts"
+            ]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "tsconfig.app.json",
-              "tsconfig.spec.json",
-              "e2e/tsconfig.json"
+              "src/tsconfig.app.json",
+              "src/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
             ]
           }
-        },
+        }
+      }
+    },
+    "bpmn-js-angular-e2e": {
+      "root": "e2e/",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "cr-connect-bpmn:serve"
+            "devServerTarget": "bpmn-js-angular:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "cr-connect-bpmn:serve:production"
+              "devServerTarget": "bpmn-js-angular:serve:production"
             }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         }
       }
-    }},
-  "defaultProject": "cr-connect-bpmn"
+    }
+  },
+  "defaultProject": "bpmn-js-angular",
+  "schematics": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  }
 }

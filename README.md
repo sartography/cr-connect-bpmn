@@ -1,6 +1,6 @@
-# CrConnectBpmn
+# BpmnJsAngular
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.15.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.1.
 
 ## Development server
 
