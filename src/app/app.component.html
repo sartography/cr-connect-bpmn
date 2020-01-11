@@ -7,6 +7,16 @@
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
     <mat-menu #importMenu="matMenu">
+      <button mat-menu-item (click)="openMethod = 'db'" [matMenuTriggerFor]="dbMenu" title="Open diagram from database">
+        <mat-icon>cloud</mat-icon>
+        Open previously saved...
+      </button>
+      <mat-menu #dbMenu="matMenu">
+        <button mat-menu-item *ngFor="let bf of bpmnFiles" (click)="diagramFile = bf.file; onSubmit($event)">
+            {{bf.name}} - v{{bf.version}} ({{bf.last_updated | date}})
+        </button>
+      </mat-menu>
+
       <button mat-menu-item (click)="openMethod = 'file'; expandToolbar = true">
         <mat-icon>code</mat-icon>
         Open from XML File

@@ -1,7 +1,9 @@
 import {Component, ViewChild} from '@angular/core';
+import {FileMeta, FileType, WorkflowSpec} from 'sartography-workflow-lib';
 import {BPMN_DIAGRAM} from '../testing/mocks/diagram.mocks';
 import {BpmnWarning} from './_interfaces/bpmn-warning';
 import {ImportEvent} from './_interfaces/import-event';
+import {ApiService} from './_services/api.service';
 import {DiagramComponent} from './diagram/diagram.component';
 
 @Component({
@@ -18,10 +20,27 @@ export class AppComponent {
   expandToolbar = false;
   openMethod: string;
   diagramFile: File;
+  workflowSpecs: WorkflowSpec[] = [];
+  bpmnFiles: FileMeta[] = [];
   @ViewChild(DiagramComponent, {static: false}) private diagramComponent: DiagramComponent;
 
-  constructor() {
+  constructor(private api: ApiService) {
     this.xmlModel = BPMN_DIAGRAM;
+    this.api.listWorkflowSpecifications().subscribe(wfs => {
+      this.workflowSpecs = wfs;
+      this.workflowSpecs.forEach(w => {
+        this.api.listBpmnFiles(w.id).subscribe(files => {
+          this.bpmnFiles = [];
+          files.forEach(f => {
+            this.api.getFileData(f.id).subscribe(d => {
+              f.content_type = (f.type === FileType.SVG) ? 'image/svg+xml' : f.content_type = 'text/xml';
+              f.file = new File([d], f.name, {type: f.content_type});
+              this.bpmnFiles.push(f);
+            });
+          });
+        });
+      });
+    });
   }
 
   handleImported(event: ImportEvent) {
@@ -52,7 +71,7 @@ export class AppComponent {
 
     if (this.openMethod === 'url') {
       this.diagramComponent.loadUrl(this.diagramUrl);
-    } else if (this.openMethod === 'file') {
+    } else {
       if (this.diagramFile && this.diagramFile.type === 'text/xml') {
         this.readFile(this.diagramFile);
       } else {
@@ -74,12 +93,15 @@ export class AppComponent {
     this.diagramFile = ($event.target as HTMLFormElement).files[0];
   }
 
-  onLoad(event: ProgressEvent) {
+  // Arrow function here preserves this context
+  onLoad = (event: ProgressEvent) => {
     const xml = (event.target as FileReader).result;
     this.diagramComponent.openDiagram(xml.toString());
   }
 
   readFile(file: File) {
+    console.log('readFile', file);
+
     // FileReader must be instantiated this way so unit test can spy on it.
     const fileReader = new (window as any).FileReader();
     fileReader.onload = this.onLoad;
