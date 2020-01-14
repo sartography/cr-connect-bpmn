@@ -31,9 +31,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   ) {
   }
 
-  get value(): any {
-    return this.xml;
-  }
+  get value(): string { return this.xml; }
 
   ngAfterViewInit() {
     this.initializeModeler();
@@ -78,12 +76,12 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
       this.openDiagram(value);
     }
     this.xml = value;
-    this.onChange(this.value);
+    this.onChange(this.xml);
   }
 
   // Allows Angular to register a function to call when the model changes.
   // Save the function as a property to call later here.
-  registerOnChange(fn: (rating: number) => void): void {
+  registerOnChange(fn: (newXmlValue: string) => void): void {
     this.onChange = fn;
   }
 
@@ -103,11 +101,14 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   }
 
   openDiagram(xml?: string) {
-    return this.zone.run(
-      () => xml ?
-        this.modeler.importXML(xml, (e, w) => this.onImport(e, w)) :
-        this.modeler.createDiagram((e, w) => this.onImport(e, w))
-    );
+    this.xml = xml;
+    return this.zone.run(() => {
+      if (xml) {
+        this.modeler.importXML(xml, (e, w) => this.onImport(e, w));
+      } else {
+        this.modeler.createDiagram((e, w) => this.onImport(e, w));
+      }
+    });
   }
 
   saveSVG() {

@@ -1,6 +1,6 @@
 <mat-toolbar [ngClass]="{'expanded': expandToolbar}">
   <mat-toolbar-row>
-    <button mat-button (click)="diagram.createNewDiagram()" title="Create new BPMN diagram"><mat-icon>insert_drive_file</mat-icon></button>
+    <button mat-button (click)="newDiagram()" title="Create new BPMN diagram"><mat-icon>insert_drive_file</mat-icon></button>
 
     <button mat-button [matMenuTriggerFor]="importMenu" title="Open diagram">
       <mat-icon>folder</mat-icon>
@@ -12,7 +12,7 @@
         Open previously saved...
       </button>
       <mat-menu #dbMenu="matMenu">
-        <button mat-menu-item *ngFor="let bf of bpmnFiles" (click)="diagramFile = bf.file; onSubmit($event)">
+        <button mat-menu-item *ngFor="let bf of bpmnFiles" (click)="loadDbFile(bf)">
             {{bf.name}} - v{{bf.version}} ({{bf.last_updated | date}})
         </button>
       </mat-menu>
@@ -27,8 +27,10 @@
       </button>
     </mat-menu>
 
+    <button mat-button (click)="saveChanges()" [disabled]="!hasChanged()"><mat-icon>save</mat-icon></button>
+
     <button mat-button [matMenuTriggerFor]="downloadMenu" title="Download diagram">
-      <mat-icon>save</mat-icon>
+      <mat-icon>save_alt</mat-icon>
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
     <mat-menu #downloadMenu="matMenu">
@@ -37,6 +39,12 @@
     </mat-menu>
   </mat-toolbar-row>
   <mat-toolbar-row *ngIf="expandToolbar">
+    <ng-container *ngIf="!openMethod">
+      <mat-form-field>
+        <input matInput [(ngModel)]="fileName" placeholder="File name" type="text">
+      </mat-form-field>
+    </ng-container>
+
     <ng-container *ngIf="openMethod === 'file'">
       <mat-form-field (click)="fileInput.click()">
         <input matInput disabled [value]="getFileName()" type="text">
@@ -49,7 +57,7 @@
         <input name="diagramUrl" [(ngModel)]="diagramUrl" matInput placeholder="Open diagram from URL" type="text">
       </mat-form-field>
     </ng-container>
-    <button mat-icon-button (click)="onSubmit($event)"><mat-icon>arrow_forward</mat-icon></button>
+    <button mat-icon-button (click)="onSubmitFileToOpen()"><mat-icon>arrow_forward</mat-icon></button>
     <span fxFlex></span>
     <button mat-icon-button (click)="expandToolbar = false"><mat-icon>close</mat-icon></button>
   </mat-toolbar-row>
