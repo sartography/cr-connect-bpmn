@@ -76,7 +76,7 @@ export class AppComponent implements AfterViewInit {
     if (this.openMethod === 'url') {
       this.diagramComponent.loadUrl(this.diagramUrl);
     } else {
-      if (this.diagramFile && this.diagramFile.type === 'text/xml') {
+      if (this.diagramFile && this.isXmlFile(this.diagramFile)) {
         this.readFile(this.diagramFile);
       } else {
         this.handleImported({
@@ -253,5 +253,12 @@ export class AppComponent implements AfterViewInit {
         Last updated: ${lastUpdated}
         Version: ${fileMeta.version}
     `;
+  }
+
+  private isXmlFile(file: File) {
+    return file.type === 'text/xml' ||
+      file.type === 'application/xml' ||
+      file.name.slice(-5) === '.bpmn' ||
+      file.name.slice(-4) === '.xml';
   }
 }
