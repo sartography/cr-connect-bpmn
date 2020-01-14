@@ -179,6 +179,9 @@ export class AppComponent implements AfterViewInit {
 
     dialogRef.afterClosed().subscribe((data: NewFileDialogData) => {
       console.log('dialog afterClosed result', data);
+      if (data && data.fileName && data.workflowSpecId) {
+        this._upsertSpecAndFileMeta(data);
+      }
       this._upsertSpecAndFileMeta(data);
     });
   }
@@ -188,7 +191,7 @@ export class AppComponent implements AfterViewInit {
       this.xml = this.draftXml;
 
       // Save old workflow spec id, if user wants to change it
-      const specId = this.workflowSpec ? this.workflowSpec.id : data.workflowSpecId;
+      const specId = this.workflowSpec ? this.workflowSpec.id : undefined;
 
       this.workflowSpec = {
         id: data.workflowSpecId,
@@ -210,13 +213,23 @@ export class AppComponent implements AfterViewInit {
         description: data.description,
       };
 
-      // New workflow spec
-      this.api.upsertWorkflowSpecification(specId, newSpec).subscribe(spec => {
-        this.api.upsertFileMeta(specId, this.diagramFileMeta).subscribe(fileMeta => {
-          this.loadFilesFromDb();
-          this.snackBar.open('Saved changes to new workflow spec and file.', 'Ok', {duration: 5000});
+      if (specId) {
+        // Update existing workflow spec and file
+        this.api.updateWorkflowSpecification(specId, newSpec).subscribe(spec => {
+          this.api.updateFileMeta(this.diagramFileMeta).subscribe(fileMeta => {
+            this.loadFilesFromDb();
+            this.snackBar.open('Saved changes to workflow spec and file.', 'Ok', {duration: 5000});
+          });
         });
-      });
+      } else {
+        // Add new workflow spec and file
+        this.api.addWorkflowSpecification(newSpec).subscribe(spec => {
+          this.api.addFileMeta(newSpec.id, this.diagramFileMeta).subscribe(fileMeta => {
+            this.loadFilesFromDb();
+            this.snackBar.open('Saved new workflow spec and file.', 'Ok', {duration: 5000});
+          });
+        });
+      }
     }
   }
 
