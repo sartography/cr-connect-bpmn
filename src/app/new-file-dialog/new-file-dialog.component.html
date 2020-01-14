@@ -1,0 +1,14 @@
+<mat-form-field>
+  <input matInput [(ngModel)]="data.workflowSpecId" placeholder="Workflow specification id">
+</mat-form-field>
+<mat-form-field>
+  <input matInput [(ngModel)]="data.fileName" placeholder="File name">
+</mat-form-field>
+<mat-form-field>
+  <input matInput [(ngModel)]="data.displayName" placeholder="Display name">
+</mat-form-field>
+<mat-form-field>
+  <input matInput [(ngModel)]="data.description" placeholder="Description">
+</mat-form-field>
+<button mat-flat-button color="primary" (click)="onSubmit()">Save</button>
+<button mat-flat-button (click)="onNoClick()">Cancel</button>
