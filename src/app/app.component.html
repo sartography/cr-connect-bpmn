@@ -12,7 +12,14 @@
         Open previously saved...
       </button>
       <mat-menu #dbMenu="matMenu">
-        <button mat-menu-item *ngFor="let bf of bpmnFiles" (click)="loadDbFile(bf)">
+        <button
+          mat-menu-item
+          *ngFor="let bf of bpmnFiles"
+          (click)="loadDbFile(bf)"
+          [matTooltip]="getFileMetaTooltipText(bf)"
+          matTooltipClass="tooltip-text"
+          matTooltipPosition="right"
+        >
           {{getFileMetaDisplayString(bf)}}
         </button>
       </mat-menu>
@@ -38,7 +45,7 @@
       <button mat-menu-item (click)="diagram.saveXML()"><mat-icon>code</mat-icon> Download XML File</button>
     </mat-menu>
 
-    <button mat-button *ngIf="diagramFileMeta" (click)="editFileMeta()">
+    <button mat-button *ngIf="diagramFileMeta && diagramFileMeta.workflow_spec_id" (click)="editFileMeta()">
       <mat-icon>edit</mat-icon>
       {{getFileMetaDisplayString(diagramFileMeta)}}
     </button>

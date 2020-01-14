@@ -182,7 +182,6 @@ export class AppComponent implements AfterViewInit {
       if (data && data.fileName && data.workflowSpecId) {
         this._upsertSpecAndFileMeta(data);
       }
-      this._upsertSpecAndFileMeta(data);
     });
   }
 
@@ -237,9 +236,22 @@ export class AppComponent implements AfterViewInit {
     return this.workflowSpecs.find(wfs => workflow_spec_id === wfs.id);
   }
 
-  getFileMetaDisplayString(bf: FileMeta) {
-    const wfsName = this.getWorkflowSpec(bf.workflow_spec_id).display_name;
-    const lastUpdated = new DatePipe('en-us').transform(bf.last_updated);
-    return `${wfsName} (${bf.name}) - v${bf.version} (${lastUpdated})`;
+  getFileMetaDisplayString(fileMeta: FileMeta) {
+    const wfsName = this.getWorkflowSpec(fileMeta.workflow_spec_id).display_name;
+    const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
+    return `${wfsName} (${fileMeta.name}) - v${fileMeta.version} (${lastUpdated})`;
+  }
+
+  getFileMetaTooltipText(fileMeta: FileMeta) {
+    const wfs = this.getWorkflowSpec(fileMeta.workflow_spec_id);
+    const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
+    return `
+        Workflow spec ID: ${wfs.id}
+        Display name: ${wfs.display_name}
+        Description: ${wfs.description}
+        File name: ${fileMeta.name}
+        Last updated: ${lastUpdated}
+        Version: ${fileMeta.version}
+    `;
   }
 }

@@ -11,6 +11,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AppComponent} from './app.component';
@@ -39,6 +40,7 @@ import { NewFileDialogComponent } from './new-file-dialog/new-file-dialog.compon
         MatToolbarModule,
         ReactiveFormsModule,
         MatDividerModule,
+        MatTooltipModule,
     ],
   bootstrap: [AppComponent],
   entryComponents: [NewFileDialogComponent],
