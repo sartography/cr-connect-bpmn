@@ -3,11 +3,14 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {DebugNode} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatDialogModule} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {BPMN_DIAGRAM, BPMN_DIAGRAM_WITH_WARNINGS} from '../testing/mocks/diagram.mocks';
 import {BpmnWarning} from './_interfaces/bpmn-warning';
@@ -30,10 +33,13 @@ describe('AppComponent', () => {
         BrowserAnimationsModule,
         NoopAnimationsModule,
         FormsModule,
+        MatDialogModule,
         MatIconModule,
         MatInputModule,
         MatMenuModule,
+        MatSnackBarModule,
         MatToolbarModule,
+        MatTooltipModule,
         ReactiveFormsModule,
         MatFormFieldModule,
         HttpClientTestingModule,
@@ -85,8 +91,7 @@ describe('AppComponent', () => {
   it('loads a diagram from URL', () => {
     component.diagramUrl = 'some-url';
     component.openMethod = 'url';
-    const event = new MouseEvent('click');
-    component['onSubmit'](event);
+    component['onSubmitFileToOpen']();
 
     const sReq = httpMock.expectOne(component.diagramUrl);
     expect(sReq.request.method).toEqual('GET');
@@ -96,8 +101,7 @@ describe('AppComponent', () => {
   it('loads a diagram from URL with warnings', () => {
     component.diagramUrl = 'some-url';
     component.openMethod = 'url';
-    const event = new MouseEvent('click');
-    component['onSubmit'](event);
+    component['onSubmitFileToOpen']();
 
     const sReq = httpMock.expectOne(component.diagramUrl);
     expect(sReq.request.method).toEqual('GET');
@@ -109,8 +113,7 @@ describe('AppComponent', () => {
     const newFile = new File([BPMN_DIAGRAM], 'filename.xml', {type: 'text/xml'});
     component.diagramFile = newFile;
     component.openMethod = 'file';
-    const event = new MouseEvent('click');
-    component['onSubmit'](event);
+    component['onSubmitFileToOpen']();
     expect(readFileSpy).toHaveBeenCalledWith(newFile);
   });
 
@@ -135,8 +138,7 @@ describe('AppComponent', () => {
 
     component.diagramFile = new File([], 'filename.jpg', {type: 'image/jpeg'});
     component.openMethod = 'file';
-    const event = new MouseEvent('click');
-    component['onSubmit'](event);
+    component['onSubmitFileToOpen']();
     const expectedParams = {
       type: 'error',
       error: new Error('Wrong file type. Please choose a BPMN XML file.')
