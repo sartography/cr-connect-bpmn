@@ -5,6 +5,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration=production",
+    "build:staging": "ng build --configuration=staging",
+    "build:test": "ng build --configuration=test",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "./node_modules/protractor/bin/webdriver-manager update && ng e2e"
