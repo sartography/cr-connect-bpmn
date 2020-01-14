@@ -4,6 +4,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatDividerModule} from '@angular/material/divider';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatMenuModule} from '@angular/material/menu';
@@ -22,22 +23,23 @@ import { NewFileDialogComponent } from './new-file-dialog/new-file-dialog.compon
     DiagramComponent,
     NewFileDialogComponent
   ],
-  imports: [
-    BrowserAnimationsModule,
-    BrowserModule,
-    FlexLayoutModule,
-    FormsModule,
-    HttpClientModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatIconModule,
-    MatInputModule,
-    MatMenuModule,
-    MatSnackBarModule,
-    MatTabsModule,
-    MatToolbarModule,
-    ReactiveFormsModule,
-  ],
+    imports: [
+        BrowserAnimationsModule,
+        BrowserModule,
+        FlexLayoutModule,
+        FormsModule,
+        HttpClientModule,
+        MatButtonModule,
+        MatDialogModule,
+        MatIconModule,
+        MatInputModule,
+        MatMenuModule,
+        MatSnackBarModule,
+        MatTabsModule,
+        MatToolbarModule,
+        ReactiveFormsModule,
+        MatDividerModule,
+    ],
   bootstrap: [AppComponent],
   entryComponents: [NewFileDialogComponent],
 })

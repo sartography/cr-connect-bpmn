@@ -1,3 +1,4 @@
+import {DatePipe} from '@angular/common';
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -23,6 +24,7 @@ export class AppComponent implements AfterViewInit {
   openMethod: string;
   diagramFile: File;
   workflowSpecs: WorkflowSpec[] = [];
+  workflowSpec: WorkflowSpec;
   bpmnFiles: FileMeta[] = [];
   diagramFileMeta: FileMeta;
   fileName: string;
@@ -119,49 +121,7 @@ export class AppComponent implements AfterViewInit {
           this.snackBar.open('Saved changes.', 'Ok', {duration: 5000});
         });
       } else {
-
-        // Open new filename/workflow spec dialog
-        const dialogRef = this.dialog.open(NewFileDialogComponent, {
-          height: '400px',
-          width: '400px',
-          data: {
-            fileName: '',
-            workflowSpecId: '',
-          },
-        });
-
-        dialogRef.afterClosed().subscribe((data: NewFileDialogData) => {
-          console.log('dialog afterClosed result', data);
-
-          if (data.fileName && data.workflowSpecId) {
-            this.xml = this.draftXml;
-
-            // New fileMeta
-            this.diagramFileMeta = {
-              content_type: 'text/xml',
-              name: data.fileName,
-              type: FileType.BPMN,
-              file: new File([this.xml], data.fileName, {type: 'text/xml'}),
-              workflow_spec_id: data.workflowSpecId,
-            };
-
-            const newSpec: WorkflowSpec = {
-              id: data.workflowSpecId,
-              display_name: data.displayName,
-              description: data.description,
-            };
-
-            // New workflow spec
-            this.api.addWorkflowSpecification(newSpec).subscribe(spec => {
-              console.log('spec', spec);
-              this.api.addFileMeta(this.diagramFileMeta).subscribe(fileMeta => {
-                this.loadFilesFromDb();
-                this.snackBar.open('Saved changes to new workflow spec and file.', 'Ok', {duration: 5000});
-              });
-            });
-          }
-        });
-
+        this.editFileMeta();
       }
     }
   }
@@ -173,6 +133,7 @@ export class AppComponent implements AfterViewInit {
   loadDbFile(bf: FileMeta) {
     this.diagramFile = bf.file;
     this.diagramFileMeta = bf;
+    this.workflowSpec = this.workflowSpecs.find(wfs => wfs.id === bf.workflow_spec_id);
     this.onSubmitFileToOpen();
   }
 
@@ -201,6 +162,71 @@ export class AppComponent implements AfterViewInit {
         });
       });
     });
+  }
 
+  editFileMeta() {
+    // Open new filename/workflow spec dialog
+    const dialogRef = this.dialog.open(NewFileDialogComponent, {
+      height: '400px',
+      width: '400px',
+      data: {
+        fileName: this.diagramFileMeta ? this.diagramFileMeta.name : '',
+        workflowSpecId: this.diagramFileMeta ? this.diagramFileMeta.workflow_spec_id : '',
+        description: this.workflowSpec ? this.workflowSpec.description : '',
+        displayName: this.workflowSpec ? this.workflowSpec.display_name : '',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((data: NewFileDialogData) => {
+      console.log('dialog afterClosed result', data);
+      this._upsertSpecAndFileMeta(data);
+    });
+  }
+
+  private _upsertSpecAndFileMeta(data: NewFileDialogData) {
+    if (data.fileName && data.workflowSpecId) {
+      this.xml = this.draftXml;
+
+      // Save old workflow spec id, if user wants to change it
+      const specId = this.workflowSpec ? this.workflowSpec.id : data.workflowSpecId;
+
+      this.workflowSpec = {
+        id: data.workflowSpecId,
+        display_name: data.displayName,
+        description: data.description,
+      };
+
+      this.diagramFileMeta = {
+        content_type: 'text/xml',
+        name: data.fileName,
+        type: FileType.BPMN,
+        file: new File([this.xml], data.fileName, {type: 'text/xml'}),
+        workflow_spec_id: data.workflowSpecId,
+      };
+
+      const newSpec: WorkflowSpec = {
+        id: data.workflowSpecId,
+        display_name: data.displayName,
+        description: data.description,
+      };
+
+      // New workflow spec
+      this.api.upsertWorkflowSpecification(specId, newSpec).subscribe(spec => {
+        this.api.upsertFileMeta(specId, this.diagramFileMeta).subscribe(fileMeta => {
+          this.loadFilesFromDb();
+          this.snackBar.open('Saved changes to new workflow spec and file.', 'Ok', {duration: 5000});
+        });
+      });
+    }
+  }
+
+  getWorkflowSpec(workflow_spec_id: string): WorkflowSpec {
+    return this.workflowSpecs.find(wfs => workflow_spec_id === wfs.id);
+  }
+
+  getFileMetaDisplayString(bf: FileMeta) {
+    const wfsName = this.getWorkflowSpec(bf.workflow_spec_id).display_name;
+    const lastUpdated = new DatePipe('en-us').transform(bf.last_updated);
+    return `${wfsName} (${bf.name}) - v${bf.version} (${lastUpdated})`;
   }
 }

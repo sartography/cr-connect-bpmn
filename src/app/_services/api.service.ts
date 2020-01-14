@@ -29,11 +29,12 @@ export class ApiService {
       .pipe(catchError(this._handleError));
   }
 
-  addWorkflowSpecification(newSpec: WorkflowSpec): Observable<WorkflowSpec> {
+  upsertWorkflowSpecification(specId: string, newSpec: WorkflowSpec): Observable<WorkflowSpec> {
     const url = this.apiUrl + '/workflow-specification';
+    const params = new HttpParams().set('spec_id', specId);
 
     return this.httpClient
-      .post<WorkflowSpec>(url, newSpec)
+      .post<WorkflowSpec>(url, newSpec, {params: params})
       .pipe(catchError(this._handleError));
   }
 
@@ -54,9 +55,9 @@ export class ApiService {
       .pipe(catchError(this._handleError));
   }
 
-  addFileMeta(fileMeta: FileMeta): Observable<FileMeta> {
+  upsertFileMeta(specId: string, fileMeta: FileMeta): Observable<FileMeta> {
     const url = this.apiUrl + '/file';
-    const params = new HttpParams().set('spec_id', fileMeta.workflow_spec_id);
+    const params = new HttpParams().set('spec_id', specId);
     const formData = new FormData();
     formData.append('workflow_spec_id', fileMeta.workflow_spec_id);
     formData.append('file', fileMeta.file);

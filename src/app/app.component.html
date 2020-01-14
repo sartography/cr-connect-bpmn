@@ -13,7 +13,7 @@
       </button>
       <mat-menu #dbMenu="matMenu">
         <button mat-menu-item *ngFor="let bf of bpmnFiles" (click)="loadDbFile(bf)">
-            {{bf.name}} - v{{bf.version}} ({{bf.last_updated | date}})
+          {{getFileMetaDisplayString(bf)}}
         </button>
       </mat-menu>
 
@@ -37,6 +37,11 @@
       <button mat-menu-item (click)="diagram.saveSVG()"><mat-icon>image</mat-icon> Download SVG Image</button>
       <button mat-menu-item (click)="diagram.saveXML()"><mat-icon>code</mat-icon> Download XML File</button>
     </mat-menu>
+
+    <button mat-button *ngIf="diagramFileMeta" (click)="editFileMeta()">
+      <mat-icon>edit</mat-icon>
+      {{getFileMetaDisplayString(diagramFileMeta)}}
+    </button>
   </mat-toolbar-row>
   <mat-toolbar-row *ngIf="expandToolbar">
     <ng-container *ngIf="!openMethod">
