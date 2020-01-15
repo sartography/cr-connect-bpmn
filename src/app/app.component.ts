@@ -116,7 +116,7 @@ export class AppComponent implements AfterViewInit {
       if (this.diagramFileMeta && this.diagramFileMeta.workflow_spec_id) {
         this.xml = this.draftXml;
         this.diagramFileMeta.file = new File([this.xml], this.diagramFileMeta.name, {type: 'text/xml'});
-        this.api.updateFileMeta(this.diagramFileMeta).subscribe(() => {
+        this.api.updateFileMeta(this.workflowSpec.id, this.diagramFileMeta).subscribe(() => {
           this.snackBar.open('Saved changes.', 'Ok', {duration: 5000});
         });
       } else {
@@ -197,7 +197,9 @@ export class AppComponent implements AfterViewInit {
         description: data.description,
       };
 
+      const fileMetaId = this.diagramFileMeta ? this.diagramFileMeta.id : undefined;
       this.diagramFileMeta = {
+        id: fileMetaId,
         content_type: 'text/xml',
         name: data.fileName,
         type: FileType.BPMN,
@@ -214,7 +216,7 @@ export class AppComponent implements AfterViewInit {
       if (specId) {
         // Update existing workflow spec and file
         this.api.updateWorkflowSpecification(specId, newSpec).subscribe(spec => {
-          this.api.updateFileMeta(this.diagramFileMeta).subscribe(fileMeta => {
+          this.api.updateFileMeta(specId, this.diagramFileMeta).subscribe(fileMeta => {
             this.loadFilesFromDb();
             this.snackBar.open('Saved changes to workflow spec and file.', 'Ok', {duration: 5000});
           });
@@ -236,22 +238,33 @@ export class AppComponent implements AfterViewInit {
   }
 
   getFileMetaDisplayString(fileMeta: FileMeta) {
-    const wfsName = this.getWorkflowSpec(fileMeta.workflow_spec_id).display_name;
-    const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
-    return `${wfsName} (${fileMeta.name}) - v${fileMeta.version} (${lastUpdated})`;
+    const spec = this.getWorkflowSpec(fileMeta.workflow_spec_id);
+
+    if (spec) {
+      const specName = spec.display_name;
+      const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
+      return `${specName} (${fileMeta.name}) - v${fileMeta.version} (${lastUpdated})`;
+    } else {
+      return 'Loading...';
+    }
   }
 
   getFileMetaTooltipText(fileMeta: FileMeta) {
-    const wfs = this.getWorkflowSpec(fileMeta.workflow_spec_id);
-    const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
-    return `
-        Workflow spec ID: ${wfs.id}
-        Display name: ${wfs.display_name}
-        Description: ${wfs.description}
-        File name: ${fileMeta.name}
-        Last updated: ${lastUpdated}
-        Version: ${fileMeta.version}
-    `;
+    const spec = this.getWorkflowSpec(fileMeta.workflow_spec_id);
+
+    if (spec) {
+      const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
+      return `
+          Workflow spec ID: ${spec.id}
+          Display name: ${spec.display_name}
+          Description: ${spec.description}
+          File name: ${fileMeta.name}
+          Last updated: ${lastUpdated}
+          Version: ${fileMeta.version}
+      `;
+    } else {
+      return 'Loading...';
+    }
   }
 
   private isXmlFile(file: File) {
