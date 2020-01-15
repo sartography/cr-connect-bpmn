@@ -8,9 +8,9 @@ import * as camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.
 import minimapModule from 'diagram-js-minimap';
 
 import * as fileSaver from 'file-saver';
+import {ApiService} from 'sartography-workflow-lib';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {ImportEvent} from '../_interfaces/import-event';
-import {ApiService} from '../_services/api.service';
 
 @Component({
   selector: 'app-diagram',
@@ -146,7 +146,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
    * Load diagram from URL and emit completion event
    */
   loadUrl(url: string) {
-    this.api.getBpmnXml(url).subscribe(xml => {
+    this.api.getStringFromUrl(url).subscribe(xml => {
       this.openDiagram(xml);
     }, error => this._handleErrors(error));
   }

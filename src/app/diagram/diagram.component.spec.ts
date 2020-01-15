@@ -4,8 +4,8 @@ import {DebugNode} from '@angular/core';
 import {async, ComponentFixture, getTestBed, TestBed} from '@angular/core/testing';
 import {MatIconModule} from '@angular/material/icon';
 import * as FileSaver from 'file-saver';
+import {ApiService, MockEnvironment} from 'sartography-workflow-lib';
 import {BPMN_DIAGRAM, BPMN_DIAGRAM_WITH_WARNINGS} from '../../testing/mocks/diagram.mocks';
-import {ApiService} from '../_services/api.service';
 
 import {DiagramComponent} from './diagram.component';
 
@@ -24,7 +24,10 @@ describe('DiagramComponent', () => {
         MatIconModule,
       ],
       declarations: [DiagramComponent],
-      providers: [ApiService]
+      providers: [
+        ApiService,
+        {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment}
+      ]
     });
 
     fixture = TestBed.createComponent(DiagramComponent);

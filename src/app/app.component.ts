@@ -2,11 +2,10 @@ import {DatePipe} from '@angular/common';
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {FileMeta, FileType, WorkflowSpec} from 'sartography-workflow-lib';
+import {FileMeta, FileType, WorkflowSpec, ApiService} from 'sartography-workflow-lib';
 import {BpmnWarning} from './_interfaces/bpmn-warning';
 import {ImportEvent} from './_interfaces/import-event';
 import {NewFileDialogData} from './_interfaces/new-file-dialog-data';
-import {ApiService} from './_services/api.service';
 import {DiagramComponent} from './diagram/diagram.component';
 import {NewFileDialogComponent} from './new-file-dialog/new-file-dialog.component';
 
@@ -147,7 +146,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   private loadFilesFromDb() {
-    this.api.listWorkflowSpecifications().subscribe(wfs => {
+    this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
       this.workflowSpecs.forEach(w => {
         this.api.listBpmnFiles(w.id).subscribe(files => {

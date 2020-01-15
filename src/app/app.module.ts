@@ -14,9 +14,18 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {AppEnvironment} from 'sartography-workflow-lib';
+import {environment} from '../environments/environment';
 import {AppComponent} from './app.component';
 import {DiagramComponent} from './diagram/diagram.component';
 import { NewFileDialogComponent } from './new-file-dialog/new-file-dialog.component';
+
+class ThisEnvironment implements AppEnvironment {
+  production = environment.production;
+  api = environment.api;
+  googleAnalyticsKey = environment.googleAnalyticsKey;
+  irbUrl = environment.irbUrl;
+}
 
 @NgModule({
   declarations: [
@@ -44,6 +53,7 @@ import { NewFileDialogComponent } from './new-file-dialog/new-file-dialog.compon
     ],
   bootstrap: [AppComponent],
   entryComponents: [NewFileDialogComponent],
+  providers: [{provide: 'APP_ENVIRONMENT', useClass: ThisEnvironment}]
 })
 export class AppModule {
 }

@@ -115,7 +115,7 @@
               "src/assets"
             ],
             "codeCoverageExclude": [
-              "src/testing/mocks/*.ts",
+              "src/testing/**/*",
               "src/app/_interfaces/*.ts",
               "src/polyfills.ts",
               "src/test.ts"

@@ -12,6 +12,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {ApiService, MockEnvironment} from 'sartography-workflow-lib';
 import {BPMN_DIAGRAM, BPMN_DIAGRAM_WITH_WARNINGS} from '../testing/mocks/diagram.mocks';
 import {BpmnWarning} from './_interfaces/bpmn-warning';
 import {AppComponent} from './app.component';
@@ -43,7 +44,12 @@ describe('AppComponent', () => {
         ReactiveFormsModule,
         MatFormFieldModule,
         HttpClientTestingModule,
+      ],
+      providers: [
+        ApiService,
+        {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment}
       ]
+
     }).compileComponents();
     httpMock = TestBed.get(HttpTestingController);
     fixture = TestBed.createComponent(AppComponent);
