@@ -1,4 +1,4 @@
-export interface NewFileDialogData {
+export interface FileMetaDialogData {
   fileName: string;
   workflowSpecId: string;
   displayName: string;

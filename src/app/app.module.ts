@@ -18,7 +18,7 @@ import {AppEnvironment} from 'sartography-workflow-lib';
 import {environment} from '../environments/environment';
 import {AppComponent} from './app.component';
 import {DiagramComponent} from './diagram/diagram.component';
-import { NewFileDialogComponent } from './new-file-dialog/new-file-dialog.component';
+import { FileMetaDialogComponent } from './file-meta-dialog/file-meta-dialog.component';
 
 class ThisEnvironment implements AppEnvironment {
   production = environment.production;
@@ -31,7 +31,7 @@ class ThisEnvironment implements AppEnvironment {
   declarations: [
     AppComponent,
     DiagramComponent,
-    NewFileDialogComponent
+    FileMetaDialogComponent
   ],
     imports: [
         BrowserAnimationsModule,
@@ -52,7 +52,7 @@ class ThisEnvironment implements AppEnvironment {
         MatTooltipModule,
     ],
   bootstrap: [AppComponent],
-  entryComponents: [NewFileDialogComponent],
+  entryComponents: [FileMetaDialogComponent],
   providers: [{provide: 'APP_ENVIRONMENT', useClass: ThisEnvironment}]
 })
 export class AppModule {

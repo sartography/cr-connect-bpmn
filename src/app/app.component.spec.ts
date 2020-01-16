@@ -11,12 +11,15 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {ApiService, MockEnvironment} from 'sartography-workflow-lib';
+import {of} from 'rxjs';
+import {ApiService, MockEnvironment, mockFileMeta0, mockWorkflowSpec0} from 'sartography-workflow-lib';
 import {BPMN_DIAGRAM, BPMN_DIAGRAM_WITH_WARNINGS} from '../testing/mocks/diagram.mocks';
 import {BpmnWarning} from './_interfaces/bpmn-warning';
 import {AppComponent} from './app.component';
 import {DiagramComponent} from './diagram/diagram.component';
+import {FileMetaDialogComponent} from './file-meta-dialog/file-meta-dialog.component';
 
 
 describe('AppComponent', () => {
@@ -29,28 +32,29 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent,
         DiagramComponent,
+        FileMetaDialogComponent,
       ],
       imports: [
         BrowserAnimationsModule,
-        NoopAnimationsModule,
         FormsModule,
+        HttpClientTestingModule,
         MatDialogModule,
+        MatFormFieldModule,
         MatIconModule,
         MatInputModule,
         MatMenuModule,
         MatSnackBarModule,
         MatToolbarModule,
         MatTooltipModule,
+        NoopAnimationsModule,
         ReactiveFormsModule,
-        MatFormFieldModule,
-        HttpClientTestingModule,
       ],
       providers: [
         ApiService,
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment}
       ]
-
-    }).compileComponents();
+    }).overrideModule(BrowserDynamicTestingModule, {set: {entryComponents: [FileMetaDialogComponent]}})
+      .compileComponents();
     httpMock = TestBed.get(HttpTestingController);
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.debugElement.componentInstance;
@@ -97,7 +101,7 @@ describe('AppComponent', () => {
   it('loads a diagram from URL', () => {
     component.diagramUrl = 'some-url';
     component.openMethod = 'url';
-    component['onSubmitFileToOpen']();
+    component.onSubmitFileToOpen();
 
     const sReq = httpMock.expectOne(component.diagramUrl);
     expect(sReq.request.method).toEqual('GET');
@@ -107,7 +111,7 @@ describe('AppComponent', () => {
   it('loads a diagram from URL with warnings', () => {
     component.diagramUrl = 'some-url';
     component.openMethod = 'url';
-    component['onSubmitFileToOpen']();
+    component.onSubmitFileToOpen();
 
     const sReq = httpMock.expectOne(component.diagramUrl);
     expect(sReq.request.method).toEqual('GET');
@@ -119,7 +123,7 @@ describe('AppComponent', () => {
     const newFile = new File([BPMN_DIAGRAM], 'filename.xml', {type: 'text/xml'});
     component.diagramFile = newFile;
     component.openMethod = 'file';
-    component['onSubmitFileToOpen']();
+    component.onSubmitFileToOpen();
     expect(readFileSpy).toHaveBeenCalledWith(newFile);
   });
 
@@ -144,7 +148,7 @@ describe('AppComponent', () => {
 
     component.diagramFile = new File([], 'filename.jpg', {type: 'image/jpeg'});
     component.openMethod = 'file';
-    component['onSubmitFileToOpen']();
+    component.onSubmitFileToOpen();
     const expectedParams = {
       type: 'error',
       error: new Error('Wrong file type. Please choose a BPMN XML file.')
@@ -163,9 +167,56 @@ describe('AppComponent', () => {
   it('should get the diagram file from the file input form control', () => {
     const expectedFile = new File([], 'filename.jpg', {type: 'image/jpeg'});
     const event = {target: {files: [expectedFile]}};
-    component['onFileSelected'](event);
+    component.onFileSelected(event);
     expect(component.diagramFile).toEqual(expectedFile);
   });
 
+  it('should update the diagram file on change', () => {
+    const initialValue = component.diagramComponent.value;
+    expect(initialValue).toBeFalsy();
+
+    const newValue = '<xml>newExpectedValue</xml>';
+    component.diagramComponent.writeValue(newValue);
+
+    expect(component.diagramComponent.value).toEqual(newValue);
+    expect(component.draftXml).toEqual(newValue);
+  });
+
+  it('should save file changes when existing diagram is modified and then saved', () => {
+    const saveFileChangesSpy = spyOn(component, 'saveFileChanges').and.stub();
+    const editFileMetaSpy = spyOn(component, 'editFileMeta').and.stub();
+
+    component.workflowSpec = mockWorkflowSpec0;
+    component.diagramFileMeta = mockFileMeta0;
+    component.diagramComponent.writeValue('<xml>newValue</xml>');
+    component.saveChanges();
+
+    expect(saveFileChangesSpy).toHaveBeenCalled();
+    expect(editFileMetaSpy).not.toHaveBeenCalled();
+  });
+
+  it('should open file metadata dialog when new diagram is saved', () => {
+    const saveFileChangesSpy = spyOn(component, 'saveFileChanges').and.stub();
+    const editFileMetaSpy = spyOn(component, 'editFileMeta').and.stub();
+
+    component.diagramComponent.writeValue('<xml>newValue</xml>');
+    component.saveChanges();
+
+    expect(saveFileChangesSpy).not.toHaveBeenCalled();
+    expect(editFileMetaSpy).toHaveBeenCalled();
+  });
+
+  it('should save file changes', () => {
+    const apiUpdateFileSpy = spyOn(component.api, 'updateFileMeta').and.returnValue(of(mockFileMeta0));
+
+    component.workflowSpec = mockWorkflowSpec0;
+    component.diagramFileMeta = mockFileMeta0;
+    component.diagramComponent.writeValue('<xml>newValue</xml>');
+    component.saveFileChanges();
+
+    expect(apiUpdateFileSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id, mockFileMeta0);
+  });
+
+  it('should open file metadata dialog');
 
 });

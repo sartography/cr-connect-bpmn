@@ -1,13 +1,13 @@
 import {DatePipe} from '@angular/common';
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {FileMeta, FileType, WorkflowSpec, ApiService} from 'sartography-workflow-lib';
+import {ApiService, FileMeta, FileType, WorkflowSpec} from 'sartography-workflow-lib';
 import {BpmnWarning} from './_interfaces/bpmn-warning';
+import {FileMetaDialogData} from './_interfaces/file-meta-dialog-data';
 import {ImportEvent} from './_interfaces/import-event';
-import {NewFileDialogData} from './_interfaces/new-file-dialog-data';
 import {DiagramComponent} from './diagram/diagram.component';
-import {NewFileDialogComponent} from './new-file-dialog/new-file-dialog.component';
+import {FileMetaDialogComponent} from './file-meta-dialog/file-meta-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -42,10 +42,6 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.diagramComponent.registerOnChange((newXmlValue: string) => {
       this.draftXml = newXmlValue;
-    });
-
-    this.diagramComponent.registerOnTouched(() => {
-      console.log('diagramComponent onTouch');
     });
   }
 
@@ -111,15 +107,11 @@ export class AppComponent implements AfterViewInit {
 
   saveChanges() {
     if (this.hasChanged()) {
-
-      console.log('saveChanges this.diagramFileMeta', this.diagramFileMeta);
       if (this.diagramFileMeta && this.diagramFileMeta.workflow_spec_id) {
-        this.xml = this.draftXml;
-        this.diagramFileMeta.file = new File([this.xml], this.diagramFileMeta.name, {type: 'text/xml'});
-        this.api.updateFileMeta(this.workflowSpec.id, this.diagramFileMeta).subscribe(() => {
-          this.snackBar.open('Saved changes.', 'Ok', {duration: 5000});
-        });
+        // Save changes to just the file
+        this.saveFileChanges();
       } else {
+        // Open the File Meta Dialog
         this.editFileMeta();
       }
     }
@@ -153,9 +145,11 @@ export class AppComponent implements AfterViewInit {
           this.bpmnFiles = [];
           files.forEach(f => {
             this.api.getFileData(f.id).subscribe(d => {
-              f.content_type = (f.type === FileType.SVG) ? 'image/svg+xml' : f.content_type = 'text/xml';
-              f.file = new File([d], f.name, {type: f.content_type});
-              this.bpmnFiles.push(f);
+              if (f.type === FileType.BPMN) {
+                f.content_type = 'text/xml';
+                f.file = new File([d], f.name, {type: f.content_type});
+                this.bpmnFiles.push(f);
+              }
             });
           });
         });
@@ -165,7 +159,7 @@ export class AppComponent implements AfterViewInit {
 
   editFileMeta() {
     // Open new filename/workflow spec dialog
-    const dialogRef = this.dialog.open(NewFileDialogComponent, {
+    const dialogRef = this.dialog.open(FileMetaDialogComponent, {
       height: '400px',
       width: '400px',
       data: {
@@ -176,15 +170,14 @@ export class AppComponent implements AfterViewInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe((data: NewFileDialogData) => {
-      console.log('dialog afterClosed result', data);
+    dialogRef.afterClosed().subscribe((data: FileMetaDialogData) => {
       if (data && data.fileName && data.workflowSpecId) {
         this._upsertSpecAndFileMeta(data);
       }
     });
   }
 
-  private _upsertSpecAndFileMeta(data: NewFileDialogData) {
+  private _upsertSpecAndFileMeta(data: FileMetaDialogData) {
     if (data.fileName && data.workflowSpecId) {
       this.xml = this.draftXml;
 
@@ -272,5 +265,13 @@ export class AppComponent implements AfterViewInit {
       file.type === 'application/xml' ||
       file.name.slice(-5) === '.bpmn' ||
       file.name.slice(-4) === '.xml';
+  }
+
+  private saveFileChanges() {
+    this.xml = this.draftXml;
+    this.diagramFileMeta.file = new File([this.xml], this.diagramFileMeta.name, {type: 'text/xml'});
+    this.api.updateFileMeta(this.workflowSpec.id, this.diagramFileMeta).subscribe(() => {
+      this.snackBar.open('Saved changes to file.', 'Ok', {duration: 5000});
+    });
   }
 }
