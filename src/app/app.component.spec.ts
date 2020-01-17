@@ -3,7 +3,7 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {DebugNode} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatDialogModule} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -14,9 +14,16 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {of} from 'rxjs';
-import {ApiService, MockEnvironment, mockFileMeta0, mockWorkflowSpec0} from 'sartography-workflow-lib';
+import {
+  ApiService, FileMeta,
+  MockEnvironment,
+  mockFileMeta0, mockFileMetas,
+  mockWorkflowSpec0,
+  mockWorkflowSpecs
+} from 'sartography-workflow-lib';
 import {BPMN_DIAGRAM, BPMN_DIAGRAM_WITH_WARNINGS} from '../testing/mocks/diagram.mocks';
 import {BpmnWarning} from './_interfaces/bpmn-warning';
+import {FileMetaDialogData} from './_interfaces/file-meta-dialog-data';
 import {AppComponent} from './app.component';
 import {DiagramComponent} from './diagram/diagram.component';
 import {FileMetaDialogComponent} from './file-meta-dialog/file-meta-dialog.component';
@@ -51,7 +58,15 @@ describe('AppComponent', () => {
       ],
       providers: [
         ApiService,
-        {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment}
+        {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+        {
+          provide: MatDialogRef,
+          useValue: {
+            close: (dialogResult: any) => {
+            }
+          }
+        },
+        {provide: MAT_DIALOG_DATA, useValue: []},
       ]
     }).overrideModule(BrowserDynamicTestingModule, {set: {entryComponents: [FileMetaDialogComponent]}})
       .compileComponents();
@@ -217,6 +232,161 @@ describe('AppComponent', () => {
     expect(apiUpdateFileSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id, mockFileMeta0);
   });
 
-  it('should open file metadata dialog');
+  it('should open file metadata dialog', () => {
+    const data: FileMetaDialogData = {
+      fileName: 'after',
+      workflowSpecId: 'after',
+      description: 'after',
+      displayName: 'after',
+    };
+
+    const upsertSpy = spyOn(component, '_upsertSpecAndFileMeta').and.stub();
+    const openDialogSpy = spyOn(component.dialog, 'open')
+      .and.returnValue({afterClosed: () => of(data)});
+    component.editFileMeta();
+    expect(openDialogSpy).toHaveBeenCalled();
+    expect(upsertSpy).toHaveBeenCalledWith(data);
+  });
+
+  it('should update spec and file metadata for existing file', () => {
+    const newXml = '<xml>New Value</xml>';
+    const data: FileMetaDialogData = {
+      fileName: mockFileMeta0.name,
+      workflowSpecId: mockWorkflowSpec0.id,
+      description: mockWorkflowSpec0.description,
+      displayName: mockWorkflowSpec0.display_name,
+    };
+    const updateWorkflowSpecificationSpy = spyOn(component.api, 'updateWorkflowSpecification')
+      .and.returnValue(of(mockWorkflowSpec0));
+    const updateFileMetaSpy = spyOn(component.api, 'updateFileMeta')
+      .and.returnValue(of(mockFileMeta0));
+    const loadFilesFromDbSpy = spyOn(component, 'loadFilesFromDb').and.stub();
+    const snackBarSpy = spyOn(component.snackBar, 'open').and.stub();
+    const noDateOrVersion: FileMeta = {
+      content_type: mockFileMeta0.content_type,
+      file: mockFileMeta0.file,
+      id: mockFileMeta0.id,
+      name: mockFileMeta0.name,
+      type: mockFileMeta0.type,
+      workflow_spec_id: mockFileMeta0.workflow_spec_id,
+    };
+
+    component.draftXml = newXml;
+    component.workflowSpec = mockWorkflowSpec0;
+    component.diagramFileMeta = mockFileMeta0;
+    component._upsertSpecAndFileMeta(data);
+    expect(component.xml).toEqual(newXml);
+    expect(updateWorkflowSpecificationSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id, mockWorkflowSpec0);
+    expect(updateFileMetaSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id, noDateOrVersion);
+    expect(loadFilesFromDbSpy).toHaveBeenCalled();
+    expect(snackBarSpy).toHaveBeenCalled();
+  });
+
+  it('should create new spec and file metadata for new file', () => {
+    const newXml = '<xml>New Value</xml>';
+    const data: FileMetaDialogData = {
+      fileName: mockFileMeta0.name,
+      workflowSpecId: mockWorkflowSpec0.id,
+      description: mockWorkflowSpec0.description,
+      displayName: mockWorkflowSpec0.display_name,
+    };
+
+    const noDateOrVersion: FileMeta = {
+      content_type: mockFileMeta0.content_type,
+      file: mockFileMeta0.file,
+      id: mockFileMeta0.id,
+      name: mockFileMeta0.name,
+      type: mockFileMeta0.type,
+      workflow_spec_id: mockFileMeta0.workflow_spec_id,
+    };
+
+    const addWorkflowSpecificationSpy = spyOn(component.api, 'addWorkflowSpecification')
+      .and.returnValue(of(mockWorkflowSpec0));
+    const addFileMetaSpy = spyOn(component.api, 'addFileMeta')
+      .and.returnValue(of(mockFileMeta0));
+    const loadFilesFromDbSpy = spyOn(component, 'loadFilesFromDb').and.stub();
+    const snackBarSpy = spyOn(component.snackBar, 'open').and.stub();
+
+    component.draftXml = newXml;
+    component.diagramFileMeta = mockFileMeta0;
+    component._upsertSpecAndFileMeta(data);
+    expect(component.xml).toEqual(newXml);
+    expect(addWorkflowSpecificationSpy).toHaveBeenCalledWith(mockWorkflowSpec0);
+    expect(addFileMetaSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id, noDateOrVersion);
+    expect(loadFilesFromDbSpy).toHaveBeenCalled();
+    expect(snackBarSpy).toHaveBeenCalled();
+  });
+
+  it('should load files from the database', () => {
+    const getWorkflowSpecListSpy = spyOn(component.api, 'getWorkflowSpecList')
+      .and.returnValue(of(mockWorkflowSpecs));
+    const listBpmnFilesSpy = spyOn(component.api, 'listBpmnFiles')
+      .and.returnValue(of(mockFileMetas));
+    const getFileDataSpy = spyOn(component.api, 'getFileData')
+      .and.returnValue(of(mockFileMeta0));
+    component.loadFilesFromDb();
+
+    expect(getWorkflowSpecListSpy).toHaveBeenCalled();
+    expect(component.workflowSpecs).toEqual(mockWorkflowSpecs);
+
+    mockWorkflowSpecs.forEach(wfs => {
+      expect(listBpmnFilesSpy).toHaveBeenCalledWith(wfs.id);
+    });
+
+    mockFileMetas.forEach(fm => {
+      expect(getFileDataSpy).toHaveBeenCalledWith(fm.id);
+    });
+
+    expect(component.bpmnFiles.length).toEqual(mockFileMetas.length);
+  });
+
+  it('should load a database file', () => {
+    const onSubmitFileToOpenSpy = spyOn(component, 'onSubmitFileToOpen').and.stub();
+    component.workflowSpecs = mockWorkflowSpecs;
+    component.loadDbFile(mockFileMeta0);
+    expect(component.diagramFile).toEqual(mockFileMeta0.file);
+    expect(component.diagramFileMeta).toEqual(mockFileMeta0);
+    expect(component.workflowSpec).toEqual(mockWorkflowSpec0);
+    expect(onSubmitFileToOpenSpy).toHaveBeenCalled();
+  });
+
+  it('should start a new diagram', () => {
+    component.xml = '<xml>old value</xml>';
+    component.draftXml = '<xml>even older value</xml>';
+    component.diagramFileMeta = mockFileMeta0;
+    component.diagramFile = mockFileMeta0.file;
+    component.workflowSpec = mockWorkflowSpec0;
+    component.newDiagram();
+
+    expect(component.xml).toBeFalsy();
+    expect(component.draftXml).toBeFalsy();
+    expect(component.fileName).toBeFalsy();
+    expect(component.workflowSpec).toBeFalsy();
+    expect(component.diagramFileMeta).toBeFalsy();
+    expect(component.diagramFile).toBeFalsy();
+    expect(component.diagramComponent.value).toBeFalsy();
+  });
+
+  it('should get a file metadata display string', () => {
+    expect(component.getFileMetaDisplayString(mockFileMeta0)).toEqual('Loading...');
+    component.workflowSpecs = mockWorkflowSpecs;
+    const expectedString = 'Everything (one-fish.bpmn) - v1.0 (Jan 23, 2020)';
+    expect(component.getFileMetaDisplayString(mockFileMeta0)).toEqual(expectedString);
+  });
+
+  it('should get file metadata tooltip text', () => {
+    expect(component.getFileMetaTooltipText(mockFileMeta0)).toEqual('Loading...');
+    component.workflowSpecs = mockWorkflowSpecs;
+    const expectedString = `
+          Workflow spec ID: all_things
+          Display name: Everything
+          Description: Do all the things
+          File name: one-fish.bpmn
+          Last updated: Jan 23, 2020
+          Version: 1.0
+      `;
+
+    expect(component.getFileMetaTooltipText(mockFileMeta0)).toEqual(expectedString);
+  });
 
 });

@@ -124,7 +124,7 @@ export class AppComponent implements AfterViewInit {
   loadDbFile(bf: FileMeta) {
     this.diagramFile = bf.file;
     this.diagramFileMeta = bf;
-    this.workflowSpec = this.workflowSpecs.find(wfs => wfs.id === bf.workflow_spec_id);
+    this.workflowSpec = this.getWorkflowSpec(bf.workflow_spec_id);
     this.onSubmitFileToOpen();
   }
 
@@ -132,6 +132,7 @@ export class AppComponent implements AfterViewInit {
     this.xml = '';
     this.draftXml = '';
     this.fileName = '';
+    this.workflowSpec = undefined;
     this.diagramFileMeta = undefined;
     this.diagramFile = undefined;
     this.diagramComponent.createNewDiagram();
