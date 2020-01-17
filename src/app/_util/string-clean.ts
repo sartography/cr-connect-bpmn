@@ -1,12 +1,12 @@
+export const trimString = (str: string): string => {
+  return !str ? '' : String(str).replace(/^\W+|\W+$/gi, '');
+};
+
 export const toSnakeCase = (str: string): string => {
   str = trimString(str);
   return !str ? '' : String(str)
     .replace(/\W+/gi, '_')
     .toLowerCase();
-};
-
-export const trimString = (str: string): string => {
-  return !str ? '' : String(str).replace(/^\W+|\W+$/gi, '');
 };
 
 export const cleanUpFilename = (str: string, extension: string): string => {
