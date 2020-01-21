@@ -53,6 +53,7 @@ describe('EditFileMetaDialogComponent', () => {
     const dataBefore: FileMetaDialogData = {
       fileName: 'green_eggs.bpmn',
       workflowSpecId: 'green_eggs',
+      name: 'green_eggs',
       displayName: 'Green Eggs',
       description: 'Eat them! Eat them! Here they are.',
     };
@@ -67,6 +68,7 @@ describe('EditFileMetaDialogComponent', () => {
     const dataBefore: FileMetaDialogData = {
       fileName: 'and_ham.bpmn',
       workflowSpecId: 'and_ham',
+      name: 'and_hame',
       displayName: 'And Ham',
       description: 'Would you, could you, in a box?',
     };
@@ -81,6 +83,7 @@ describe('EditFileMetaDialogComponent', () => {
     const dataBefore: FileMetaDialogData = {
       fileName: ' 🍳 green_eggs.v1-2020-01-01.XML.bmnp 🍖 ',
       workflowSpecId: 'green_eggs',
+      name: 'green_eggs',
       displayName: 'Green Eggs',
       description: 'Eat them! Eat them! Here they are.',
     };
@@ -97,6 +100,7 @@ describe('EditFileMetaDialogComponent', () => {
     const dataBefore: FileMetaDialogData = {
       fileName: 'green_eggs.bpmn',
       workflowSpecId: ' 🍳 Green Eggs & Ham: A Dish Best Served Cold? 🍖 ',
+      name: 'green_eggs',
       displayName: 'Green Eggs',
       description: 'I would not, could not, with a fox!',
     };

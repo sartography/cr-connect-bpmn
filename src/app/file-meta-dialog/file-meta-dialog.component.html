@@ -1,15 +1,18 @@
 <div mat-dialog-content>
   <mat-form-field>
-    <input [(ngModel)]="data.workflowSpecId" matInput placeholder="Workflow specification id">
+    <input disabled required [(ngModel)]="data.workflowSpecId" matInput placeholder="Workflow specification id">
   </mat-form-field>
   <mat-form-field>
-    <input [(ngModel)]="data.fileName" matInput placeholder="File name">
+    <input required [(ngModel)]="data.name" matInput placeholder="Workflow specification name">
   </mat-form-field>
   <mat-form-field>
-    <input [(ngModel)]="data.displayName" matInput placeholder="Display name">
+    <input required [(ngModel)]="data.fileName" matInput placeholder="File name">
   </mat-form-field>
   <mat-form-field>
-    <textarea [(ngModel)]="data.description" matInput matTextareaAutosize placeholder="Description"></textarea>
+    <input required [(ngModel)]="data.displayName" matInput placeholder="Display name">
+  </mat-form-field>
+  <mat-form-field>
+    <textarea required [(ngModel)]="data.description" matInput matTextareaAutosize placeholder="Description"></textarea>
   </mat-form-field>
 </div>
 

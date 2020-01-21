@@ -236,6 +236,7 @@ describe('AppComponent', () => {
     const data: FileMetaDialogData = {
       fileName: 'after',
       workflowSpecId: 'after',
+      name: 'after',
       description: 'after',
       displayName: 'after',
     };
@@ -253,6 +254,7 @@ describe('AppComponent', () => {
     const data: FileMetaDialogData = {
       fileName: mockFileMeta0.name,
       workflowSpecId: mockWorkflowSpec0.id,
+      name: mockWorkflowSpec0.name,
       description: mockWorkflowSpec0.description,
       displayName: mockWorkflowSpec0.display_name,
     };
@@ -287,6 +289,7 @@ describe('AppComponent', () => {
     const data: FileMetaDialogData = {
       fileName: mockFileMeta0.name,
       workflowSpecId: mockWorkflowSpec0.id,
+      name: mockWorkflowSpec0.id,
       description: mockWorkflowSpec0.description,
       displayName: mockWorkflowSpec0.display_name,
     };
@@ -370,7 +373,7 @@ describe('AppComponent', () => {
   it('should get a file metadata display string', () => {
     expect(component.getFileMetaDisplayString(mockFileMeta0)).toEqual('Loading...');
     component.workflowSpecs = mockWorkflowSpecs;
-    const expectedString = 'Everything (one-fish.bpmn) - v1.0 (Jan 23, 2020)';
+    const expectedString = 'all_things - all_things - Everything (one-fish.bpmn) - v1.0 (Jan 23, 2020)';
     expect(component.getFileMetaDisplayString(mockFileMeta0)).toEqual(expectedString);
   });
 
@@ -379,6 +382,7 @@ describe('AppComponent', () => {
     component.workflowSpecs = mockWorkflowSpecs;
     const expectedString = `
           Workflow spec ID: all_things
+          Workflow name: all_things
           Display name: Everything
           Description: Do all the things
           File name: one-fish.bpmn

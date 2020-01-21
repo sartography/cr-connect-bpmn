@@ -187,6 +187,7 @@ export class AppComponent implements AfterViewInit {
 
       this.workflowSpec = {
         id: data.workflowSpecId,
+        name: data.name,
         display_name: data.displayName,
         description: data.description,
       };
@@ -203,6 +204,7 @@ export class AppComponent implements AfterViewInit {
 
       const newSpec: WorkflowSpec = {
         id: data.workflowSpecId,
+        name: data.name,
         display_name: data.displayName,
         description: data.description,
       };
@@ -235,7 +237,7 @@ export class AppComponent implements AfterViewInit {
     const spec = this.getWorkflowSpec(fileMeta.workflow_spec_id);
 
     if (spec) {
-      const specName = spec.display_name;
+      const specName = spec.id + ' - ' + spec.name + ' - ' + spec.display_name;
       const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
       return `${specName} (${fileMeta.name}) - v${fileMeta.version} (${lastUpdated})`;
     } else {
@@ -250,6 +252,7 @@ export class AppComponent implements AfterViewInit {
       const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
       return `
           Workflow spec ID: ${spec.id}
+          Workflow name: ${spec.name}
           Display name: ${spec.display_name}
           Description: ${spec.description}
           File name: ${fileMeta.name}
