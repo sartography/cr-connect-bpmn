@@ -103,7 +103,7 @@ export class ModelerComponent implements AfterViewInit {
   // Arrow function here preserves this context
   onLoad = (event: ProgressEvent) => {
     this.xml = (event.target as FileReader).result.toString();
-    this.diagramComponent.openDiagram(this.xml);
+    this.diagramComponent.openDiagram(this.xml, this.diagramFileMeta.type);
   }
 
   readFile(file: File) {
@@ -154,7 +154,7 @@ export class ModelerComponent implements AfterViewInit {
           this.bpmnFiles = [];
           files.forEach(f => {
             this.api.getFileData(f.id).subscribe(d => {
-              if (f.type === FileType.BPMN) {
+              if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
                 f.content_type = 'text/xml';
                 f.file = new File([d], f.name, {type: f.content_type});
                 this.bpmnFiles.push(f);
