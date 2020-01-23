@@ -1,0 +1,22 @@
+<div class="container">
+  <mat-card *ngFor="let wfs of workflowSpecs" class="mat-elevation-z0">
+    <mat-card-content>
+      <h1>{{wfs.id}}</h1>
+      <h2>{{wfs.name}}</h2>
+      <h3>{{wfs.display_name}}</h3>
+      <p>{{wfs.description}}</p>
+      <app-file-list [workflowSpec]="wfs"></app-file-list>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button>
+        <mat-icon>note_add</mat-icon>
+        Add new file
+      </button>
+      <button mat-button>
+        <mat-icon>cloud_upload</mat-icon>
+        Upload file
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+

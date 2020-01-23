@@ -33,6 +33,8 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
 
   get value(): string { return this.xml; }
 
+  get properties(): any { return this.modeler.get('propertiesPanel')._current; }
+
   ngAfterViewInit() {
     this.initializeModeler();
     this.openDiagram(this.xml);

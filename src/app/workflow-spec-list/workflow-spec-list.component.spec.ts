@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AppComponent } from './app.component';
+import { WorkflowSpecListComponent } from './workflow-spec-list.component';
 
-describe('AppComponent', () => {
-  let component: AppComponent;
-  let fixture: ComponentFixture<AppComponent>;
+describe('WorkflowSpecListComponent', () => {
+  let component: WorkflowSpecListComponent;
+  let fixture: ComponentFixture<WorkflowSpecListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppComponent ]
+      declarations: [ WorkflowSpecListComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AppComponent);
+    fixture = TestBed.createComponent(WorkflowSpecListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
