@@ -1,25 +1,14 @@
 import {HttpErrorResponse} from '@angular/common/http';
-import {AfterViewInit, Component, ElementRef, EventEmitter, NgZone, Output, Renderer2, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, NgZone, Output, ViewChild} from '@angular/core';
 import {ControlValueAccessor} from '@angular/forms';
-import * as bpmnPropertiesPanelModule from 'bpmn-js-properties-panel';
-import * as bpmnPropertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda';
-
-import * as dmnPropertiesPanelModule from 'dmn-js-properties-panel';
-import drdAdapterModule from 'dmn-js-properties-panel/lib/adapter/drd';
-import * as dmnPropertiesProviderModule from 'dmn-js-properties-panel/lib/provider/camunda';
-
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import DmnModeler from 'dmn-js/lib/Modeler';
-
-import * as bpmnModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.json';
-import * as dmnModdleDescriptor from 'camunda-dmn-moddle/resources/camunda.json';
-
-import minimapModule from 'diagram-js-minimap';
-
 import * as fileSaver from 'file-saver';
 import {ApiService} from 'sartography-workflow-lib';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {ImportEvent} from '../_interfaces/import-event';
+import {bpmnModelerConfig} from './bpmn-modeler-config';
+import {dmnModelerConfig} from './dmn-modeler-config';
 
 @Component({
   selector: 'app-diagram',
@@ -30,7 +19,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('containerRef', {static: true}) containerRef: ElementRef;
   @ViewChild('propertiesRef', {static: true}) propertiesRef: ElementRef;
   @Output() private importDone: EventEmitter<ImportEvent> = new EventEmitter();
-  private modeler: BpmnModeler|DmnModeler;
+  private modeler: BpmnModeler | DmnModeler;
   private xml = '';
   private disabled = false;
 
@@ -40,9 +29,13 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   ) {
   }
 
-  get value(): string { return this.xml; }
+  get value(): string {
+    return this.xml;
+  }
 
-  get properties(): any { return this.modeler.get('propertiesPanel')._current; }
+  get properties(): any {
+    return this.modeler.get('propertiesPanel')._current;
+  }
 
   ngAfterViewInit() {
     this.initializeModeler('bpmn');
@@ -168,14 +161,8 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
       propertiesPanel: {
         parent: this.propertiesRef.nativeElement,
       },
-      additionalModules: [
-        bpmnPropertiesProviderModule,
-        bpmnPropertiesPanelModule,
-        minimapModule,
-      ],
-      moddleExtensions: {
-        camunda: bpmnModdleDescriptor['default']
-      }
+      additionalModules: bpmnModelerConfig.additionalModules,
+      moddleExtensions: bpmnModelerConfig.moddleExtensions,
     });
 
     this.modeler.get('eventBus').on('commandStack.changed', () => this.saveDiagram());
@@ -190,16 +177,20 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   private initializeDMNModeler() {
     this.modeler = new DmnModeler({
       container: this.containerRef.nativeElement,
-      propertiesPanel: {
-        parent: this.propertiesRef.nativeElement,
+      drd: {
+        propertiesPanel: {
+          parent: this.propertiesRef.nativeElement,
+        },
+        additionalModules: dmnModelerConfig.additionalModules,
       },
-      additionalModules: [
-        dmnPropertiesProviderModule,
-        dmnPropertiesPanelModule,
-        drdAdapterModule,
-      ],
-      moddleExtensions: {
-        camunda: dmnModdleDescriptor['default']
+      moddleExtensions: dmnModelerConfig.moddleExtensions,
+    });
+
+    this.modeler.on('views.changed', event => console.log('DMN Modeler changed event:', event));
+
+    this.modeler.on('import.done', ({error}) => {
+      if (!error) {
+        this.modeler.getActiveViewer().get('canvas').zoom('fit-viewport');
       }
     });
   }
