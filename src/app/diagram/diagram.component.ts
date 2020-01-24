@@ -1,5 +1,5 @@
 import {HttpErrorResponse} from '@angular/common/http';
-import {AfterViewInit, Component, ElementRef, EventEmitter, NgZone, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, NgZone, Output, Renderer2, ViewChild} from '@angular/core';
 import {ControlValueAccessor} from '@angular/forms';
 import * as bpmnPropertiesPanelModule from 'bpmn-js-properties-panel';
 import * as bpmnPropertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda';
@@ -56,6 +56,8 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   }
 
   initializeModeler(diagramType) {
+    this.clearElements();
+
     if (diagramType === 'dmn') {
       this.initializeDMNModeler();
     } else {
@@ -199,6 +201,13 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
       moddleExtensions: {
         camunda: dmnModdleDescriptor['default']
       }
+    });
+  }
+
+  private clearElements() {
+    const els: HTMLElement[] = [this.containerRef.nativeElement, this.propertiesRef.nativeElement];
+    els.forEach(e => {
+      e.innerHTML = '';
     });
   }
 }
