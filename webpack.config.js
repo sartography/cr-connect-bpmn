@@ -1,4 +1,5 @@
 const WebpackNotifierPlugin = require('webpack-notifier');
+const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
@@ -19,7 +20,7 @@ module.exports = {
         exclude: /node_modules\/(?!(dmn-js|dmn-js-drd|dmn-js-shared|dmn-js-decision-table|table-js|dmn-js-literal-expression|diagram-js)\/).*/,
         loader: 'babel-loader',
         options: {
-          presets: ["@babel/preset-react", '@babel/preset-env']
+          presets: ['@babel/preset-react', '@babel/preset-env']
         }
       }
     ]
@@ -29,6 +30,6 @@ module.exports = {
       alwaysNotify: true,
       title: 'App Name',
       contentImage: path.join(__dirname, 'image.png')
-    }),
+    })
   ]
 };
