@@ -15,18 +15,21 @@ import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/tes
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {of} from 'rxjs';
 import {
-  ApiService, FileMeta,
+  ApiService,
+  FileMeta,
+  FileType,
   MockEnvironment,
-  mockFileMeta0, mockFileMetas,
+  mockFileMeta0,
+  mockFileMetas,
   mockWorkflowSpec0,
   mockWorkflowSpecs
 } from 'sartography-workflow-lib';
 import {BPMN_DIAGRAM, BPMN_DIAGRAM_WITH_WARNINGS} from '../../testing/mocks/diagram.mocks';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {FileMetaDialogData} from '../_interfaces/file-meta-dialog-data';
-import {ModelerComponent} from './modeler.component';
 import {DiagramComponent} from '../diagram/diagram.component';
 import {FileMetaDialogComponent} from '../file-meta-dialog/file-meta-dialog.component';
+import {ModelerComponent} from './modeler.component';
 
 
 describe('ModelerComponent', () => {
@@ -75,8 +78,30 @@ describe('ModelerComponent', () => {
     component = fixture.debugElement.componentInstance;
     component.diagramComponent = TestBed.createComponent(DiagramComponent).componentInstance;
     fixture.detectChanges();
+
+    const wfsReq = httpMock.expectOne('apiRoot/workflow-specification');
+    expect(wfsReq.request.method).toEqual('GET');
+    wfsReq.flush(mockWorkflowSpecs);
+    expect(component.workflowSpecs.length).toBeGreaterThan(0);
+
+    mockWorkflowSpecs.forEach(wfs => {
+      const req = httpMock.expectOne(`apiRoot/file?spec_id=${wfs.id}`);
+      expect(req.request.method).toEqual('GET');
+      req.flush(mockFileMetas);
+
+      mockFileMetas.forEach((fm, i) => {
+        const fmReq = httpMock.expectOne(`apiRoot/file/${fm.id}/data`);
+        expect(fmReq.request.method).toEqual('GET');
+        fmReq.flush(mockFileMetas[i].file);
+      });
+    });
+
   }));
 
+  afterEach(() => {
+    httpMock.verify();
+    fixture.destroy();
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -154,8 +179,9 @@ describe('ModelerComponent', () => {
     });
     const openDiagramSpy = spyOn(component.diagramComponent, 'openDiagram').and.stub();
     const newFile = new File([BPMN_DIAGRAM], 'filename.xml', {type: 'text/xml'});
+    component.diagramFileMeta = mockFileMeta0;
     component.readFile(newFile);
-    expect(openDiagramSpy).toHaveBeenCalledWith(BPMN_DIAGRAM);
+    expect(openDiagramSpy).toHaveBeenCalledWith(BPMN_DIAGRAM, FileType.BPMN);
   });
 
   it('loads a diagram from File with error', () => {
@@ -371,14 +397,18 @@ describe('ModelerComponent', () => {
   });
 
   it('should get a file metadata display string', () => {
+    component.workflowSpecs = [];
     expect(component.getFileMetaDisplayString(mockFileMeta0)).toEqual('Loading...');
+
     component.workflowSpecs = mockWorkflowSpecs;
     const expectedString = 'all_things - all_things - Everything (one-fish.bpmn) - v1.0 (Jan 23, 2020)';
     expect(component.getFileMetaDisplayString(mockFileMeta0)).toEqual(expectedString);
   });
 
   it('should get file metadata tooltip text', () => {
+    component.workflowSpecs = [];
     expect(component.getFileMetaTooltipText(mockFileMeta0)).toEqual('Loading...');
+
     component.workflowSpecs = mockWorkflowSpecs;
     const expectedString = `
           Workflow spec ID: all_things

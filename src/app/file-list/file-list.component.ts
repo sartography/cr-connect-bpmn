@@ -18,7 +18,6 @@ export class FileListComponent implements OnInit {
   }
 
   getIconCode(file_type: string) {
-    console.log('content_type', file_type);
     switch (file_type) {
       case FileType.BPMN:
         return 'account_tree';

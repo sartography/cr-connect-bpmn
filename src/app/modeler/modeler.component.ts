@@ -41,14 +41,6 @@ export class ModelerComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.diagramComponent.registerOnChange((newXmlValue: string) => {
-
-      const props = this.diagramComponent.properties;
-      if (props) {
-        const entries = props.entries;
-        console.log('id', entries.id.oldValues.id);
-        console.log('name', entries.name.oldValues.name);
-      }
-
       this.draftXml = newXmlValue;
     });
   }
@@ -143,7 +135,7 @@ export class ModelerComponent implements AfterViewInit {
     this.workflowSpec = undefined;
     this.diagramFileMeta = undefined;
     this.diagramFile = undefined;
-    this.diagramComponent.createNewDiagram();
+    this.diagramComponent.openDiagram();
   }
 
   private loadFilesFromDb() {

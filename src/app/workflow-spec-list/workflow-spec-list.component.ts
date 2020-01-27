@@ -10,20 +10,22 @@ export class WorkflowSpecListComponent implements OnInit {
   workflowSpecs: WorkflowSpec[] = [];
 
   constructor(private api: ApiService) {
-    this.api.getWorkflowSpecList().subscribe(wfs => {
-      console.log('wfs', wfs);
-      this.workflowSpecs = wfs;
-    });
+    this.loadWorkflowSpecs();
   }
 
   ngOnInit() {
   }
 
   newWorkflowSpec() {
-
   }
 
   deleteWorkflowSpec(specId: string) {
-    this.api.deleteWorkflowSpecification(specId).subscribe();
+    this.api.deleteWorkflowSpecification(specId).subscribe(() => this.loadWorkflowSpecs());
+  }
+
+  private loadWorkflowSpecs() {
+    this.api.getWorkflowSpecList().subscribe(wfs => {
+      this.workflowSpecs = wfs;
+    });
   }
 }

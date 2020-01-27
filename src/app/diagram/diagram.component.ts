@@ -4,7 +4,7 @@ import {ControlValueAccessor} from '@angular/forms';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import DmnModeler from 'dmn-js/lib/Modeler';
 import * as fileSaver from 'file-saver';
-import {ApiService} from 'sartography-workflow-lib';
+import {ApiService, FileType} from 'sartography-workflow-lib';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {ImportEvent} from '../_interfaces/import-event';
 import {bpmnModelerConfig} from './bpmn-modeler-config';
@@ -19,6 +19,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('containerRef', {static: true}) containerRef: ElementRef;
   @ViewChild('propertiesRef', {static: true}) propertiesRef: ElementRef;
   @Output() private importDone: EventEmitter<ImportEvent> = new EventEmitter();
+  private diagramType: FileType = FileType.BPMN;
   private modeler: BpmnModeler | DmnModeler;
   private xml = '';
   private disabled = false;
@@ -33,12 +34,8 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
     return this.xml;
   }
 
-  get properties(): any {
-    return this.modeler.get('propertiesPanel')._current;
-  }
-
   ngAfterViewInit() {
-    this.initializeModeler('bpmn');
+    this.initializeModeler(this.diagramType);
     this.openDiagram(this.xml);
   }
 
@@ -48,10 +45,10 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   onTouched() {
   }
 
-  initializeModeler(diagramType) {
+  initializeModeler(diagramType: FileType) {
     this.clearElements();
 
-    if (diagramType === 'dmn') {
+    if (diagramType === FileType.DMN) {
       this.initializeDMNModeler();
     } else {
       this.initializeBPMNModeler();
@@ -85,11 +82,8 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
     this.disabled = isDisabled;
   }
 
-  createNewDiagram() {
-    this.openDiagram();
-  }
-
-  openDiagram(xml?: string, diagramType?: string) {
+  openDiagram(xml?: string, diagramType?: FileType) {
+    this.diagramType = diagramType || FileType.BPMN;
     this.xml = xml;
     this.initializeModeler(diagramType);
     return this.zone.run(() => {
@@ -137,7 +131,8 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
    */
   loadUrl(url: string) {
     this.api.getStringFromUrl(url).subscribe(xml => {
-      this.openDiagram(xml);
+      const diagramType = (xml.includes('dmn.xsd') ? FileType.DMN : FileType.BPMN);
+      this.openDiagram(xml, diagramType);
     }, error => this._handleErrors(error));
   }
 
