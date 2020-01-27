@@ -5,10 +5,13 @@ import BpmnModeler from 'bpmn-js/lib/Modeler';
 import DmnModeler from 'dmn-js/lib/Modeler';
 import * as fileSaver from 'file-saver';
 import {ApiService, FileType} from 'sartography-workflow-lib';
+import {DMN_DIAGRAM_EMPTY} from '../../testing/mocks/diagram.mocks';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {ImportEvent} from '../_interfaces/import-event';
+import {getDiagramTypeFromXml} from '../_util/diagram-type';
 import {bpmnModelerConfig} from './bpmn-modeler-config';
 import {dmnModelerConfig} from './dmn-modeler-config';
+import {v4 as uuidv4} from 'uuid';
 
 @Component({
   selector: 'app-diagram',
@@ -83,14 +86,20 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   }
 
   openDiagram(xml?: string, diagramType?: FileType) {
-    this.diagramType = diagramType || FileType.BPMN;
+    this.diagramType = diagramType || getDiagramTypeFromXml(xml);
     this.xml = xml;
     this.initializeModeler(diagramType);
     return this.zone.run(() => {
       if (xml) {
         this.modeler.importXML(xml, (e, w) => this.onImport(e, w));
       } else {
-        this.modeler.createDiagram((e, w) => this.onImport(e, w));
+        if (this.modeler.createDiagram) {
+          this.modeler.createDiagram((e, w) => this.onImport(e, w));
+        } else {
+          const r = 'REPLACE_ME';
+          const newXml = DMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/gi, () => uuidv4().slice(0, 7));
+          this.modeler.importXML(newXml, (e, w) => this.onImport(e, w));
+        }
       }
     });
   }
@@ -99,7 +108,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
     this.saveDiagram();
     this.modeler.saveSVG((err, svg) => {
       const blob = new Blob([svg], {type: 'image/svg+xml'});
-      fileSaver.saveAs(blob, `BPMN Diagram - ${new Date().toISOString()}.svg`);
+      fileSaver.saveAs(blob, `${this.diagramType.toString().toUpperCase()} Diagram - ${new Date().toISOString()}.svg`);
     });
   }
 
@@ -131,7 +140,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
    */
   loadUrl(url: string) {
     this.api.getStringFromUrl(url).subscribe(xml => {
-      const diagramType = (xml.includes('dmn.xsd') ? FileType.DMN : FileType.BPMN);
+      const diagramType = getDiagramTypeFromXml(xml);
       this.openDiagram(xml, diagramType);
     }, error => this._handleErrors(error));
   }
@@ -181,7 +190,9 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
       moddleExtensions: dmnModelerConfig.moddleExtensions,
     });
 
-    this.modeler.on('views.changed', event => console.log('DMN Modeler changed event:', event));
+    this.modeler.on('commandStack.changed', () => this.saveDiagram());
+
+    this.modeler.on('views.changed', event => this.saveDiagram());
 
     this.modeler.on('import.done', ({error}) => {
       if (!error) {

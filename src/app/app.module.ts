@@ -16,15 +16,19 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {FormlyModule} from '@ngx-formly/core';
+import {FormlyMaterialModule} from '@ngx-formly/material';
 import {AppEnvironment} from 'sartography-workflow-lib';
 import {environment} from '../environments/environment';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {DiagramComponent} from './diagram/diagram.component';
+import {FileListComponent} from './file-list/file-list.component';
 import {FileMetaDialogComponent} from './file-meta-dialog/file-meta-dialog.component';
 import {ModelerComponent} from './modeler/modeler.component';
+import {WorkflowSpecDialogComponent} from './workflow-spec-dialog/workflow-spec-dialog.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
-import { FileListComponent } from './file-list/file-list.component';
+import { GetIconCodePipe } from './_pipes/get-icon-code.pipe';
 
 class ThisEnvironment implements AppEnvironment {
   production = environment.production;
@@ -41,11 +45,19 @@ class ThisEnvironment implements AppEnvironment {
     ModelerComponent,
     WorkflowSpecListComponent,
     FileListComponent,
+    WorkflowSpecDialogComponent,
+    GetIconCodePipe,
   ],
   imports: [
     BrowserAnimationsModule,
     BrowserModule,
     FlexLayoutModule,
+    FormlyMaterialModule,
+    FormlyModule.forRoot({
+      validationMessages: [
+        {name: 'required', message: 'This field is required'},
+      ],
+    }),
     FormsModule,
     HttpClientModule,
     MatButtonModule,
@@ -64,7 +76,10 @@ class ThisEnvironment implements AppEnvironment {
     MatListModule,
   ],
   bootstrap: [AppComponent],
-  entryComponents: [FileMetaDialogComponent],
+  entryComponents: [
+    FileMetaDialogComponent,
+    WorkflowSpecDialogComponent
+  ],
   providers: [{provide: 'APP_ENVIRONMENT', useClass: ThisEnvironment}]
 })
 export class AppModule {

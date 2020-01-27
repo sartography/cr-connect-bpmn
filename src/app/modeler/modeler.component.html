@@ -1,6 +1,19 @@
 <mat-toolbar [ngClass]="{'expanded': expandToolbar}">
   <mat-toolbar-row>
-    <button mat-button (click)="newDiagram()" title="Create new BPMN diagram"><mat-icon>insert_drive_file</mat-icon></button>
+    <button mat-button [matMenuTriggerFor]="newMenu" title="Open diagram">
+      <mat-icon>insert_drive_file</mat-icon>
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+    <mat-menu #newMenu="matMenu">
+      <button mat-button (click)="newDiagram(fileTypes.BPMN)">
+        <mat-icon>{{fileTypes.BPMN | getIconCode}}</mat-icon>
+        Create new BPMN diagram
+      </button>
+      <button mat-button (click)="newDiagram(fileTypes.DMN)">
+        <mat-icon>{{fileTypes.DMN | getIconCode}}</mat-icon>
+        Create new DMN diagram
+      </button>
+    </mat-menu>
 
     <button mat-button [matMenuTriggerFor]="importMenu" title="Open diagram">
       <mat-icon>folder</mat-icon>
@@ -41,7 +54,7 @@
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
     <mat-menu #downloadMenu="matMenu">
-      <button mat-menu-item (click)="diagram.saveSVG()"><mat-icon>image</mat-icon> Download SVG Image</button>
+      <button mat-menu-item (click)="diagram.saveSVG()"><mat-icon>{{fileTypes.SVG | getIconCode}}</mat-icon> Download SVG Image</button>
       <button mat-menu-item (click)="diagram.saveXML()"><mat-icon>code</mat-icon> Download XML File</button>
     </mat-menu>
 
@@ -62,7 +75,7 @@
         <mat-icon matPrefix>folder_open</mat-icon>
         <input matInput disabled [value]="getFileName()" type="text">
       </mat-form-field>
-      <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.xml,application/xml,text/xml">
+      <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.dmn,.xml,application/xml,text/xml">
     </ng-container>
     <ng-container *ngIf="openMethod === 'url'">
       <mat-form-field>

@@ -2,10 +2,12 @@ import {DatePipe} from '@angular/common';
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {ActivatedRoute} from '@angular/router';
 import {ApiService, FileMeta, FileType, WorkflowSpec} from 'sartography-workflow-lib';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {FileMetaDialogData} from '../_interfaces/file-meta-dialog-data';
 import {ImportEvent} from '../_interfaces/import-event';
+import {getDiagramTypeFromXml} from '../_util/diagram-type';
 import {DiagramComponent} from '../diagram/diagram.component';
 import {FileMetaDialogComponent} from '../file-meta-dialog/file-meta-dialog.component';
 
@@ -27,6 +29,7 @@ export class ModelerComponent implements AfterViewInit {
   bpmnFiles: FileMeta[] = [];
   diagramFileMeta: FileMeta;
   fileName: string;
+  fileTypes = FileType;
   private xml = '';
   private draftXml = '';
   @ViewChild(DiagramComponent, {static: false}) private diagramComponent: DiagramComponent;
@@ -34,7 +37,8 @@ export class ModelerComponent implements AfterViewInit {
   constructor(
     private api: ApiService,
     private snackBar: MatSnackBar,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private route: ActivatedRoute,
   ) {
     this.loadFilesFromDb();
   }
@@ -95,8 +99,9 @@ export class ModelerComponent implements AfterViewInit {
   // Arrow function here preserves this context
   onLoad = (event: ProgressEvent) => {
     this.xml = (event.target as FileReader).result.toString();
-    this.diagramComponent.openDiagram(this.xml, this.diagramFileMeta.type);
-  }
+    const diagramType = this.diagramFileMeta ? this.diagramFileMeta.type : getDiagramTypeFromXml(this.xml);
+    this.diagramComponent.openDiagram(this.xml, diagramType);
+  };
 
   readFile(file: File) {
     // FileReader must be instantiated this way so unit test can spy on it.
@@ -128,34 +133,13 @@ export class ModelerComponent implements AfterViewInit {
     this.onSubmitFileToOpen();
   }
 
-  newDiagram() {
+  newDiagram(diagramType?: FileType) {
     this.xml = '';
     this.draftXml = '';
     this.fileName = '';
-    this.workflowSpec = undefined;
     this.diagramFileMeta = undefined;
     this.diagramFile = undefined;
-    this.diagramComponent.openDiagram();
-  }
-
-  private loadFilesFromDb() {
-    this.api.getWorkflowSpecList().subscribe(wfs => {
-      this.workflowSpecs = wfs;
-      this.workflowSpecs.forEach(w => {
-        this.api.listBpmnFiles(w.id).subscribe(files => {
-          this.bpmnFiles = [];
-          files.forEach(f => {
-            this.api.getFileData(f.id).subscribe(d => {
-              if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
-                f.content_type = 'text/xml';
-                f.file = new File([d], f.name, {type: f.content_type});
-                this.bpmnFiles.push(f);
-              }
-            });
-          });
-        });
-      });
-    });
+    this.diagramComponent.openDiagram(undefined, diagramType);
   }
 
   editFileMeta() {
@@ -175,6 +159,79 @@ export class ModelerComponent implements AfterViewInit {
       if (data && data.fileName && data.workflowSpecId) {
         this._upsertSpecAndFileMeta(data);
       }
+    });
+  }
+
+  getWorkflowSpec(workflow_spec_id: string): WorkflowSpec {
+    return this.workflowSpecs.find(wfs => workflow_spec_id === wfs.id);
+  }
+
+  getFileMetaDisplayString(fileMeta: FileMeta) {
+    const spec = this.getWorkflowSpec(fileMeta.workflow_spec_id);
+
+    if (spec) {
+      const specName = spec.id + ' - ' + spec.name + ' - ' + spec.display_name;
+      const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
+      return `${specName} (${fileMeta.name}) - v${fileMeta.version} (${lastUpdated})`;
+    } else {
+      return 'Loading...';
+    }
+  }
+
+  getFileMetaTooltipText(fileMeta: FileMeta) {
+    const spec = this.getWorkflowSpec(fileMeta.workflow_spec_id);
+
+    if (spec) {
+      const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
+      return `
+          Workflow spec ID: ${spec.id}
+          Workflow name: ${spec.name}
+          Display name: ${spec.display_name}
+          Description: ${spec.description}
+          File name: ${fileMeta.name}
+          Last updated: ${lastUpdated}
+          Version: ${fileMeta.version}
+      `;
+    } else {
+      return 'Loading...';
+    }
+  }
+
+  private loadFilesFromDb() {
+
+    this.route.paramMap.subscribe(paramMap => {
+      const workflowSpecId = paramMap.get('workflowSpecId');
+      const fileMetaId = parseInt(paramMap.get('fileMetaId'), 10);
+
+      console.log('workflowSpecId', workflowSpecId);
+      console.log('fileMetaId', fileMetaId);
+
+      this.api.getWorkflowSpecList().subscribe(wfs => {
+        this.workflowSpecs = wfs;
+        this.workflowSpecs.forEach(w => {
+          if (w.id === workflowSpecId) {
+            this.workflowSpec = w;
+          }
+          this.api.listBpmnFiles(w.id).subscribe(files => {
+            this.bpmnFiles = [];
+            files.forEach(f => {
+              this.api.getFileData(f.id).subscribe(d => {
+                if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
+                  f.content_type = 'text/xml';
+                  f.file = new File([d], f.name, {type: f.content_type});
+                  this.bpmnFiles.push(f);
+
+                  if (f.id === fileMetaId) {
+                    this.diagramFileMeta = f;
+                    this.diagramFile = f.file;
+                    this.onSubmitFileToOpen();
+                  }
+                }
+              });
+            });
+          });
+        });
+      });
     });
   }
 
@@ -229,46 +286,12 @@ export class ModelerComponent implements AfterViewInit {
     }
   }
 
-  getWorkflowSpec(workflow_spec_id: string): WorkflowSpec {
-    return this.workflowSpecs.find(wfs => workflow_spec_id === wfs.id);
-  }
-
-  getFileMetaDisplayString(fileMeta: FileMeta) {
-    const spec = this.getWorkflowSpec(fileMeta.workflow_spec_id);
-
-    if (spec) {
-      const specName = spec.id + ' - ' + spec.name + ' - ' + spec.display_name;
-      const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
-      return `${specName} (${fileMeta.name}) - v${fileMeta.version} (${lastUpdated})`;
-    } else {
-      return 'Loading...';
-    }
-  }
-
-  getFileMetaTooltipText(fileMeta: FileMeta) {
-    const spec = this.getWorkflowSpec(fileMeta.workflow_spec_id);
-
-    if (spec) {
-      const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
-      return `
-          Workflow spec ID: ${spec.id}
-          Workflow name: ${spec.name}
-          Display name: ${spec.display_name}
-          Description: ${spec.description}
-          File name: ${fileMeta.name}
-          Last updated: ${lastUpdated}
-          Version: ${fileMeta.version}
-      `;
-    } else {
-      return 'Loading...';
-    }
-  }
-
   private isXmlFile(file: File) {
-    return file.type === 'text/xml' ||
-      file.type === 'application/xml' ||
-      file.name.slice(-5) === '.bpmn' ||
-      file.name.slice(-4) === '.xml';
+    return file.type.toLowerCase() === 'text/xml' ||
+      file.type.toLowerCase() === 'application/xml' ||
+      file.name.slice(-5).toLowerCase() === '.bpmn' ||
+      file.name.slice(-4).toLowerCase() === '.dmn' ||
+      file.name.slice(-4).toLowerCase() === '.xml';
   }
 
   private saveFileChanges() {

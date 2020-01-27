@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import {ApiService, FileMeta, FileType, WorkflowSpec} from 'sartography-workflow-lib';
 
 @Component({
@@ -10,22 +11,14 @@ export class FileListComponent implements OnInit {
   @Input() workflowSpec: WorkflowSpec;
   fileMetas: FileMeta[];
 
-  constructor(private api: ApiService) {
+  constructor(
+    private api: ApiService,
+    private router: Router
+  ) {
   }
 
   ngOnInit() {
     this.loadFileMetas();
-  }
-
-  getIconCode(file_type: string) {
-    switch (file_type) {
-      case FileType.BPMN:
-        return 'account_tree';
-      case FileType.SVG:
-        return 'image';
-      case FileType.DMN:
-        return 'view_list';
-    }
   }
 
   deleteFile(fileMetaId: number) {
@@ -34,5 +27,9 @@ export class FileListComponent implements OnInit {
 
   private loadFileMetas() {
     this.api.listBpmnFiles(this.workflowSpec.id).subscribe(fms => this.fileMetas = fms);
+  }
+
+  editFile(fileMetaId: number) {
+    this.router.navigate([`/modeler/${this.workflowSpec.id}/${fileMetaId}`]);
   }
 }

@@ -6,7 +6,8 @@ import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list
 
 
 const appRoutes: Routes = [
-  { path: 'modeler', component: ModelerComponent },
+  { path: 'modeler/:workflowSpecId', component: ModelerComponent },
+  { path: 'modeler/:workflowSpecId/:fileMetaId', component: ModelerComponent },
   { path: 'workflow-specs', component: WorkflowSpecListComponent },
   { path: '', redirectTo: '/workflow-specs', pathMatch: 'full' },
 ];

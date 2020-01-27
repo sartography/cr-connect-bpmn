@@ -1,7 +1,7 @@
 
 <div class="container">
   <h1>Workflow Specifications</h1>
-  <button mat-flat-button color="primary" (click)="newWorkflowSpec()">
+  <button mat-flat-button color="primary" (click)="editWorkflowSpec()">
     <mat-icon>library_add</mat-icon>
     Add new workflow specification
   </button>
@@ -10,7 +10,10 @@
   <mat-card *ngFor="let wfs of workflowSpecs" class="mat-elevation-z0">
     <mat-card-header>
       <mat-card-title>
-        <h1>{{wfs.id}}</h1>
+        <h1>
+          {{wfs.id}}
+          <button mat-mini-fab color="primary" (click)="editWorkflowSpec(wfs)"><mat-icon>edit</mat-icon></button>
+        </h1>
       </mat-card-title>
       <mat-card-subtitle>
         <h2>{{wfs.name}}</h2>
@@ -26,13 +29,13 @@
       <app-file-list [workflowSpec]="wfs"></app-file-list>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-button>
+      <button mat-button [routerLink]="['/modeler/' + wfs.id]" [queryParams]="{action: 'newFile'}">
         <mat-icon>note_add</mat-icon>
-        Add new file
+        Add new BPMN or DMN file
       </button>
-      <button mat-button>
+      <button mat-button [routerLink]="['/modeler/' + wfs.id]" [queryParams]="{action: 'openFile'}">
         <mat-icon>cloud_upload</mat-icon>
-        Upload file
+        Upload BPMN or DMN file
       </button>
     </mat-card-actions>
   </mat-card>

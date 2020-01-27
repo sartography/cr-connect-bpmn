@@ -57,10 +57,6 @@ describe('FileListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should get an icon code for each file type', () => {
-    Object.values(FileType).forEach(ft => expect(component.getIconCode(ft)).toBeTruthy());
-  });
-
   it('should delete a file', () => {
     const loadFileMetasSpy = spyOn((component as any), 'loadFileMetas').and.stub();
     component.deleteFile(mockFileMeta0.id);
