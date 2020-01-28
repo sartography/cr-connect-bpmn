@@ -15,8 +15,8 @@ RUN apt-get -y  install nodejs build-essential
 
 #RUN npm cache verify
 RUN npm install
-#RUN npm run build:staging
-RUN npm run build
+RUN npm run build:staging
+#RUN npm run build
 
 #FROM nginx:alpine
 

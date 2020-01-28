@@ -30,7 +30,7 @@ import {WorkflowSpecDialogComponent} from './workflow-spec-dialog/workflow-spec-
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
 import { GetIconCodePipe } from './_pipes/get-icon-code.pipe';
 
-class ThisEnvironment implements AppEnvironment {
+export class ThisEnvironment implements AppEnvironment {
   production = environment.production;
   api = environment.api;
   googleAnalyticsKey = environment.googleAnalyticsKey;
