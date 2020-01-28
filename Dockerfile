@@ -10,3 +10,6 @@ RUN npm run build:staging
 ### STAGE 2: Run ###
 FROM nginx:1.17.1-alpine
 COPY --from=build /crc-bpmn/dist/cr-connect-bpmn /usr/share/nginx/html
+
+# expose ports
+EXPOSE 80
