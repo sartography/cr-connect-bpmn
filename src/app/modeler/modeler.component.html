@@ -8,7 +8,7 @@
     ({{workflowSpec.name}})
   </mat-toolbar-row>
   <mat-toolbar-row>
-    <button mat-button [matMenuTriggerFor]="newMenu" title="Open diagram">
+    <button #newMenuTrigger="matMenuTrigger" mat-button [matMenuTriggerFor]="newMenu" title="Open diagram">
       <mat-icon>insert_drive_file</mat-icon>
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
@@ -23,7 +23,7 @@
       </button>
     </mat-menu>
 
-    <button mat-button [matMenuTriggerFor]="importMenu" title="Open diagram">
+    <button #importMenuTrigger="matMenuTrigger" mat-button [matMenuTriggerFor]="importMenu" title="Open diagram">
       <mat-icon>folder</mat-icon>
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
@@ -36,7 +36,7 @@
         <button
           mat-menu-item
           *ngFor="let bf of bpmnFiles"
-          (click)="loadDbFile(bf)"
+          [routerLink]="['/modeler', workflowSpec.id, bf.id]"
           [matTooltip]="getFileMetaTooltipText(bf)"
           matTooltipClass="tooltip-text"
           matTooltipPosition="right"

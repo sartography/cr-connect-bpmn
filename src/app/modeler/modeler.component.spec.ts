@@ -27,7 +27,7 @@ import {
 } from 'sartography-workflow-lib';
 import {BPMN_DIAGRAM, BPMN_DIAGRAM_WITH_WARNINGS} from '../../testing/mocks/diagram.mocks';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
-import {FileMetaDialogData} from '../_interfaces/file-meta-dialog-data';
+import {DialogData} from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {DiagramComponent} from '../diagram/diagram.component';
 import {FileMetaDialogComponent} from '../file-meta-dialog/file-meta-dialog.component';
@@ -268,7 +268,7 @@ describe('ModelerComponent', () => {
   });
 
   it('should open file metadata dialog', () => {
-    const data: FileMetaDialogData = {
+    const data: DialogData = {
       fileName: 'after',
       fileType: FileType.BPMN,
     };
@@ -283,7 +283,7 @@ describe('ModelerComponent', () => {
 
   it('should update file metadata for existing file', () => {
     const newXml = '<xml>New Value</xml>';
-    const data: FileMetaDialogData = {
+    const data: DialogData = {
       fileName: mockFileMeta0.name,
       fileType: FileType.BPMN,
     };
@@ -315,7 +315,7 @@ describe('ModelerComponent', () => {
 
   it('should create new file metadata for new file', () => {
     const newXml = '<xml>New Value</xml>';
-    const data: FileMetaDialogData = {
+    const data: DialogData = {
       fileName: mockFileMeta0.name,
       fileType: FileType.BPMN,
     };

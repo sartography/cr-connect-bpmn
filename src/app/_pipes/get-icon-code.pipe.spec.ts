@@ -6,10 +6,10 @@ describe('GetIconCodePipe', () => {
 
   beforeEach(() => {
     pipe = new GetIconCodePipe();
-  })
+  });
 
   it('create an instance', () => {
-    expect(pipe).toBeTruthy()
+    expect(pipe).toBeTruthy();
   });
 
   it('should get an icon code for each file type', () => {

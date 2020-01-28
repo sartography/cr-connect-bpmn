@@ -2,14 +2,16 @@ import {DatePipe} from '@angular/common';
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService, FileMeta, FileType, WorkflowSpec} from 'sartography-workflow-lib';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
-import {FileMetaDialogData} from '../_interfaces/file-meta-dialog-data';
+import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData} from '../_interfaces/dialog-data';
 import {ImportEvent} from '../_interfaces/import-event';
 import {getDiagramTypeFromXml} from '../_util/diagram-type';
 import {DiagramComponent} from '../diagram/diagram.component';
 import {FileMetaDialogComponent} from '../file-meta-dialog/file-meta-dialog.component';
+import {NewFileDialogComponent} from '../new-file-dialog/new-file-dialog.component';
+import {OpenFileDialogComponent} from '../open-file-dialog/open-file-dialog.component';
 
 @Component({
   selector: 'app-modeler',
@@ -42,21 +44,19 @@ export class ModelerComponent implements AfterViewInit {
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
     private route: ActivatedRoute,
+    private router: Router,
   ) {
-
     this.route.queryParams.subscribe(q => {
       if (q && q.action) {
         if (q.action === 'openFile') {
-          this.expandToolbar = true;
-          this.openMethod = 'file';
+          this.openFileDialog();
         } else if (q.action === 'newFile') {
-
+          this.newFileDialog();
         }
       }
-    })
+    });
 
     this.route.paramMap.subscribe(paramMap => {
-      console.log('paramMap', paramMap);
       this.workflowSpecId = paramMap.get('workflowSpecId');
       this.fileMetaId = parseInt(paramMap.get('fileMetaId'), 10);
       this.loadFilesFromDb();
@@ -163,14 +163,35 @@ export class ModelerComponent implements AfterViewInit {
     this.diagramComponent.openDiagram(undefined, diagramType);
   }
 
+  openFileDialog() {
+    const dialogRef = this.dialog.open(OpenFileDialogComponent, {
+    });
+
+    dialogRef.afterClosed().subscribe((data: OpenFileDialogData) => {
+      if (data && data.file) {
+        this.diagramFile = data.file;
+        this.onSubmitFileToOpen();
+      }
+    });
+  }
+
+  newFileDialog() {
+    const dialogRef = this.dialog.open(NewFileDialogComponent, {
+    });
+
+    dialogRef.afterClosed().subscribe((data: NewFileDialogData) => {
+      if (data && data.fileType) {
+        this.diagramType = data.fileType;
+        this.newDiagram(data.fileType);
+      }
+    });
+  }
+
   editFileMeta() {
-    // Open new filename/workflow spec dialog
     const dialogRef = this.dialog.open(FileMetaDialogComponent, {
-      height: '400px',
-      width: '400px',
       data: {
         fileName: this.diagramFile ? this.diagramFile.name : this.fileName || '',
-        fileType: getDiagramTypeFromXml(this.xml),
+        fileType: this.diagramType || getDiagramTypeFromXml(this.xml),
       },
     });
 
@@ -215,39 +236,36 @@ export class ModelerComponent implements AfterViewInit {
 
   private loadFilesFromDb() {
     this.api.getWorkflowSpecList().subscribe(wfs => {
-        this.workflowSpecs = wfs;
-        this.workflowSpecs.forEach(w => {
-          if (w.id === this.workflowSpecId) {
-            this.workflowSpec = w;
-            this.api.listBpmnFiles(w.id).subscribe(files => {
-              this.bpmnFiles = [];
-              files.forEach(f => {
-                this.api.getFileData(f.id).subscribe(d => {
-                  if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
-                    f.content_type = 'text/xml';
-                    f.file = new File([d], f.name, {type: f.content_type});
-                    this.bpmnFiles.push(f);
+      this.workflowSpecs = wfs;
+      this.workflowSpecs.forEach(w => {
+        if (w.id === this.workflowSpecId) {
+          this.workflowSpec = w;
+          this.api.listBpmnFiles(w.id).subscribe(files => {
+            this.bpmnFiles = [];
+            files.forEach(f => {
+              this.api.getFileData(f.id).subscribe(d => {
+                if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
+                  f.content_type = 'text/xml';
+                  f.file = new File([d], f.name, {type: f.content_type});
+                  this.bpmnFiles.push(f);
 
-                    if (f.id === this.fileMetaId) {
-                      this.diagramFileMeta = f;
-                      this.diagramFile = f.file;
-                      this.onSubmitFileToOpen();
-                    }
+                  if (f.id === this.fileMetaId) {
+                    this.diagramFileMeta = f;
+                    this.diagramFile = f.file;
+                    this.onSubmitFileToOpen();
                   }
-                });
+                }
               });
             });
-          }
-        });
+          });
+        }
       });
+    });
   }
 
   private _upsertFileMeta(data: FileMetaDialogData) {
     if (data.fileName) {
       this.xml = this.draftXml;
-
-      // Save old workflow spec id, if user wants to change it
-      const specId = this.workflowSpec ? this.workflowSpec.id : undefined;
       const fileMetaId = this.diagramFileMeta ? this.diagramFileMeta.id : undefined;
       const fileType = this.diagramFileMeta ? this.diagramFileMeta.type : FileType.BPMN;
       this.diagramFileMeta = {
@@ -259,17 +277,17 @@ export class ModelerComponent implements AfterViewInit {
         workflow_spec_id: this.workflowSpec.id,
       };
 
-      if (specId && fileMetaId) {
+      if (this.workflowSpec && fileMetaId) {
         // Update existing file meta
-        this.api.updateFileMeta(specId, this.diagramFileMeta).subscribe(fileMeta => {
+        this.api.updateFileMeta(this.workflowSpec.id, this.diagramFileMeta).subscribe(fileMeta => {
           this.loadFilesFromDb();
-          this.snackBar.open('Saved changes to workflow spec and file.', 'Ok', {duration: 5000});
+          this.snackBar.open(`Saved changes to file ${fileMeta.name}.`, 'Ok', {duration: 5000});
         });
       } else {
         // Add new file meta
-        this.api.addFileMeta(specId, this.diagramFileMeta).subscribe(fileMeta => {
-          this.loadFilesFromDb();
-          this.snackBar.open('Saved new workflow spec and file.', 'Ok', {duration: 5000});
+        this.api.addFileMeta(this.workflowSpec.id, this.diagramFileMeta).subscribe(fileMeta => {
+          this.router.navigate(['/modeler', this.workflowSpec.id, fileMeta.id]);
+          this.snackBar.open(`Saved new file ${fileMeta.name} to workflow spec ${this.workflowSpec.name}.`, 'Ok', {duration: 5000});
         });
       }
     }
@@ -287,7 +305,7 @@ export class ModelerComponent implements AfterViewInit {
     this.xml = this.draftXml;
     this.diagramFileMeta.file = new File([this.xml], this.diagramFileMeta.name, {type: 'text/xml'});
     this.api.updateFileMeta(this.workflowSpec.id, this.diagramFileMeta).subscribe(() => {
-      this.snackBar.open('Saved changes to file.', 'Ok', {duration: 5000});
+      this.snackBar.open(`Saved changes to file ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
     });
   }
 }

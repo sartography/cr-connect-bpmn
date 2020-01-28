@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ApiService, WorkflowSpec} from 'sartography-workflow-lib';
-import {WorkflowSpecDialogData} from '../_interfaces/workflow-spec-dialog-data';
+import {WorkflowSpecDialogData} from '../_interfaces/dialog-data';
 import {WorkflowSpecDialogComponent} from '../workflow-spec-dialog/workflow-spec-dialog.component';
 
 @Component({

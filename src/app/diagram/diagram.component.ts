@@ -21,7 +21,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('containerRef', {static: true}) containerRef: ElementRef;
   @ViewChild('propertiesRef', {static: true}) propertiesRef: ElementRef;
   @Output() private importDone: EventEmitter<ImportEvent> = new EventEmitter();
-  private diagramType: FileType = FileType.BPMN;
+  private diagramType: FileType;
   private modeler: BpmnModeler | DmnModeler;
   private xml = '';
   private disabled = false;

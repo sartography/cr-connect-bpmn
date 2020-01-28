@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FileMetaDialogData} from '../_interfaces/file-meta-dialog-data';
-import {cleanUpFilename, toSnakeCase, trimString} from '../_util/string-clean';
+import {FileMetaDialogData} from '../_interfaces/dialog-data';
+import {cleanUpFilename} from '../_util/string-clean';
 
 @Component({
   selector: 'app-new-file-dialog',

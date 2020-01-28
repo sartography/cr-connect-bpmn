@@ -29,6 +29,8 @@ import {ModelerComponent} from './modeler/modeler.component';
 import {WorkflowSpecDialogComponent} from './workflow-spec-dialog/workflow-spec-dialog.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
 import { GetIconCodePipe } from './_pipes/get-icon-code.pipe';
+import { NewFileDialogComponent } from './new-file-dialog/new-file-dialog.component';
+import { OpenFileDialogComponent } from './open-file-dialog/open-file-dialog.component';
 
 export class ThisEnvironment implements AppEnvironment {
   production = environment.production;
@@ -47,6 +49,8 @@ export class ThisEnvironment implements AppEnvironment {
     FileListComponent,
     WorkflowSpecDialogComponent,
     GetIconCodePipe,
+    NewFileDialogComponent,
+    OpenFileDialogComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -78,7 +82,9 @@ export class ThisEnvironment implements AppEnvironment {
   bootstrap: [AppComponent],
   entryComponents: [
     FileMetaDialogComponent,
-    WorkflowSpecDialogComponent
+    NewFileDialogComponent,
+    OpenFileDialogComponent,
+    WorkflowSpecDialogComponent,
   ],
   providers: [{provide: 'APP_ENVIRONMENT', useClass: ThisEnvironment}]
 })

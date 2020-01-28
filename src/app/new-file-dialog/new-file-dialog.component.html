@@ -1,0 +1,15 @@
+<div mat-dialog-title>
+  <button mat-icon-button mat-dialog-close=""><mat-icon>close</mat-icon></button>
+</div>
+<div mat-dialog-content>
+  <div *ngIf="!mode" class="select-mode" fxLayoutAlign="center center">
+    <button (click)="onSubmit(fileType.DMN)" color="primary" mat-flat-button>
+      <mat-icon>{{fileType.DMN | getIconCode}}</mat-icon>
+      New DMN Diagram
+    </button>
+    <button (click)="onSubmit(fileType.BPMN)" color="primary" mat-flat-button>
+      <mat-icon>{{fileType.BPMN | getIconCode}}</mat-icon>
+      New BPMN Diagram
+    </button>
+  </div>
+</div>

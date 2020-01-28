@@ -1,0 +1,33 @@
+<div mat-dialog-content>
+  <div *ngIf="!mode" class="select-mode" fxLayoutAlign="center center">
+    <button (click)="mode = 'local'" color="primary" mat-flat-button>
+      <mat-icon>code</mat-icon>
+      Upload a local BPMN/DMN file
+    </button>
+    <button (click)="mode = 'remote'" color="primary" mat-flat-button>
+      <mat-icon>link</mat-icon>
+      Open a BPMN/DMN file from URL
+    </button>
+  </div>
+
+  <div *ngIf="mode === 'local'">
+    <h1>Upload a local file</h1>
+    <mat-form-field (click)="fileInput.click()">
+      <mat-icon matPrefix>folder_open</mat-icon>
+      <input [value]="getFileName()" disabled matInput type="text">
+    </mat-form-field>
+    <input #fileInput (change)="onFileSelected($event)" accept=".bpmn,.dmn,.xml,application/xml,text/xml" hidden id="file"
+           type="file">
+    <button (click)="onSubmit()" [disabled]="!diagramFile" color="primary" mat-flat-button>Upload File</button>
+    <button (click)="mode = undefined" mat-flat-button>Cancel</button>
+  </div>
+
+  <div *ngIf="mode === 'remote'">
+    <h1>Open a file from a URL</h1>
+    <mat-form-field>
+      <input [(ngModel)]="url" matInput placeholder="BPMN/DMN File URL" type="url">
+    </mat-form-field>
+    <button (click)="onSubmitUrl()" [disabled]="!isValidUrl()" color="primary" mat-flat-button>Fetch File</button>
+    <button (click)="mode = undefined" mat-flat-button>Cancel</button>
+  </div>
+</div>
