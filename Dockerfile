@@ -1,25 +1,12 @@
-FROM ubuntu:18.04
-
+### STAGE 1: Build ###
+FROM node:12.7-alpine AS build
 RUN mkdir /crc-bpmn
 WORKDIR /crc-bpmn
-
-ADD package.json /crc-bpmn/
-
-COPY . /crc-bpmn/
-RUN apt-get -y update
-RUN apt-get -y install curl
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
-#RUN sudo apt-get install -y nodejs
-RUN apt-get -y update
-RUN apt-get -y  install nodejs build-essential
-
-#RUN npm cache verify
+COPY package.json ./
 RUN npm install
+COPY . .
 RUN npm run build:staging
-#RUN npm run build
 
-#FROM nginx:alpine
-
-#COPY --from=builder /crc-bpmn/dist/* /usr/share/nginx/html/
-
-CMD ["npm", "run", "start"]
+### STAGE 2: Run ###
+FROM nginx:1.17.1-alpine
+COPY --from=build /crc-bpmn/dist/cr-connect-bpmn /usr/share/nginx/html
