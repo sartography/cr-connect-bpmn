@@ -235,30 +235,25 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   private loadFilesFromDb() {
-    this.api.getWorkflowSpecList().subscribe(wfs => {
-      this.workflowSpecs = wfs;
-      this.workflowSpecs.forEach(w => {
-        if (w.id === this.workflowSpecId) {
-          this.workflowSpec = w;
-          this.api.listBpmnFiles(w.id).subscribe(files => {
-            this.bpmnFiles = [];
-            files.forEach(f => {
-              this.api.getFileData(f.id).subscribe(d => {
-                if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
-                  f.content_type = 'text/xml';
-                  f.file = new File([d], f.name, {type: f.content_type});
-                  this.bpmnFiles.push(f);
+    this.api.getWorkflowSpecification(this.workflowSpecId).subscribe(wfs => {
+      this.workflowSpec = wfs;
+      this.api.listBpmnFiles(wfs.id).subscribe(files => {
+        this.bpmnFiles = [];
+        files.forEach(f => {
+          this.api.getFileData(f.id).subscribe(d => {
+            if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
+              f.content_type = 'text/xml';
+              f.file = new File([d], f.name, {type: f.content_type});
+              this.bpmnFiles.push(f);
 
-                  if (f.id === this.fileMetaId) {
-                    this.diagramFileMeta = f;
-                    this.diagramFile = f.file;
-                    this.onSubmitFileToOpen();
-                  }
-                }
-              });
-            });
+              if (f.id === this.fileMetaId) {
+                this.diagramFileMeta = f;
+                this.diagramFile = f.file;
+                this.onSubmitFileToOpen();
+              }
+            }
           });
-        }
+        });
       });
     });
   }

@@ -14,6 +14,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ActivatedRoute, convertToParamMap} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
 import {Observable, of} from 'rxjs';
 import {
   ApiService,
@@ -27,7 +28,7 @@ import {
 } from 'sartography-workflow-lib';
 import {BPMN_DIAGRAM, BPMN_DIAGRAM_WITH_WARNINGS} from '../../testing/mocks/diagram.mocks';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
-import {DialogData} from '../_interfaces/dialog-data';
+import {FileMetaDialogData} from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {DiagramComponent} from '../diagram/diagram.component';
 import {FileMetaDialogComponent} from '../file-meta-dialog/file-meta-dialog.component';
@@ -61,6 +62,7 @@ describe('ModelerComponent', () => {
         MatTooltipModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
+        RouterTestingModule,
       ],
       providers: [
         ApiService,
@@ -74,6 +76,9 @@ describe('ModelerComponent', () => {
         },
         {provide: MAT_DIALOG_DATA, useValue: []},
         {provide: ActivatedRoute, useValue: {
+          queryParams: of(convertToParamMap({
+            action: ''
+          })),
           paramMap: of(convertToParamMap({
             workflowSpecId: mockWorkflowSpec0.id,
             fileMetaId: `${mockFileMeta0.id}`
@@ -88,23 +93,20 @@ describe('ModelerComponent', () => {
     component.diagramComponent = TestBed.createComponent(DiagramComponent).componentInstance;
     fixture.detectChanges();
 
-    const wfsReq = httpMock.expectOne('apiRoot/workflow-specification');
+    const wfsReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}`);
     expect(wfsReq.request.method).toEqual('GET');
-    wfsReq.flush(mockWorkflowSpecs);
-    expect(component.workflowSpecs.length).toBeGreaterThan(0);
+    wfsReq.flush(mockWorkflowSpec0);
+    expect(component.workflowSpec).toEqual(mockWorkflowSpec0);
 
-    mockWorkflowSpecs.forEach(wfs => {
-      const req = httpMock.expectOne(`apiRoot/file?spec_id=${wfs.id}`);
-      expect(req.request.method).toEqual('GET');
-      req.flush(mockFileMetas);
+    const req = httpMock.expectOne(`apiRoot/file?spec_id=${mockWorkflowSpec0.id}`);
+    expect(req.request.method).toEqual('GET');
+    req.flush(mockFileMetas);
 
-      mockFileMetas.forEach((fm, i) => {
-        const fmReq = httpMock.expectOne(`apiRoot/file/${fm.id}/data`);
-        expect(fmReq.request.method).toEqual('GET');
-        fmReq.flush(mockFileMetas[i].file);
-      });
+    mockFileMetas.forEach((fm, i) => {
+      const fmReq = httpMock.expectOne(`apiRoot/file/${fm.id}/data`);
+      expect(fmReq.request.method).toEqual('GET');
+      fmReq.flush(mockFileMetas[i].file);
     });
-
   }));
 
   afterEach(() => {
@@ -268,7 +270,7 @@ describe('ModelerComponent', () => {
   });
 
   it('should open file metadata dialog', () => {
-    const data: DialogData = {
+    const data: FileMetaDialogData = {
       fileName: 'after',
       fileType: FileType.BPMN,
     };
@@ -283,7 +285,7 @@ describe('ModelerComponent', () => {
 
   it('should update file metadata for existing file', () => {
     const newXml = '<xml>New Value</xml>';
-    const data: DialogData = {
+    const data: FileMetaDialogData = {
       fileName: mockFileMeta0.name,
       fileType: FileType.BPMN,
     };
@@ -315,7 +317,7 @@ describe('ModelerComponent', () => {
 
   it('should create new file metadata for new file', () => {
     const newXml = '<xml>New Value</xml>';
-    const data: DialogData = {
+    const data: FileMetaDialogData = {
       fileName: mockFileMeta0.name,
       fileType: FileType.BPMN,
     };

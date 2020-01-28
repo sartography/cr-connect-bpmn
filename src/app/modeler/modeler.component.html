@@ -1,9 +1,9 @@
 <mat-toolbar [ngClass]="{'expanded': expandToolbar}">
   <mat-toolbar-row *ngIf="workflowSpec">
-    <button mat-button [routerLink]="['/']">
+    <a mat-button [routerLink]="['/']">
       <mat-icon>arrow_back</mat-icon>
       Back
-    </button>
+    </a>
     {{workflowSpec.display_name}}
     ({{workflowSpec.name}})
   </mat-toolbar-row>
@@ -33,7 +33,7 @@
         Open previously saved...
       </button>
       <mat-menu #dbMenu="matMenu">
-        <button
+        <a
           mat-menu-item
           *ngFor="let bf of bpmnFiles"
           [routerLink]="['/modeler', workflowSpec.id, bf.id]"
@@ -42,7 +42,7 @@
           matTooltipPosition="right"
         >
           {{getFileMetaDisplayString(bf)}}
-        </button>
+        </a>
       </mat-menu>
 
       <button mat-menu-item (click)="openMethod = 'file'; expandToolbar = true">
