@@ -4,6 +4,7 @@ import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {FileType} from 'sartography-workflow-lib';
 import {FileMetaDialogData} from '../_interfaces/file-meta-dialog-data';
 
 import {FileMetaDialogComponent} from './file-meta-dialog.component';
@@ -52,10 +53,7 @@ describe('EditFileMetaDialogComponent', () => {
     const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
     const dataBefore: FileMetaDialogData = {
       fileName: 'green_eggs.bpmn',
-      workflowSpecId: 'green_eggs',
-      name: 'green_eggs',
-      displayName: 'Green Eggs',
-      description: 'Eat them! Eat them! Here they are.',
+      fileType: FileType.BPMN,
     };
 
     component.data = dataBefore;
@@ -67,10 +65,7 @@ describe('EditFileMetaDialogComponent', () => {
     const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
     const dataBefore: FileMetaDialogData = {
       fileName: 'and_ham.bpmn',
-      workflowSpecId: 'and_ham',
-      name: 'and_hame',
-      displayName: 'And Ham',
-      description: 'Would you, could you, in a box?',
+      fileType: FileType.BPMN,
     };
 
     component.data = dataBefore;
@@ -82,10 +77,7 @@ describe('EditFileMetaDialogComponent', () => {
     const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
     const dataBefore: FileMetaDialogData = {
       fileName: ' 🍳 green_eggs.v1-2020-01-01.XML.bmnp 🍖 ',
-      workflowSpecId: 'green_eggs',
-      name: 'green_eggs',
-      displayName: 'Green Eggs',
-      description: 'Eat them! Eat them! Here they are.',
+      fileType: FileType.BPMN,
     };
 
     component.data = dataBefore;
@@ -93,22 +85,5 @@ describe('EditFileMetaDialogComponent', () => {
     const expectedData: FileMetaDialogData = JSON.parse(JSON.stringify(dataBefore));
     expectedData.fileName = 'green_eggs.v1-2020-01-01.XML.bpmn';
     expect(closeSpy).toHaveBeenCalledWith(expectedData);
-  });
-
-  it('should clean up workflow spec id', () => {
-    const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
-    const dataBefore: FileMetaDialogData = {
-      fileName: 'green_eggs.bpmn',
-      workflowSpecId: ' 🍳 Green Eggs & Ham: A Dish Best Served Cold? 🍖 ',
-      name: 'green_eggs',
-      displayName: 'Green Eggs',
-      description: 'I would not, could not, with a fox!',
-    };
-
-    component.data = dataBefore;
-    component.onSubmit();
-    const expectedData: FileMetaDialogData = JSON.parse(JSON.stringify(dataBefore));
-    expectedData.workflowSpecId = 'green_eggs_ham_a_dish_best_served_cold';
-    expect(closeSpy).toHaveBeenCalledWith(dataBefore);
   });
 });

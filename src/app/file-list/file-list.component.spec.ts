@@ -2,6 +2,7 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
+import {RouterTestingModule} from '@angular/router/testing';
 import {
   ApiService,
   FileType,
@@ -10,6 +11,7 @@ import {
   mockFileMetas,
   mockWorkflowSpec0
 } from 'sartography-workflow-lib';
+import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {FileListComponent} from './file-list.component';
 
 describe('FileListComponent', () => {
@@ -23,8 +25,10 @@ describe('FileListComponent', () => {
         HttpClientTestingModule,
         MatIconModule,
         MatListModule,
+        RouterTestingModule,
       ],
       declarations: [
+        GetIconCodePipe,
         FileListComponent
       ],
       providers: [

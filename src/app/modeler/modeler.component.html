@@ -1,4 +1,12 @@
 <mat-toolbar [ngClass]="{'expanded': expandToolbar}">
+  <mat-toolbar-row *ngIf="workflowSpec">
+    <button mat-button [routerLink]="['/']">
+      <mat-icon>arrow_back</mat-icon>
+      Back
+    </button>
+    {{workflowSpec.display_name}}
+    ({{workflowSpec.name}})
+  </mat-toolbar-row>
   <mat-toolbar-row>
     <button mat-button [matMenuTriggerFor]="newMenu" title="Open diagram">
       <mat-icon>insert_drive_file</mat-icon>
@@ -58,9 +66,9 @@
       <button mat-menu-item (click)="diagram.saveXML()"><mat-icon>code</mat-icon> Download XML File</button>
     </mat-menu>
 
-    <button mat-button *ngIf="diagramFileMeta && diagramFileMeta.workflow_spec_id" (click)="editFileMeta()">
+    <button mat-button *ngIf="diagramFile" (click)="editFileMeta()">
       <mat-icon>edit</mat-icon>
-      {{getFileMetaDisplayString(diagramFileMeta)}}
+      {{getFileName()}}
     </button>
   </mat-toolbar-row>
   <mat-toolbar-row *ngIf="expandToolbar">
@@ -82,7 +90,13 @@
         <input name="diagramUrl" [(ngModel)]="diagramUrl" matInput placeholder="Open diagram from URL" type="text">
       </mat-form-field>
     </ng-container>
-    <button mat-flat-button (click)="onSubmitFileToOpen()" color="primary" id="open_file_button">Open file <mat-icon>arrow_forward</mat-icon></button>
+    <button
+      mat-flat-button
+      (click)="onSubmitFileToOpen()"
+      [disabled]="!diagramFile"
+      color="primary"
+      id="open_file_button"
+    >Open file <mat-icon>arrow_forward</mat-icon></button>
     <span fxFlex></span>
     <button mat-icon-button (click)="expandToolbar = false"><mat-icon>close</mat-icon></button>
   </mat-toolbar-row>

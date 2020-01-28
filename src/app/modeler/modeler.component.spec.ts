@@ -13,7 +13,8 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {of} from 'rxjs';
+import {ActivatedRoute, convertToParamMap} from '@angular/router';
+import {Observable, of} from 'rxjs';
 import {
   ApiService,
   FileMeta,
@@ -27,6 +28,7 @@ import {
 import {BPMN_DIAGRAM, BPMN_DIAGRAM_WITH_WARNINGS} from '../../testing/mocks/diagram.mocks';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {FileMetaDialogData} from '../_interfaces/file-meta-dialog-data';
+import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {DiagramComponent} from '../diagram/diagram.component';
 import {FileMetaDialogComponent} from '../file-meta-dialog/file-meta-dialog.component';
 import {ModelerComponent} from './modeler.component';
@@ -40,6 +42,7 @@ describe('ModelerComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
+        GetIconCodePipe,
         ModelerComponent,
         DiagramComponent,
         FileMetaDialogComponent,
@@ -70,6 +73,12 @@ describe('ModelerComponent', () => {
           }
         },
         {provide: MAT_DIALOG_DATA, useValue: []},
+        {provide: ActivatedRoute, useValue: {
+          paramMap: of(convertToParamMap({
+            workflowSpecId: mockWorkflowSpec0.id,
+            fileMetaId: `${mockFileMeta0.id}`
+          }))
+        }}
       ]
     }).overrideModule(BrowserDynamicTestingModule, {set: {entryComponents: [FileMetaDialogComponent]}})
       .compileComponents();
@@ -198,7 +207,7 @@ describe('ModelerComponent', () => {
   });
 
   it('should get the diagram file name', () => {
-    expect(component.getFileName()).toEqual('No file selected');
+    expect(component.getFileName()).toEqual(mockFileMeta0.name);
 
     const filename = 'expected_file_name.jpg';
     component.diagramFile = new File([], filename, {type: 'image/jpeg'});
@@ -261,10 +270,7 @@ describe('ModelerComponent', () => {
   it('should open file metadata dialog', () => {
     const data: FileMetaDialogData = {
       fileName: 'after',
-      workflowSpecId: 'after',
-      name: 'after',
-      description: 'after',
-      displayName: 'after',
+      fileType: FileType.BPMN,
     };
 
     const upsertSpy = spyOn(component, '_upsertSpecAndFileMeta').and.stub();
@@ -275,14 +281,11 @@ describe('ModelerComponent', () => {
     expect(upsertSpy).toHaveBeenCalledWith(data);
   });
 
-  it('should update spec and file metadata for existing file', () => {
+  it('should update file metadata for existing file', () => {
     const newXml = '<xml>New Value</xml>';
     const data: FileMetaDialogData = {
       fileName: mockFileMeta0.name,
-      workflowSpecId: mockWorkflowSpec0.id,
-      name: mockWorkflowSpec0.name,
-      description: mockWorkflowSpec0.description,
-      displayName: mockWorkflowSpec0.display_name,
+      fileType: FileType.BPMN,
     };
     const updateWorkflowSpecificationSpy = spyOn(component.api, 'updateWorkflowSpecification')
       .and.returnValue(of(mockWorkflowSpec0));
@@ -310,14 +313,11 @@ describe('ModelerComponent', () => {
     expect(snackBarSpy).toHaveBeenCalled();
   });
 
-  it('should create new spec and file metadata for new file', () => {
+  it('should create new file metadata for new file', () => {
     const newXml = '<xml>New Value</xml>';
     const data: FileMetaDialogData = {
       fileName: mockFileMeta0.name,
-      workflowSpecId: mockWorkflowSpec0.id,
-      name: mockWorkflowSpec0.id,
-      description: mockWorkflowSpec0.description,
-      displayName: mockWorkflowSpec0.display_name,
+      fileType: FileType.BPMN,
     };
 
     const noDateOrVersion: FileMeta = {

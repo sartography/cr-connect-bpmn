@@ -22,11 +22,11 @@ mat-form-field {
 
 mat-toolbar {
   transition: all 200ms ease-in-out;
-  height: 64px;
+  height: 128px;
 }
 
 mat-toolbar.expanded {
-  height: 128px;
+  height: 192px;
 }
 
 ::ng-deep .tooltip-text {

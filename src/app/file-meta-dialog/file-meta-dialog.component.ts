@@ -21,8 +21,7 @@ export class FileMetaDialogComponent {
   }
 
   onSubmit() {
-    this.data.workflowSpecId = toSnakeCase(this.data.workflowSpecId);
-    this.data.fileName = cleanUpFilename(this.data.fileName, 'bpmn');
+    this.data.fileName = cleanUpFilename(this.data.fileName, this.data.fileType);
     this.dialogRef.close(this.data);
   }
 

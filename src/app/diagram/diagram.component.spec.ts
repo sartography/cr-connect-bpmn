@@ -3,7 +3,7 @@ import {DebugNode} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatIconModule} from '@angular/material/icon';
 import * as FileSaver from 'file-saver';
-import {ApiService, FileType, MockEnvironment} from 'sartography-workflow-lib';
+import {ApiService, BPMN_DIAGRAM_DEFAULT, FileType, MockEnvironment} from 'sartography-workflow-lib';
 import {
   BPMN_DIAGRAM,
   BPMN_DIAGRAM_WITH_WARNINGS,
@@ -134,10 +134,11 @@ describe('DiagramComponent', () => {
 
   it('should create a new diagram', () => {
     const initializeModelerSpy = spyOn(component, 'initializeModeler').and.stub();
-    const createDiagramSpy = spyOn(component.modeler, 'createDiagram').and.stub();
+    const importXMLSpy = spyOn(component.modeler, 'importXML').and.stub();
+    spyOn(component, 'getRandomString').and.returnValue('REPLACE_ME');
     component.openDiagram();
     expect(initializeModelerSpy).toHaveBeenCalledWith(undefined);
-    expect(createDiagramSpy).toHaveBeenCalled();
+    expect(importXMLSpy).toHaveBeenCalledWith(BPMN_DIAGRAM_DEFAULT, jasmine.any(Function));
   });
 
   it('should open an existing BPMN diagram from XML', () => {
@@ -177,10 +178,11 @@ describe('DiagramComponent', () => {
   it('should edit diagram', () => {
     const initializeModelerSpy = spyOn(component, 'initializeModeler').and.stub();
     const onChangeSpy = spyOn(component, 'onChange').and.stub();
-    const createDiagramSpy = spyOn(component.modeler, 'createDiagram').and.stub();
+    const importXMLSpy = spyOn(component.modeler, 'importXML').and.stub();
+    spyOn(component, 'getRandomString').and.returnValue('REPLACE_ME');
     component.openDiagram();
     expect(initializeModelerSpy).toHaveBeenCalledWith(undefined);
-    expect(createDiagramSpy).toHaveBeenCalled();
+    expect(importXMLSpy).toHaveBeenCalledWith(BPMN_DIAGRAM_DEFAULT, jasmine.any(Function));
 
     component.writeValue(BPMN_DIAGRAM);
     expect(initializeModelerSpy).toHaveBeenCalledWith(undefined);

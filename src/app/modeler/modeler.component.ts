@@ -33,6 +33,9 @@ export class ModelerComponent implements AfterViewInit {
   private xml = '';
   private draftXml = '';
   @ViewChild(DiagramComponent, {static: false}) private diagramComponent: DiagramComponent;
+  private diagramType: FileType;
+  private workflowSpecId: string;
+  private fileMetaId: number;
 
   constructor(
     private api: ApiService,
@@ -40,7 +43,24 @@ export class ModelerComponent implements AfterViewInit {
     public dialog: MatDialog,
     private route: ActivatedRoute,
   ) {
-    this.loadFilesFromDb();
+
+    this.route.queryParams.subscribe(q => {
+      if (q && q.action) {
+        if (q.action === 'openFile') {
+          this.expandToolbar = true;
+          this.openMethod = 'file';
+        } else if (q.action === 'newFile') {
+
+        }
+      }
+    })
+
+    this.route.paramMap.subscribe(paramMap => {
+      console.log('paramMap', paramMap);
+      this.workflowSpecId = paramMap.get('workflowSpecId');
+      this.fileMetaId = parseInt(paramMap.get('fileMetaId'), 10);
+      this.loadFilesFromDb();
+    });
   }
 
   ngAfterViewInit(): void {
@@ -89,7 +109,7 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   getFileName() {
-    return this.diagramFile ? this.diagramFile.name : 'No file selected';
+    return this.diagramFile ? this.diagramFile.name : this.fileName || 'No file selected';
   }
 
   onFileSelected($event: Event) {
@@ -99,9 +119,9 @@ export class ModelerComponent implements AfterViewInit {
   // Arrow function here preserves this context
   onLoad = (event: ProgressEvent) => {
     this.xml = (event.target as FileReader).result.toString();
-    const diagramType = this.diagramFileMeta ? this.diagramFileMeta.type : getDiagramTypeFromXml(this.xml);
+    const diagramType = getDiagramTypeFromXml(this.xml);
     this.diagramComponent.openDiagram(this.xml, diagramType);
-  };
+  }
 
   readFile(file: File) {
     // FileReader must be instantiated this way so unit test can spy on it.
@@ -139,6 +159,7 @@ export class ModelerComponent implements AfterViewInit {
     this.fileName = '';
     this.diagramFileMeta = undefined;
     this.diagramFile = undefined;
+    this.diagramType = diagramType;
     this.diagramComponent.openDiagram(undefined, diagramType);
   }
 
@@ -148,16 +169,14 @@ export class ModelerComponent implements AfterViewInit {
       height: '400px',
       width: '400px',
       data: {
-        fileName: this.diagramFileMeta ? this.diagramFileMeta.name : '',
-        workflowSpecId: this.diagramFileMeta ? this.diagramFileMeta.workflow_spec_id : '',
-        description: this.workflowSpec ? this.workflowSpec.description : '',
-        displayName: this.workflowSpec ? this.workflowSpec.display_name : '',
+        fileName: this.diagramFile ? this.diagramFile.name : this.fileName || '',
+        fileType: getDiagramTypeFromXml(this.xml),
       },
     });
 
     dialogRef.afterClosed().subscribe((data: FileMetaDialogData) => {
-      if (data && data.fileName && data.workflowSpecId) {
-        this._upsertSpecAndFileMeta(data);
+      if (data && data.fileName) {
+        this._upsertFileMeta(data);
       }
     });
   }
@@ -167,12 +186,9 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   getFileMetaDisplayString(fileMeta: FileMeta) {
-    const spec = this.getWorkflowSpec(fileMeta.workflow_spec_id);
-
-    if (spec) {
-      const specName = spec.id + ' - ' + spec.name + ' - ' + spec.display_name;
+    if (fileMeta) {
       const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
-      return `${specName} (${fileMeta.name}) - v${fileMeta.version} (${lastUpdated})`;
+      return `${fileMeta.name} - v${fileMeta.version} (${lastUpdated})`;
     } else {
       return 'Loading...';
     }
@@ -198,89 +214,62 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   private loadFilesFromDb() {
-
-    this.route.paramMap.subscribe(paramMap => {
-      const workflowSpecId = paramMap.get('workflowSpecId');
-      const fileMetaId = parseInt(paramMap.get('fileMetaId'), 10);
-
-      console.log('workflowSpecId', workflowSpecId);
-      console.log('fileMetaId', fileMetaId);
-
-      this.api.getWorkflowSpecList().subscribe(wfs => {
+    this.api.getWorkflowSpecList().subscribe(wfs => {
         this.workflowSpecs = wfs;
         this.workflowSpecs.forEach(w => {
-          if (w.id === workflowSpecId) {
+          if (w.id === this.workflowSpecId) {
             this.workflowSpec = w;
-          }
-          this.api.listBpmnFiles(w.id).subscribe(files => {
-            this.bpmnFiles = [];
-            files.forEach(f => {
-              this.api.getFileData(f.id).subscribe(d => {
-                if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
-                  f.content_type = 'text/xml';
-                  f.file = new File([d], f.name, {type: f.content_type});
-                  this.bpmnFiles.push(f);
+            this.api.listBpmnFiles(w.id).subscribe(files => {
+              this.bpmnFiles = [];
+              files.forEach(f => {
+                this.api.getFileData(f.id).subscribe(d => {
+                  if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
+                    f.content_type = 'text/xml';
+                    f.file = new File([d], f.name, {type: f.content_type});
+                    this.bpmnFiles.push(f);
 
-                  if (f.id === fileMetaId) {
-                    this.diagramFileMeta = f;
-                    this.diagramFile = f.file;
-                    this.onSubmitFileToOpen();
+                    if (f.id === this.fileMetaId) {
+                      this.diagramFileMeta = f;
+                      this.diagramFile = f.file;
+                      this.onSubmitFileToOpen();
+                    }
                   }
-                }
+                });
               });
             });
-          });
+          }
         });
       });
-    });
   }
 
-  private _upsertSpecAndFileMeta(data: FileMetaDialogData) {
-    if (data.fileName && data.workflowSpecId) {
+  private _upsertFileMeta(data: FileMetaDialogData) {
+    if (data.fileName) {
       this.xml = this.draftXml;
 
       // Save old workflow spec id, if user wants to change it
       const specId = this.workflowSpec ? this.workflowSpec.id : undefined;
-
-      this.workflowSpec = {
-        id: data.workflowSpecId,
-        name: data.name,
-        display_name: data.displayName,
-        description: data.description,
-      };
-
       const fileMetaId = this.diagramFileMeta ? this.diagramFileMeta.id : undefined;
+      const fileType = this.diagramFileMeta ? this.diagramFileMeta.type : FileType.BPMN;
       this.diagramFileMeta = {
         id: fileMetaId,
         content_type: 'text/xml',
         name: data.fileName,
-        type: FileType.BPMN,
+        type: fileType,
         file: new File([this.xml], data.fileName, {type: 'text/xml'}),
-        workflow_spec_id: data.workflowSpecId,
+        workflow_spec_id: this.workflowSpec.id,
       };
 
-      const newSpec: WorkflowSpec = {
-        id: data.workflowSpecId,
-        name: data.name,
-        display_name: data.displayName,
-        description: data.description,
-      };
-
-      if (specId) {
-        // Update existing workflow spec and file
-        this.api.updateWorkflowSpecification(specId, newSpec).subscribe(spec => {
-          this.api.updateFileMeta(specId, this.diagramFileMeta).subscribe(fileMeta => {
-            this.loadFilesFromDb();
-            this.snackBar.open('Saved changes to workflow spec and file.', 'Ok', {duration: 5000});
-          });
+      if (specId && fileMetaId) {
+        // Update existing file meta
+        this.api.updateFileMeta(specId, this.diagramFileMeta).subscribe(fileMeta => {
+          this.loadFilesFromDb();
+          this.snackBar.open('Saved changes to workflow spec and file.', 'Ok', {duration: 5000});
         });
       } else {
-        // Add new workflow spec and file
-        this.api.addWorkflowSpecification(newSpec).subscribe(spec => {
-          this.api.addFileMeta(newSpec.id, this.diagramFileMeta).subscribe(fileMeta => {
-            this.loadFilesFromDb();
-            this.snackBar.open('Saved new workflow spec and file.', 'Ok', {duration: 5000});
-          });
+        // Add new file meta
+        this.api.addFileMeta(specId, this.diagramFileMeta).subscribe(fileMeta => {
+          this.loadFilesFromDb();
+          this.snackBar.open('Saved new workflow spec and file.', 'Ok', {duration: 5000});
         });
       }
     }

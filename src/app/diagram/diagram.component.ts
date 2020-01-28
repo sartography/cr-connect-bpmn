@@ -4,14 +4,13 @@ import {ControlValueAccessor} from '@angular/forms';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import DmnModeler from 'dmn-js/lib/Modeler';
 import * as fileSaver from 'file-saver';
-import {ApiService, FileType} from 'sartography-workflow-lib';
-import {DMN_DIAGRAM_EMPTY} from '../../testing/mocks/diagram.mocks';
+import {ApiService, BPMN_DIAGRAM_DEFAULT, DMN_DIAGRAM_DEFAULT, FileType} from 'sartography-workflow-lib';
+import {v4 as uuidv4} from 'uuid';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {ImportEvent} from '../_interfaces/import-event';
 import {getDiagramTypeFromXml} from '../_util/diagram-type';
 import {bpmnModelerConfig} from './bpmn-modeler-config';
 import {dmnModelerConfig} from './dmn-modeler-config';
-import {v4 as uuidv4} from 'uuid';
 
 @Component({
   selector: 'app-diagram',
@@ -89,18 +88,14 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
     this.diagramType = diagramType || getDiagramTypeFromXml(xml);
     this.xml = xml;
     this.initializeModeler(diagramType);
+
     return this.zone.run(() => {
-      if (xml) {
-        this.modeler.importXML(xml, (e, w) => this.onImport(e, w));
-      } else {
-        if (this.modeler.createDiagram) {
-          this.modeler.createDiagram((e, w) => this.onImport(e, w));
-        } else {
-          const r = 'REPLACE_ME';
-          const newXml = DMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/gi, () => uuidv4().slice(0, 7));
-          this.modeler.importXML(newXml, (e, w) => this.onImport(e, w));
-        }
+      if (!xml) {
+        const defaultXml = diagramType === FileType.DMN ? DMN_DIAGRAM_DEFAULT : BPMN_DIAGRAM_DEFAULT;
+        xml = defaultXml.replace(/REPLACE_ME/gi, () => this.getRandomString(7));
       }
+
+      this.modeler.importXML(xml, (e, w) => this.onImport(e, w));
     });
   }
 
@@ -174,6 +169,11 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
     this.modeler.on('import.done', ({error}) => {
       if (!error) {
         this.modeler.get('canvas').zoom('fit-viewport');
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'smooth',
+        });
       }
     });
   }
@@ -197,6 +197,11 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
     this.modeler.on('import.done', ({error}) => {
       if (!error) {
         this.modeler.getActiveViewer().get('canvas').zoom('fit-viewport');
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'smooth',
+        });
       }
     });
   }
@@ -206,5 +211,9 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
     els.forEach(e => {
       e.innerHTML = '';
     });
+  }
+
+  private getRandomString(len: number): string {
+    return uuidv4().slice(0, len);
   }
 }
