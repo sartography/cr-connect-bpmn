@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {FileType} from 'sartography-workflow-lib';
-import {NewFileDialogData} from '../_interfaces/dialog-data';
+import {NewFileDialogData} from '../../_interfaces/dialog-data';
 
 @Component({
   selector: 'app-new-file-dialog',

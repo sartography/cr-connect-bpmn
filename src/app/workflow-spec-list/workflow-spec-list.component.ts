@@ -3,7 +3,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ApiService, WorkflowSpec} from 'sartography-workflow-lib';
 import {WorkflowSpecDialogData} from '../_interfaces/dialog-data';
-import {WorkflowSpecDialogComponent} from '../workflow-spec-dialog/workflow-spec-dialog.component';
+import {WorkflowSpecDialogComponent} from '../_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
 
 @Component({
   selector: 'app-workflow-spec-list',

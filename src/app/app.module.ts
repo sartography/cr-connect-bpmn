@@ -24,13 +24,14 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {DiagramComponent} from './diagram/diagram.component';
 import {FileListComponent} from './file-list/file-list.component';
-import {FileMetaDialogComponent} from './file-meta-dialog/file-meta-dialog.component';
+import {FileMetaDialogComponent} from './_dialogs/file-meta-dialog/file-meta-dialog.component';
 import {ModelerComponent} from './modeler/modeler.component';
-import {WorkflowSpecDialogComponent} from './workflow-spec-dialog/workflow-spec-dialog.component';
+import {WorkflowSpecDialogComponent} from './_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
 import { GetIconCodePipe } from './_pipes/get-icon-code.pipe';
-import { NewFileDialogComponent } from './new-file-dialog/new-file-dialog.component';
-import { OpenFileDialogComponent } from './open-file-dialog/open-file-dialog.component';
+import { NewFileDialogComponent } from './_dialogs/new-file-dialog/new-file-dialog.component';
+import { OpenFileDialogComponent } from './_dialogs/open-file-dialog/open-file-dialog.component';
+import { DeleteFileDialogComponent } from './_dialogs/delete-file-dialog/delete-file-dialog.component';
 
 export class ThisEnvironment implements AppEnvironment {
   production = environment.production;
@@ -51,6 +52,7 @@ export class ThisEnvironment implements AppEnvironment {
     GetIconCodePipe,
     NewFileDialogComponent,
     OpenFileDialogComponent,
+    DeleteFileDialogComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -81,6 +83,7 @@ export class ThisEnvironment implements AppEnvironment {
   ],
   bootstrap: [AppComponent],
   entryComponents: [
+    DeleteFileDialogComponent,
     FileMetaDialogComponent,
     NewFileDialogComponent,
     OpenFileDialogComponent,

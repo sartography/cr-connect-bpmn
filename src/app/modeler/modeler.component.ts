@@ -9,9 +9,9 @@ import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData} from '../_int
 import {ImportEvent} from '../_interfaces/import-event';
 import {getDiagramTypeFromXml} from '../_util/diagram-type';
 import {DiagramComponent} from '../diagram/diagram.component';
-import {FileMetaDialogComponent} from '../file-meta-dialog/file-meta-dialog.component';
-import {NewFileDialogComponent} from '../new-file-dialog/new-file-dialog.component';
-import {OpenFileDialogComponent} from '../open-file-dialog/open-file-dialog.component';
+import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
+import {NewFileDialogComponent} from '../_dialogs/new-file-dialog/new-file-dialog.component';
+import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
 
 @Component({
   selector: 'app-modeler',

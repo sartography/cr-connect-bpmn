@@ -1,9 +1,9 @@
 <mat-list>
-  <mat-list-item *ngFor="let fm of fileMetas" (click)="editFile(fm.id)">
-    <mat-icon mat-list-icon>{{fm.type | getIconCode}}</mat-icon>
-    <h4 mat-line>{{fm.name}}</h4>
-    <p mat-line>{{fm.last_updated | date}}</p>
+  <mat-list-item *ngFor="let fm of fileMetas">
+    <mat-icon mat-list-icon (click)="editFile(fm.id)">{{fm.type | getIconCode}}</mat-icon>
+    <h4 mat-line (click)="editFile(fm.id)">{{fm.name}}</h4>
+    <p mat-line (click)="editFile(fm.id)">{{fm.last_updated | date}}</p>
     <button mat-icon-button color="primary" (click)="editFile(fm.id)" class="mat-elevation-z0"><mat-icon>edit</mat-icon></button>
-    <button mat-icon-button color="warn" (click)="deleteFile(fm.id)" class="mat-elevation-z0"><mat-icon>delete</mat-icon></button>
+    <button mat-icon-button color="warn" (click)="confirmDelete(fm)" class="mat-elevation-z0"><mat-icon>delete</mat-icon></button>
   </mat-list-item>
 </mat-list>

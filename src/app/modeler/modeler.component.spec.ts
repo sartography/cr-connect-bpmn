@@ -31,7 +31,7 @@ import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {FileMetaDialogData} from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {DiagramComponent} from '../diagram/diagram.component';
-import {FileMetaDialogComponent} from '../file-meta-dialog/file-meta-dialog.component';
+import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
 import {ModelerComponent} from './modeler.component';
 
 

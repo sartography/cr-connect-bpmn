@@ -5,7 +5,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {FileType} from 'sartography-workflow-lib';
-import {FileMetaDialogData} from '../_interfaces/dialog-data';
+import {FileMetaDialogData} from '../../_interfaces/dialog-data';
 import {FileMetaDialogComponent} from './file-meta-dialog.component';
 
 describe('EditFileMetaDialogComponent', () => {

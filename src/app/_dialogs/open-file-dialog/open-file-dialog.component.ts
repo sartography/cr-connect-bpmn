@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {ApiService} from 'sartography-workflow-lib';
-import {getDiagramTypeFromXml} from '../_util/diagram-type';
-import {cleanUpFilename} from '../_util/string-clean';
+import {getDiagramTypeFromXml} from '../../_util/diagram-type';
+import {cleanUpFilename} from '../../_util/string-clean';
 
 @Component({
   selector: 'app-open-file-dialog',
@@ -33,7 +33,7 @@ export class OpenFileDialogComponent {
   }
 
   getFileName() {
-    return this.diagramFile ? this.diagramFile.name : 'No file selected';
+    return this.diagramFile ? this.diagramFile.name : 'Click to select a file';
   }
 
   onSubmitUrl() {
