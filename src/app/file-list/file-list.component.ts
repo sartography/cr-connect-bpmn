@@ -2,9 +2,9 @@ import {Component, Input, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Router} from '@angular/router';
-import {ApiService, FileMeta, FileType, WorkflowSpec} from 'sartography-workflow-lib';
-import {DeleteFileDialogData} from '../_interfaces/dialog-data';
+import {ApiService, FileMeta, WorkflowSpec} from 'sartography-workflow-lib';
 import {DeleteFileDialogComponent} from '../_dialogs/delete-file-dialog/delete-file-dialog.component';
+import {DeleteFileDialogData} from '../_interfaces/dialog-data';
 
 @Component({
   selector: 'app-file-list',
@@ -24,18 +24,7 @@ export class FileListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadFileMetas();
-  }
-
-  deleteFile(fileMeta: FileMeta) {
-    this.api.deleteFileMeta(fileMeta.id).subscribe(() => {
-      this.loadFileMetas();
-      this.snackBar.open(`Deleted file ${fileMeta.name}.`, 'Ok', {duration: 3000});
-    });
-  }
-
-  private loadFileMetas() {
-    this.api.listBpmnFiles(this.workflowSpec.id).subscribe(fms => this.fileMetas = fms);
+    this._loadFileMetas();
   }
 
   editFile(fileMetaId: number) {
@@ -52,8 +41,19 @@ export class FileListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((data: DeleteFileDialogData) => {
       if (data && data.confirm && data.fileMeta) {
-        this.deleteFile(data.fileMeta);
+        this._deleteFile(data.fileMeta);
       }
     });
+  }
+
+  private _deleteFile(fileMeta: FileMeta) {
+    this.api.deleteFileMeta(fileMeta.id).subscribe(() => {
+      this._loadFileMetas();
+      this.snackBar.open(`Deleted file ${fileMeta.name}.`, 'Ok', {duration: 3000});
+    });
+  }
+
+  private _loadFileMetas() {
+    this.api.listBpmnFiles(this.workflowSpec.id).subscribe(fms => this.fileMetas = fms);
   }
 }

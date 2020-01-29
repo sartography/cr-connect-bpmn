@@ -1,4 +1,4 @@
-import {FileMeta, FileType} from 'sartography-workflow-lib';
+import {FileMeta, FileType, WorkflowSpec} from 'sartography-workflow-lib';
 
 export interface FileMetaDialogData {
   fileName: string;
@@ -23,4 +23,9 @@ export interface WorkflowSpecDialogData {
 export interface DeleteFileDialogData {
   confirm: boolean;
   fileMeta: FileMeta;
+}
+
+export interface DeleteWorkflowSpecDialogData {
+  confirm: boolean;
+  workflowSpec: WorkflowSpec;
 }

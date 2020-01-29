@@ -20,7 +20,7 @@
         <h3>{{wfs.display_name}}</h3>
       </mat-card-subtitle>
       <span fxFlex></span>
-      <button mat-icon-button title="Delete this workflow specification" color="warn" (click)="deleteWorkflowSpec(wfs.id)">
+      <button mat-icon-button title="Delete this workflow specification" color="warn" (click)="confirmDeleteWorkflowSpec(wfs)">
         <mat-icon>delete</mat-icon>
       </button>
     </mat-card-header>

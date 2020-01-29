@@ -2,8 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ApiService, WorkflowSpec} from 'sartography-workflow-lib';
-import {WorkflowSpecDialogData} from '../_interfaces/dialog-data';
+import {DeleteWorkflowSpecDialogComponent} from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
 import {WorkflowSpecDialogComponent} from '../_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
+import {DeleteWorkflowSpecDialogData, WorkflowSpecDialogData} from '../_interfaces/dialog-data';
 
 @Component({
   selector: 'app-workflow-spec-list',
@@ -19,14 +20,10 @@ export class WorkflowSpecListComponent implements OnInit {
     private snackBar: MatSnackBar,
     public dialog: MatDialog
   ) {
-    this.loadWorkflowSpecs();
+    this._loadWorkflowSpecs();
   }
 
   ngOnInit() {
-  }
-
-  deleteWorkflowSpec(specId: string) {
-    this.api.deleteWorkflowSpecification(specId).subscribe(() => this.loadWorkflowSpecs());
   }
 
   editWorkflowSpec(selectedSpec?: WorkflowSpec) {
@@ -51,7 +48,22 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  private loadWorkflowSpecs() {
+  confirmDeleteWorkflowSpec(wfs: WorkflowSpec) {
+    const dialogRef = this.dialog.open(DeleteWorkflowSpecDialogComponent, {
+      data: {
+        confirm: false,
+        workflowSpec: wfs,
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((data: DeleteWorkflowSpecDialogData) => {
+      if (data && data.confirm && data.workflowSpec) {
+        this._deleteWorkflowSpec(data.workflowSpec);
+      }
+    });
+  }
+
+  private _loadWorkflowSpecs() {
     this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
     });
@@ -74,16 +86,22 @@ export class WorkflowSpecListComponent implements OnInit {
         // Update existing workflow spec and file
         this.api.updateWorkflowSpecification(specId, newSpec).subscribe(spec => {
           this.snackBar.open('Saved changes to workflow spec.', 'Ok', {duration: 3000});
-          this.loadWorkflowSpecs();
+          this._loadWorkflowSpecs();
         });
       } else {
         // Add new workflow spec and file
         this.api.addWorkflowSpecification(newSpec).subscribe(spec => {
           this.snackBar.open('Saved new workflow spec.', 'Ok', {duration: 3000});
-          this.loadWorkflowSpecs();
+          this._loadWorkflowSpecs();
         });
       }
     }
   }
 
+  private _deleteWorkflowSpec(workflowSpec: WorkflowSpec) {
+    this.api.deleteWorkflowSpecification(workflowSpec.id).subscribe(() => {
+      this._loadWorkflowSpecs();
+      this.snackBar.open(`Deleted workflow spec ${workflowSpec.name}.`, 'Ok', {duration: 3000});
+    });
+  }
 }

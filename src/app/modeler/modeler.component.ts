@@ -8,6 +8,7 @@ import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData} from '../_interfaces/dialog-data';
 import {ImportEvent} from '../_interfaces/import-event';
 import {getDiagramTypeFromXml} from '../_util/diagram-type';
+import {isNumberDefined} from '../_util/is-number-defined';
 import {DiagramComponent} from '../diagram/diagram.component';
 import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
 import {NewFileDialogComponent} from '../_dialogs/new-file-dialog/new-file-dialog.component';
@@ -272,7 +273,7 @@ export class ModelerComponent implements AfterViewInit {
         workflow_spec_id: this.workflowSpec.id,
       };
 
-      if (this.workflowSpec && fileMetaId) {
+      if (this.workflowSpec && isNumberDefined(fileMetaId)) {
         // Update existing file meta
         this.api.updateFileMeta(this.workflowSpec.id, this.diagramFileMeta).subscribe(fileMeta => {
           this.loadFilesFromDb();

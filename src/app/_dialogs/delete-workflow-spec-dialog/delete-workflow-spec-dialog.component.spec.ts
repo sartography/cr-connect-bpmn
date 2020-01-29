@@ -1,14 +1,13 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material';
 import {MatIconModule} from '@angular/material/icon';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {GetIconCodePipe} from '../../_pipes/get-icon-code.pipe';
 
-import { NewFileDialogComponent } from './new-file-dialog.component';
+import { DeleteWorkflowSpecDialogComponent } from './delete-workflow-spec-dialog.component';
 
-describe('NewFileDialogComponent', () => {
-  let component: NewFileDialogComponent;
-  let fixture: ComponentFixture<NewFileDialogComponent>;
+describe('DeleteFileDialogComponent', () => {
+  let component: DeleteWorkflowSpecDialogComponent;
+  let fixture: ComponentFixture<DeleteWorkflowSpecDialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -18,20 +17,10 @@ describe('NewFileDialogComponent', () => {
         MatIconModule,
         NoopAnimationsModule,
       ],
-      declarations: [
-        NewFileDialogComponent,
-        GetIconCodePipe,
-      ],
+      declarations: [ DeleteWorkflowSpecDialogComponent ],
       providers: [
         {
           provide: MatDialogRef,
-          useValue: {
-            close: (dialogResult: any) => {
-            }
-          }
-        },
-        {
-          provide: MatDialog,
           useValue: {
             close: (dialogResult: any) => {
             }
@@ -44,7 +33,7 @@ describe('NewFileDialogComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NewFileDialogComponent);
+    fixture = TestBed.createComponent(DeleteWorkflowSpecDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

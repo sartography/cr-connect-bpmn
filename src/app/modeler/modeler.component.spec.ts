@@ -15,7 +15,7 @@ import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/tes
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ActivatedRoute, convertToParamMap} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
-import {Observable, of} from 'rxjs';
+import {of} from 'rxjs';
 import {
   ApiService,
   FileMeta,
@@ -27,11 +27,13 @@ import {
   mockWorkflowSpecs
 } from 'sartography-workflow-lib';
 import {BPMN_DIAGRAM, BPMN_DIAGRAM_WITH_WARNINGS} from '../../testing/mocks/diagram.mocks';
+import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
+import {NewFileDialogComponent} from '../_dialogs/new-file-dialog/new-file-dialog.component';
+import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {FileMetaDialogData} from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {DiagramComponent} from '../diagram/diagram.component';
-import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
 import {ModelerComponent} from './modeler.component';
 
 
@@ -43,10 +45,12 @@ describe('ModelerComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        GetIconCodePipe,
-        ModelerComponent,
         DiagramComponent,
         FileMetaDialogComponent,
+        NewFileDialogComponent,
+        OpenFileDialogComponent,
+        GetIconCodePipe,
+        ModelerComponent,
       ],
       imports: [
         BrowserAnimationsModule,
@@ -75,17 +79,27 @@ describe('ModelerComponent', () => {
           }
         },
         {provide: MAT_DIALOG_DATA, useValue: []},
-        {provide: ActivatedRoute, useValue: {
-          queryParams: of(convertToParamMap({
-            action: ''
-          })),
-          paramMap: of(convertToParamMap({
-            workflowSpecId: mockWorkflowSpec0.id,
-            fileMetaId: `${mockFileMeta0.id}`
-          }))
-        }}
+        {
+          provide: ActivatedRoute, useValue: {
+            queryParams: of(convertToParamMap({
+              action: ''
+            })),
+            paramMap: of(convertToParamMap({
+              workflowSpecId: mockWorkflowSpec0.id,
+              fileMetaId: `${mockFileMeta0.id}`
+            }))
+          }
+        }
       ]
-    }).overrideModule(BrowserDynamicTestingModule, {set: {entryComponents: [FileMetaDialogComponent]}})
+    }).overrideModule(BrowserDynamicTestingModule, {
+      set: {
+        entryComponents: [
+          FileMetaDialogComponent,
+          NewFileDialogComponent,
+          OpenFileDialogComponent,
+        ]
+      }
+    })
       .compileComponents();
     httpMock = TestBed.get(HttpTestingController);
     fixture = TestBed.createComponent(ModelerComponent);
@@ -251,6 +265,9 @@ describe('ModelerComponent', () => {
     const saveFileChangesSpy = spyOn(component, 'saveFileChanges').and.stub();
     const editFileMetaSpy = spyOn(component, 'editFileMeta').and.stub();
 
+    component.newDiagram(FileType.BPMN);
+    expect(component.diagramFileMeta).toBeFalsy();
+
     component.diagramComponent.writeValue('<xml>newValue</xml>');
     component.saveChanges();
 
@@ -275,7 +292,7 @@ describe('ModelerComponent', () => {
       fileType: FileType.BPMN,
     };
 
-    const upsertSpy = spyOn(component, '_upsertSpecAndFileMeta').and.stub();
+    const upsertSpy = spyOn(component, '_upsertFileMeta').and.stub();
     const openDialogSpy = spyOn(component.dialog, 'open')
       .and.returnValue({afterClosed: () => of(data)});
     component.editFileMeta();
@@ -289,8 +306,6 @@ describe('ModelerComponent', () => {
       fileName: mockFileMeta0.name,
       fileType: FileType.BPMN,
     };
-    const updateWorkflowSpecificationSpy = spyOn(component.api, 'updateWorkflowSpecification')
-      .and.returnValue(of(mockWorkflowSpec0));
     const updateFileMetaSpy = spyOn(component.api, 'updateFileMeta')
       .and.returnValue(of(mockFileMeta0));
     const loadFilesFromDbSpy = spyOn(component, 'loadFilesFromDb').and.stub();
@@ -305,11 +320,8 @@ describe('ModelerComponent', () => {
     };
 
     component.draftXml = newXml;
-    component.workflowSpec = mockWorkflowSpec0;
-    component.diagramFileMeta = mockFileMeta0;
-    component._upsertSpecAndFileMeta(data);
+    component._upsertFileMeta(data);
     expect(component.xml).toEqual(newXml);
-    expect(updateWorkflowSpecificationSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id, mockWorkflowSpec0);
     expect(updateFileMetaSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id, noDateOrVersion);
     expect(loadFilesFromDbSpy).toHaveBeenCalled();
     expect(snackBarSpy).toHaveBeenCalled();
@@ -323,46 +335,44 @@ describe('ModelerComponent', () => {
     };
 
     const noDateOrVersion: FileMeta = {
+      id: undefined,
       content_type: mockFileMeta0.content_type,
       file: mockFileMeta0.file,
-      id: mockFileMeta0.id,
       name: mockFileMeta0.name,
       type: mockFileMeta0.type,
       workflow_spec_id: mockFileMeta0.workflow_spec_id,
     };
 
-    const addWorkflowSpecificationSpy = spyOn(component.api, 'addWorkflowSpecification')
-      .and.returnValue(of(mockWorkflowSpec0));
     const addFileMetaSpy = spyOn(component.api, 'addFileMeta')
       .and.returnValue(of(mockFileMeta0));
     const loadFilesFromDbSpy = spyOn(component, 'loadFilesFromDb').and.stub();
+    const routerNavigateSpy = spyOn(component.router, 'navigate').and.stub();
     const snackBarSpy = spyOn(component.snackBar, 'open').and.stub();
 
+    component.newDiagram(FileType.BPMN);
+    expect(component.diagramFileMeta).toBeFalsy();
+
     component.draftXml = newXml;
-    component.diagramFileMeta = mockFileMeta0;
-    component._upsertSpecAndFileMeta(data);
+    component._upsertFileMeta(data);
     expect(component.xml).toEqual(newXml);
-    expect(addWorkflowSpecificationSpy).toHaveBeenCalledWith(mockWorkflowSpec0);
     expect(addFileMetaSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id, noDateOrVersion);
-    expect(loadFilesFromDbSpy).toHaveBeenCalled();
+    expect(loadFilesFromDbSpy).not.toHaveBeenCalled();
+    expect(routerNavigateSpy).toHaveBeenCalled();
     expect(snackBarSpy).toHaveBeenCalled();
   });
 
   it('should load files from the database', () => {
-    const getWorkflowSpecListSpy = spyOn(component.api, 'getWorkflowSpecList')
-      .and.returnValue(of(mockWorkflowSpecs));
+    const getWorkflowSpecSpy = spyOn(component.api, 'getWorkflowSpecification')
+      .and.returnValue(of(mockWorkflowSpec0));
     const listBpmnFilesSpy = spyOn(component.api, 'listBpmnFiles')
       .and.returnValue(of(mockFileMetas));
     const getFileDataSpy = spyOn(component.api, 'getFileData')
       .and.returnValue(of(mockFileMeta0));
     component.loadFilesFromDb();
 
-    expect(getWorkflowSpecListSpy).toHaveBeenCalled();
-    expect(component.workflowSpecs).toEqual(mockWorkflowSpecs);
-
-    mockWorkflowSpecs.forEach(wfs => {
-      expect(listBpmnFilesSpy).toHaveBeenCalledWith(wfs.id);
-    });
+    expect(getWorkflowSpecSpy).toHaveBeenCalled();
+    expect(component.workflowSpec).toEqual(mockWorkflowSpec0);
+    expect(listBpmnFilesSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id);
 
     mockFileMetas.forEach(fm => {
       expect(getFileDataSpy).toHaveBeenCalledWith(fm.id);
@@ -392,18 +402,15 @@ describe('ModelerComponent', () => {
     expect(component.xml).toBeFalsy();
     expect(component.draftXml).toBeFalsy();
     expect(component.fileName).toBeFalsy();
-    expect(component.workflowSpec).toBeFalsy();
+    expect(component.workflowSpec).toBeTruthy();
     expect(component.diagramFileMeta).toBeFalsy();
     expect(component.diagramFile).toBeFalsy();
     expect(component.diagramComponent.value).toBeFalsy();
   });
 
   it('should get a file metadata display string', () => {
-    component.workflowSpecs = [];
-    expect(component.getFileMetaDisplayString(mockFileMeta0)).toEqual('Loading...');
-
-    component.workflowSpecs = mockWorkflowSpecs;
-    const expectedString = 'all_things - all_things - Everything (one-fish.bpmn) - v1.0 (Jan 23, 2020)';
+    expect(component.getFileMetaDisplayString(undefined)).toEqual('Loading...');
+    const expectedString = 'one-fish.bpmn - v1.0 (Jan 23, 2020)';
     expect(component.getFileMetaDisplayString(mockFileMeta0)).toEqual(expectedString);
   });
 
