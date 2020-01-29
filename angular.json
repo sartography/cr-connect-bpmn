@@ -116,6 +116,7 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
+            "port": 5002,
             "customWebpackConfig": {
               "path": "./webpack.config.js"
             },
