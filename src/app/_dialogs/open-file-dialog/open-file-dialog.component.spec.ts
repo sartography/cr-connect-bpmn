@@ -6,7 +6,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {ApiService, MockEnvironment} from 'sartography-workflow-lib';
+import {ApiService, MockEnvironment, mockFileMeta0} from 'sartography-workflow-lib';
+import {OpenFileDialogData} from '../../_interfaces/dialog-data';
 
 import { OpenFileDialogComponent } from './open-file-dialog.component';
 
@@ -61,5 +62,38 @@ describe('OpenFileDialogComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should save data on submit', () => {
+    const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
+    const expectedData: OpenFileDialogData = { file: mockFileMeta0.file };
+
+    component.diagramFile = expectedData.file;
+    component.onSubmit();
+    expect(closeSpy).toHaveBeenCalledWith(expectedData);
+  });
+
+  it('should not change data on cancel', () => {
+    const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
+    const expectedData: OpenFileDialogData = { file: mockFileMeta0.file };
+
+    component.diagramFile = expectedData.file;
+    component.onNoClick();
+    expect(closeSpy).toHaveBeenCalledWith();
+  });
+
+  it('should load XML from URL, then set and clean up filename', () => {
+    const url = 'whatever/ 🍳 green_eggs.v1-2020-01-01.XML.bmnp 🍖 ';
+    const expectedName = 'green_eggs.v1-2020-01-01.XML.bpmn';
+    const onSubmitSpy = spyOn(component, 'onSubmit').and.stub();
+
+    component.url = url;
+    component.onSubmitUrl();
+    const req = httpMock.expectOne(url);
+    expect(req.request.method).toEqual('GET');
+    req.flush('<xml></xml>');
+    expect(component.diagramFile).toBeTruthy();
+    expect(component.diagramFile.name).toEqual(expectedName);
+    expect(onSubmitSpy).toHaveBeenCalled();
   });
 });

@@ -43,7 +43,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
       if (data && data.id && data.name && data.display_name && data.description) {
-        this._upsertSpecAndFileMeta(data);
+        this._upsertWorkflowSpecification(data);
       }
     });
   }
@@ -69,10 +69,10 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  private _upsertSpecAndFileMeta(data: WorkflowSpecDialogData) {
+  private _upsertWorkflowSpecification(data: WorkflowSpecDialogData) {
     if (data.id && data.name && data.display_name && data.description) {
 
-      // Save old workflow spec id, if user wants to change it
+      // Save old workflow spec id, in case it's changed
       const specId = this.selectedSpec ? this.selectedSpec.id : undefined;
 
       const newSpec: WorkflowSpec = {
@@ -83,25 +83,36 @@ export class WorkflowSpecListComponent implements OnInit {
       };
 
       if (specId) {
-        // Update existing workflow spec and file
-        this.api.updateWorkflowSpecification(specId, newSpec).subscribe(spec => {
-          this.snackBar.open('Saved changes to workflow spec.', 'Ok', {duration: 3000});
-          this._loadWorkflowSpecs();
-        });
+        this._updateWorkflowSpec(specId, newSpec);
       } else {
-        // Add new workflow spec and file
-        this.api.addWorkflowSpecification(newSpec).subscribe(spec => {
-          this.snackBar.open('Saved new workflow spec.', 'Ok', {duration: 3000});
-          this._loadWorkflowSpecs();
-        });
+        this._addWorkflowSpec(newSpec);
       }
     }
+  }
+
+  private _updateWorkflowSpec(specId: string, newSpec: WorkflowSpec) {
+    this.api.updateWorkflowSpecification(specId, newSpec).subscribe(spec => {
+      this._loadWorkflowSpecs();
+      this._displayMessage('Saved changes to workflow spec.');
+    });
+  }
+
+  private _addWorkflowSpec(newSpec: WorkflowSpec) {
+    this.api.addWorkflowSpecification(newSpec).subscribe(spec => {
+      this._loadWorkflowSpecs();
+      this._displayMessage('Saved new workflow spec.');
+    });
   }
 
   private _deleteWorkflowSpec(workflowSpec: WorkflowSpec) {
     this.api.deleteWorkflowSpecification(workflowSpec.id).subscribe(() => {
       this._loadWorkflowSpecs();
-      this.snackBar.open(`Deleted workflow spec ${workflowSpec.name}.`, 'Ok', {duration: 3000});
+      this._displayMessage(`Deleted workflow spec ${workflowSpec.name}.`);
     });
   }
+
+  private _displayMessage(message: string) {
+    this.snackBar.open(message, 'Ok', {duration: 3000});
+  }
 }
+
