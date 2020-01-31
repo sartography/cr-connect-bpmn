@@ -276,14 +276,18 @@ describe('ModelerComponent', () => {
   });
 
   it('should save file changes', () => {
-    const apiUpdateFileSpy = spyOn(component.api, 'updateFileMeta').and.returnValue(of(mockFileMeta0));
+    const updateFileMetaSpy = spyOn(component.api, 'updateFileMeta').and.returnValue(of(mockFileMeta0));
+    const updateFileDataSpy = spyOn(component.api, 'updateFileData').and.returnValue(of(mockFileMeta0));
+    const snackBarOpenSpy = spyOn(component.snackBar, 'open').and.stub();
 
     component.workflowSpec = mockWorkflowSpec0;
     component.diagramFileMeta = mockFileMeta0;
     component.diagramComponent.writeValue('<xml>newValue</xml>');
     component.saveFileChanges();
 
-    expect(apiUpdateFileSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id, mockFileMeta0);
+    expect(updateFileMetaSpy).toHaveBeenCalledWith(mockFileMeta0);
+    expect(updateFileDataSpy).toHaveBeenCalledWith(mockFileMeta0);
+    expect(snackBarOpenSpy).toHaveBeenCalled();
   });
 
   it('should open file metadata dialog', () => {
