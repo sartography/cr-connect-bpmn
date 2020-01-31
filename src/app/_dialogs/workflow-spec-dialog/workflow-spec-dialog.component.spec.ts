@@ -7,6 +7,8 @@ import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {FormlyModule} from '@ngx-formly/core';
 import {FormlyMaterialModule} from '@ngx-formly/material';
+import {mockWorkflowSpec0} from 'sartography-workflow-lib';
+import {WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
 
 import { WorkflowSpecDialogComponent } from './workflow-spec-dialog.component';
 
@@ -51,5 +53,19 @@ describe('WorkflowSpecDialogComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should save data on submit', () => {
+    const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
+    const expectedData: WorkflowSpecDialogData = mockWorkflowSpec0 as WorkflowSpecDialogData;
+    component.model = expectedData;
+    component.onSubmit();
+    expect(closeSpy).toHaveBeenCalledWith(expectedData);
+  });
+
+  it('should not change data on cancel', () => {
+    const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
+    component.onNoClick();
+    expect(closeSpy).toHaveBeenCalledWith();
   });
 });

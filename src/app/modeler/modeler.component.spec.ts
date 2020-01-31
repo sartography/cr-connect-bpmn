@@ -31,7 +31,7 @@ import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-di
 import {NewFileDialogComponent} from '../_dialogs/new-file-dialog/new-file-dialog.component';
 import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
-import {FileMetaDialogData} from '../_interfaces/dialog-data';
+import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData} from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {DiagramComponent} from '../diagram/diagram.component';
 import {ModelerComponent} from './modeler.component';
@@ -415,10 +415,10 @@ describe('ModelerComponent', () => {
   });
 
   it('should get file metadata tooltip text', () => {
-    component.workflowSpecs = [];
+    component.workflowSpec = undefined;
     expect(component.getFileMetaTooltipText(mockFileMeta0)).toEqual('Loading...');
 
-    component.workflowSpecs = mockWorkflowSpecs;
+    component.workflowSpec = mockWorkflowSpec0;
     const expectedString = `
           Workflow spec ID: all_things
           Workflow name: all_things
@@ -430,6 +430,45 @@ describe('ModelerComponent', () => {
       `;
 
     expect(component.getFileMetaTooltipText(mockFileMeta0)).toEqual(expectedString);
+  });
+
+  it('should display new file dialog', () => {
+    const data: NewFileDialogData = {
+      fileType: FileType.BPMN,
+    };
+
+    const newDiagramSpy = spyOn(component, 'newDiagram').and.stub();
+    const openDialogSpy = spyOn(component.dialog, 'open')
+      .and.returnValue({afterClosed: () => of(data)});
+    component.newFileDialog();
+    expect(openDialogSpy).toHaveBeenCalled();
+    expect(newDiagramSpy).toHaveBeenCalledWith(data.fileType);
+  });
+
+  it('should display open file dialog', () => {
+    const data: OpenFileDialogData = {
+      file: mockFileMeta0.file
+    };
+
+    const onSubmitFileToOpenSpy = spyOn(component, 'onSubmitFileToOpen').and.stub();
+    const openDialogSpy = spyOn(component.dialog, 'open')
+      .and.returnValue({afterClosed: () => of(data)});
+    component.openFileDialog();
+    expect(openDialogSpy).toHaveBeenCalled();
+    expect(component.diagramFile).toEqual(data.file);
+    expect(onSubmitFileToOpenSpy).toHaveBeenCalled();
+  });
+
+  it('should trigger open file dialog from query params', () => {
+    const openFileDialogSpy = spyOn(component, 'openFileDialog').and.stub();
+    component._handleAction({action: 'openFile'});
+    expect(openFileDialogSpy).toHaveBeenCalled();
+  });
+
+  it('should trigger new file dialog from query params', () => {
+    const newFileDialogSpy = spyOn(component, 'newFileDialog').and.stub();
+    component._handleAction({action: 'newFile'});
+    expect(newFileDialogSpy).toHaveBeenCalled();
   });
 
 });

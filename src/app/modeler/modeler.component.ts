@@ -2,7 +2,7 @@ import {DatePipe} from '@angular/common';
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {ApiService, FileMeta, FileType, WorkflowSpec} from 'sartography-workflow-lib';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData} from '../_interfaces/dialog-data';
@@ -27,7 +27,6 @@ export class ModelerComponent implements AfterViewInit {
   expandToolbar = false;
   openMethod: string;
   diagramFile: File;
-  workflowSpecs: WorkflowSpec[] = [];
   workflowSpec: WorkflowSpec;
   bpmnFiles: FileMeta[] = [];
   diagramFileMeta: FileMeta;
@@ -48,13 +47,7 @@ export class ModelerComponent implements AfterViewInit {
     private router: Router,
   ) {
     this.route.queryParams.subscribe(q => {
-      if (q && q.action) {
-        if (q.action === 'openFile') {
-          this.openFileDialog();
-        } else if (q.action === 'newFile') {
-          this.newFileDialog();
-        }
-      }
+      this._handleAction(q);
     });
 
     this.route.paramMap.subscribe(paramMap => {
@@ -150,7 +143,6 @@ export class ModelerComponent implements AfterViewInit {
   loadDbFile(bf: FileMeta) {
     this.diagramFile = bf.file;
     this.diagramFileMeta = bf;
-    this.workflowSpec = this.getWorkflowSpec(bf.workflow_spec_id);
     this.onSubmitFileToOpen();
   }
 
@@ -203,10 +195,6 @@ export class ModelerComponent implements AfterViewInit {
     });
   }
 
-  getWorkflowSpec(workflow_spec_id: string): WorkflowSpec {
-    return this.workflowSpecs.find(wfs => workflow_spec_id === wfs.id);
-  }
-
   getFileMetaDisplayString(fileMeta: FileMeta) {
     if (fileMeta) {
       const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
@@ -217,7 +205,7 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   getFileMetaTooltipText(fileMeta: FileMeta) {
-    const spec = this.getWorkflowSpec(fileMeta.workflow_spec_id);
+    const spec = this.workflowSpec;
 
     if (spec) {
       const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
@@ -303,5 +291,15 @@ export class ModelerComponent implements AfterViewInit {
     this.api.updateFileMeta(this.workflowSpec.id, this.diagramFileMeta).subscribe(() => {
       this.snackBar.open(`Saved changes to file ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
     });
+  }
+
+  private _handleAction(q: Params) {
+    if (q && q.action) {
+      if (q.action === 'openFile') {
+        this.openFileDialog();
+      } else if (q.action === 'newFile') {
+        this.newFileDialog();
+      }
+    }
   }
 }

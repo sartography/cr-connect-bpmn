@@ -96,4 +96,26 @@ describe('OpenFileDialogComponent', () => {
     expect(component.diagramFile.name).toEqual(expectedName);
     expect(onSubmitSpy).toHaveBeenCalled();
   });
+
+  it('should get the diagram file name', () => {
+    component.diagramFile = undefined;
+    expect(component.getFileName()).toEqual('Click to select a file');
+
+    component.diagramFile = mockFileMeta0.file;
+    expect(component.getFileName()).toEqual(mockFileMeta0.file.name);
+  });
+
+  it('should get a file from the file input field event', () => {
+    const event = {target: {files: [mockFileMeta0.file]}};
+    (component as any).onFileSelected(event);
+    expect(component.diagramFile).toEqual(mockFileMeta0.file);
+  });
+
+  it('should determine if a string is a valid URL', () => {
+    component.url = 'badurl';
+    expect(component.isValidUrl()).toEqual(false);
+
+    component.url = 'http://this-is-a.very-excellent-valid-good-url.com:8080/my_file_name.xml';
+    expect(component.isValidUrl()).toEqual(true);
+  });
 });

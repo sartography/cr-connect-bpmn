@@ -3,6 +3,7 @@ import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material'
 import {MatIconModule} from '@angular/material/icon';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {mockFileMeta0} from 'sartography-workflow-lib';
+import {DeleteFileDialogData} from '../../_interfaces/dialog-data';
 
 import { DeleteFileDialogComponent } from './delete-file-dialog.component';
 
@@ -44,5 +45,19 @@ describe('DeleteFileDialogComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should confirm deletion on submit', () => {
+    const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
+    const expectedData: DeleteFileDialogData = {confirm: true, fileMeta: mockFileMeta0};
+    component.data.fileMeta = mockFileMeta0;
+    component.onSubmit();
+    expect(closeSpy).toHaveBeenCalledWith(expectedData);
+  });
+
+  it('should not change data on cancel', () => {
+    const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
+    component.onNoClick();
+    expect(closeSpy).toHaveBeenCalledWith();
   });
 });
