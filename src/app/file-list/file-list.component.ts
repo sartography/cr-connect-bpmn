@@ -47,12 +47,12 @@ export class FileListComponent implements OnInit {
     });
   }
 
-  makePrimary(fm: FileMeta) {
-    if (fm.type === FileType.BPMN) {
+  makePrimary(fmPrimary: FileMeta) {
+    if (fmPrimary.type === FileType.BPMN) {
       let numUpdated = 0;
-      this.fileMetas.forEach(f => {
-        f.primary = (fm.id === f.id);
-        this.api.updateFileMeta(this.workflowSpec.id, f).subscribe(() => {
+      this.fileMetas.forEach(fm => {
+        fm.primary = (fmPrimary.id === fm.id);
+        this.api.updateFileMeta(this.workflowSpec.id, fm).subscribe(() => {
           numUpdated++;
 
           // Reload all fileMetas when all have been updated.
