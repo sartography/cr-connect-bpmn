@@ -52,7 +52,7 @@ export class FileListComponent implements OnInit {
       let numUpdated = 0;
       this.fileMetas.forEach(fm => {
         fm.primary = (fmPrimary.id === fm.id);
-        this.api.updateFileMeta(this.workflowSpec.id, fm).subscribe(() => {
+        this.api.updateFileMeta(fm).subscribe(() => {
           numUpdated++;
 
           // Reload all fileMetas when all have been updated.

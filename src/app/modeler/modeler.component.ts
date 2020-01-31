@@ -263,7 +263,7 @@ export class ModelerComponent implements AfterViewInit {
 
       if (this.workflowSpec && isNumberDefined(fileMetaId)) {
         // Update existing file meta
-        this.api.updateFileMeta(this.workflowSpec.id, this.diagramFileMeta).subscribe(fileMeta => {
+        this.api.updateFileMeta(this.diagramFileMeta).subscribe(fileMeta => {
           this.loadFilesFromDb();
           this.snackBar.open(`Saved changes to file ${fileMeta.name}.`, 'Ok', {duration: 5000});
         });
@@ -288,7 +288,7 @@ export class ModelerComponent implements AfterViewInit {
   private saveFileChanges() {
     this.xml = this.draftXml;
     this.diagramFileMeta.file = new File([this.xml], this.diagramFileMeta.name, {type: 'text/xml'});
-    this.api.updateFileMeta(this.workflowSpec.id, this.diagramFileMeta).subscribe(() => {
+    this.api.updateFileMeta(this.diagramFileMeta).subscribe(() => {
       this.snackBar.open(`Saved changes to file ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
     });
   }
