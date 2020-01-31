@@ -1,6 +1,16 @@
 <mat-list>
   <mat-list-item *ngFor="let fm of fileMetas">
     <mat-icon mat-list-icon (click)="editFile(fm.id)">{{fm.type | getIconCode}}</mat-icon>
+    <ng-container *ngIf="fm.type === fileType.BPMN">
+      <button mat-flat-button *ngIf="!fm.primary" (click)="makePrimary(fm)">
+        <mat-icon>radio_button_unchecked</mat-icon>
+        Make primary process
+      </button>
+      <button mat-flat-button *ngIf="fm.primary">
+        <mat-icon>radio_button_checked</mat-icon>
+        Primary process
+      </button>
+    </ng-container>
     <h4 mat-line (click)="editFile(fm.id)">{{fm.name}}</h4>
     <p mat-line (click)="editFile(fm.id)">{{fm.last_updated | date}}</p>
     <button mat-icon-button color="primary" (click)="editFile(fm.id)" class="mat-elevation-z0"><mat-icon>edit</mat-icon></button>
