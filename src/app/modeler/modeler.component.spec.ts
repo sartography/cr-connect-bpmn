@@ -312,6 +312,8 @@ describe('ModelerComponent', () => {
     };
     const updateFileMetaSpy = spyOn(component.api, 'updateFileMeta')
       .and.returnValue(of(mockFileMeta0));
+    const updateFileDataSpy = spyOn(component.api, 'updateFileData')
+      .and.returnValue(of(mockFileMeta0.file));
     const loadFilesFromDbSpy = spyOn(component, 'loadFilesFromDb').and.stub();
     const snackBarSpy = spyOn(component.snackBar, 'open').and.stub();
     const noDateOrVersion: FileMeta = {
@@ -326,7 +328,8 @@ describe('ModelerComponent', () => {
     component.draftXml = newXml;
     component._upsertFileMeta(data);
     expect(component.xml).toEqual(newXml);
-    expect(updateFileMetaSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id, noDateOrVersion);
+    expect(updateFileMetaSpy).toHaveBeenCalledWith(noDateOrVersion);
+    expect(updateFileDataSpy).toHaveBeenCalledWith(noDateOrVersion);
     expect(loadFilesFromDbSpy).toHaveBeenCalled();
     expect(snackBarSpy).toHaveBeenCalled();
   });
