@@ -4,6 +4,7 @@ import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material'
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import createClone from 'rfdc';
 import {FileType} from 'sartography-workflow-lib';
 import {FileMetaDialogData} from '../../_interfaces/dialog-data';
 import {FileMetaDialogComponent} from './file-meta-dialog.component';
@@ -81,7 +82,7 @@ describe('EditFileMetaDialogComponent', () => {
 
     component.data = dataBefore;
     component.onSubmit();
-    const expectedData: FileMetaDialogData = JSON.parse(JSON.stringify(dataBefore));
+    const expectedData: FileMetaDialogData = createClone()(dataBefore);
     expectedData.fileName = 'green_eggs.v1-2020-01-01.XML.bpmn';
     expect(closeSpy).toHaveBeenCalledWith(expectedData);
   });

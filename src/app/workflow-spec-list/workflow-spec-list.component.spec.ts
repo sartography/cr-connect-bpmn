@@ -8,6 +8,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
+import createClone from 'rfdc';
 import {of} from 'rxjs';
 import {
   ApiService,
@@ -20,7 +21,6 @@ import {DeleteWorkflowSpecDialogComponent} from '../_dialogs/delete-workflow-spe
 import {DeleteWorkflowSpecDialogData, WorkflowSpecDialogData} from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {FileListComponent} from '../file-list/file-list.component';
-
 import {WorkflowSpecListComponent} from './workflow-spec-list.component';
 
 describe('WorkflowSpecListComponent', () => {
@@ -126,7 +126,7 @@ describe('WorkflowSpecListComponent', () => {
     _updateWorkflowSpecSpy.calls.reset();
 
     component.selectedSpec = mockWorkflowSpec0;
-    const modifiedData: WorkflowSpecDialogData = JSON.parse(JSON.stringify(mockWorkflowSpec0));
+    const modifiedData: WorkflowSpecDialogData = createClone()(mockWorkflowSpec0);
     modifiedData.display_name = 'Modified';
     (component as any)._upsertWorkflowSpecification(modifiedData);
     expect(_addWorkflowSpecSpy).not.toHaveBeenCalled();
