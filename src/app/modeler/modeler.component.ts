@@ -226,7 +226,7 @@ export class ModelerComponent implements AfterViewInit {
   private loadFilesFromDb() {
     this.api.getWorkflowSpecification(this.workflowSpecId).subscribe(wfs => {
       this.workflowSpec = wfs;
-      this.api.listBpmnFiles(wfs.id).subscribe(files => {
+      this.api.getFileMeta({workflow_spec_id: wfs.id}).subscribe(files => {
         this.bpmnFiles = [];
         files.forEach(f => {
           this.api.getFileData(f.id).subscribe(d => {
@@ -271,7 +271,7 @@ export class ModelerComponent implements AfterViewInit {
         });
       } else {
         // Add new file meta
-        this.api.addFileMeta(this.workflowSpec.id, this.diagramFileMeta).subscribe(fileMeta => {
+        this.api.addFileMeta({workflow_spec_id: this.workflowSpec.id}, this.diagramFileMeta).subscribe(fileMeta => {
           this.router.navigate(['/modeler', this.workflowSpec.id, fileMeta.id]);
           this.snackBar.open(`Saved new file ${fileMeta.name} to workflow spec ${this.workflowSpec.name}.`, 'Ok', {duration: 5000});
         });

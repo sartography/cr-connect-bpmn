@@ -112,7 +112,7 @@ describe('ModelerComponent', () => {
     wfsReq.flush(mockWorkflowSpec0);
     expect(component.workflowSpec).toEqual(mockWorkflowSpec0);
 
-    const req = httpMock.expectOne(`apiRoot/file?spec_id=${mockWorkflowSpec0.id}`);
+    const req = httpMock.expectOne(`apiRoot/file?workflow_spec_id=${mockWorkflowSpec0.id}`);
     expect(req.request.method).toEqual('GET');
     req.flush(mockFileMetas);
 
@@ -362,7 +362,7 @@ describe('ModelerComponent', () => {
     component.draftXml = newXml;
     component._upsertFileMeta(data);
     expect(component.xml).toEqual(newXml);
-    expect(addFileMetaSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id, noDateOrVersion);
+    expect(addFileMetaSpy).toHaveBeenCalledWith({workflow_spec_id: mockWorkflowSpec0.id}, noDateOrVersion);
     expect(loadFilesFromDbSpy).not.toHaveBeenCalled();
     expect(routerNavigateSpy).toHaveBeenCalled();
     expect(snackBarSpy).toHaveBeenCalled();
@@ -371,7 +371,7 @@ describe('ModelerComponent', () => {
   it('should load files from the database', () => {
     const getWorkflowSpecSpy = spyOn(component.api, 'getWorkflowSpecification')
       .and.returnValue(of(mockWorkflowSpec0));
-    const listBpmnFilesSpy = spyOn(component.api, 'listBpmnFiles')
+    const getFileMetaSpy = spyOn(component.api, 'getFileMeta')
       .and.returnValue(of(mockFileMetas));
     const getFileDataSpy = spyOn(component.api, 'getFileData')
       .and.returnValue(of(mockFileMeta0));
@@ -379,7 +379,7 @@ describe('ModelerComponent', () => {
 
     expect(getWorkflowSpecSpy).toHaveBeenCalled();
     expect(component.workflowSpec).toEqual(mockWorkflowSpec0);
-    expect(listBpmnFilesSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id);
+    expect(getFileMetaSpy).toHaveBeenCalledWith({workflow_spec_id: mockWorkflowSpec0.id});
 
     mockFileMetas.forEach(fm => {
       expect(getFileDataSpy).toHaveBeenCalledWith(fm.id);

@@ -13,6 +13,11 @@ describe('GetIconCodePipe', () => {
   });
 
   it('should get an icon code for each file type', () => {
-    Object.values(FileType).forEach(ft => expect(pipe.transform(ft)).toBeTruthy());
+    const types = [
+      FileType.BPMN,
+      FileType.DMN,
+      FileType.SVG
+    ];
+    types.forEach(ft => expect(pipe.transform(ft)).toBeTruthy());
   });
 });

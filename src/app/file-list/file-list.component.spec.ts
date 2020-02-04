@@ -81,7 +81,7 @@ describe('FileListComponent', () => {
     expect(fmsNoFiles.every(fm => !fm.file)).toEqual(true);
     expect(justFiles.every(f => !!f.name)).toEqual(true);
 
-    const fmsReq = httpMock.expectOne(`apiRoot/file?spec_id=${mockWorkflowSpec0.id}`);
+    const fmsReq = httpMock.expectOne(`apiRoot/file?workflow_spec_id=${mockWorkflowSpec0.id}`);
     expect(fmsReq.request.method).toEqual('GET');
     fmsReq.flush(fmsNoFiles);
     expect(component.fileMetas.length).toBeGreaterThan(0);
