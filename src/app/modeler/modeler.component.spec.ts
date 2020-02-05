@@ -371,7 +371,7 @@ describe('ModelerComponent', () => {
   it('should load files from the database', () => {
     const getWorkflowSpecSpy = spyOn(component.api, 'getWorkflowSpecification')
       .and.returnValue(of(mockWorkflowSpec0));
-    const getFileMetaSpy = spyOn(component.api, 'getFileMeta')
+    const getFileMetasSpy = spyOn(component.api, 'getFileMetas')
       .and.returnValue(of(mockFileMetas));
     const getFileDataSpy = spyOn(component.api, 'getFileData')
       .and.returnValue(of(mockFileMeta0));
@@ -379,7 +379,7 @@ describe('ModelerComponent', () => {
 
     expect(getWorkflowSpecSpy).toHaveBeenCalled();
     expect(component.workflowSpec).toEqual(mockWorkflowSpec0);
-    expect(getFileMetaSpy).toHaveBeenCalledWith({workflow_spec_id: mockWorkflowSpec0.id});
+    expect(getFileMetasSpy).toHaveBeenCalledWith({workflow_spec_id: mockWorkflowSpec0.id});
 
     mockFileMetas.forEach(fm => {
       expect(getFileDataSpy).toHaveBeenCalledWith(fm.id);

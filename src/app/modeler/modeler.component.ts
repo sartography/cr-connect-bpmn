@@ -226,7 +226,7 @@ export class ModelerComponent implements AfterViewInit {
   private loadFilesFromDb() {
     this.api.getWorkflowSpecification(this.workflowSpecId).subscribe(wfs => {
       this.workflowSpec = wfs;
-      this.api.getFileMeta({workflow_spec_id: wfs.id}).subscribe(files => {
+      this.api.getFileMetas({workflow_spec_id: wfs.id}).subscribe(files => {
         this.bpmnFiles = [];
         files.forEach(f => {
           this.api.getFileData(f.id).subscribe(d => {
