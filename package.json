@@ -14,7 +14,7 @@
     "e2e": "./node_modules/protractor/bin/webdriver-manager update && ng e2e",
     "e2e:with-wf": "npm run wf && ng e2e",
     "wf:stop": "docker stop wf || true && docker rm wf || true && docker system prune -f",
-    "wf:build": "docker build -t wf github.com/sartography/cr-connect-workflow#feature/update-task-data",
+    "wf:build": "docker build -t wf github.com/sartography/cr-connect-workflow#master",
     "wf:start": "docker run -d --name wf -p 5000:5000 wf",
     "wf:db": "docker exec -it wf sh -c 'pipenv run flask db upgrade'",
     "wf:data": "docker exec -it wf sh -c 'pipenv run flask load-example-data'",
