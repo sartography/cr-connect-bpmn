@@ -6,7 +6,7 @@ services:
     volumes:
       - ./pg-init-scripts/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
     ports:
-      - "5432:5432"
+      - "5432"
     environment:
       - POSTGRES_USER=crc_user
       - POSTGRES_PASSWORD=crc_pass
