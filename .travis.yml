@@ -15,6 +15,8 @@ install:
   - npm install
 script:
   - npm run ci
+before_deploy:
+  - docker build -t sartography/cr-connect-bpmn .
 deploy:
   provider: script
   script: bash ./docker/docker_push.sh
