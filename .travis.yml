@@ -15,3 +15,8 @@ install:
   - npm install
 script:
   - npm run ci
+deploy:
+  provider: script
+  script: bash ./docker/docker_push.sh
+  on:
+    branch: master
