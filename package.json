@@ -13,7 +13,7 @@
     "lint": "ng lint",
     "e2e": "./node_modules/protractor/bin/webdriver-manager update && ng e2e",
     "e2e:with-wf": "npm run e2e-wf && ng e2e",
-    "e2e-wf:stop": "docker stop db && docker stop backend",
+    "e2e-wf:stop": "docker stop db || true && docker stop backend || true",
     "e2e-wf:clean": "docker system prune -f && cd docker && docker-compose rm -f -v -s && cd ..",
     "e2e-wf:build": "cd docker && docker-compose pull && docker-compose build --no-cache && cd ..",
     "e2e-wf:start": "cd docker && docker-compose up -d && cd ..",
