@@ -9,7 +9,7 @@
     "build:staging": "ng build --configuration=staging",
     "build:test": "ng build --configuration=test",
     "test": "ng test",
-    "test:once": "ng test --code-coverage --watch=false",
+    "test:coverage": "ng test --codeCoverage=true --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "e2e": "./node_modules/protractor/bin/webdriver-manager update && ng e2e",
     "e2e:with-wf": "npm run e2e-wf && ng e2e && npm run e2e-wf:stop && npm run e2e-wf:clean",
@@ -18,7 +18,7 @@
     "e2e-wf:build": "cd docker && docker-compose pull && docker-compose build --no-cache && cd ..",
     "e2e-wf:start": "cd docker && docker-compose up -d && cd ..",
     "e2e-wf": "npm run e2e-wf:stop && npm run e2e-wf:clean && npm run e2e-wf:build && npm run e2e-wf:start",
-    "ci": "npm run lint && npm run test:once && npm run e2e:with-wf && sonar-scanner"
+    "ci": "npm run lint && npm run test:coverage && npm run e2e:with-wf && sonar-scanner"
   },
   "private": true,
   "dependencies": {
