@@ -157,7 +157,8 @@
               "src/testing/**/*",
               "src/app/_interfaces/*.ts",
               "src/polyfills.ts",
-              "src/test.ts"
+              "src/test.ts",
+              "docker/**/*"
             ]
           }
         },
