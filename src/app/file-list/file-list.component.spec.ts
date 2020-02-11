@@ -103,6 +103,18 @@ describe('FileListComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should sort files by name', () => {
+    let prevFileMeta;
+
+    for (const thisFileMeta of component.fileMetas) {
+      if (!prevFileMeta) {
+        prevFileMeta = thisFileMeta;
+      } else {
+        expect(thisFileMeta.name).toBeGreaterThan(prevFileMeta.name);
+        prevFileMeta = thisFileMeta;
+      }
+    }
+  });
 
   it('should show a confirmation dialog before deleting a file', () => {
     const mockConfirmDeleteData: DeleteFileDialogData = {
