@@ -142,6 +142,7 @@ describe('DiagramComponent', () => {
     component.fileName = 'file name with no extension';
     component.diagramType = FileType.DMN;
     expect((component as any).insertDateIntoFileName()).toEqual('file name with no extension_2020-02-02_20:20.dmn');
+    MockDate.reset();
   });
 
   it('should create a new diagram', () => {
