@@ -3,6 +3,7 @@ import {DebugNode} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatIconModule} from '@angular/material/icon';
 import * as FileSaver from 'file-saver';
+import MockDate from 'mockdate';
 import {ApiService, BPMN_DIAGRAM_DEFAULT, FileType, MockEnvironment} from 'sartography-workflow-lib';
 import {
   BPMN_DIAGRAM,
@@ -10,7 +11,6 @@ import {
   DMN_DIAGRAM,
   DMN_DIAGRAM_WITH_WARNINGS
 } from '../../testing/mocks/diagram.mocks';
-
 import {DiagramComponent} from './diagram.component';
 
 describe('DiagramComponent', () => {
@@ -31,9 +31,10 @@ describe('DiagramComponent', () => {
       ]
     });
 
+    httpMock = TestBed.get(HttpTestingController);
     fixture = TestBed.createComponent(DiagramComponent);
     component = fixture.debugElement.componentInstance;
-    httpMock = TestBed.get(HttpTestingController);
+    component.fileName = '';
     fixture.detectChanges();
   }));
 
@@ -130,6 +131,17 @@ describe('DiagramComponent', () => {
     const fileSaverSpy = spyOn(FileSaver, 'saveAs').and.stub();
     component.saveXML();
     expect(fileSaverSpy).toHaveBeenCalled();
+  });
+
+  it('should insert date into filename', () => {
+    MockDate.set('02/02/2020 20:20:020 GMT-0500');
+    component.fileName = 'file name with extension.bpmn';
+    component.diagramType = FileType.BPMN;
+    expect((component as any).insertDateIntoFileName()).toEqual('file name with extension_2020-02-02_20:20.bpmn');
+
+    component.fileName = 'file name with no extension';
+    component.diagramType = FileType.DMN;
+    expect((component as any).insertDateIntoFileName()).toEqual('file name with no extension_2020-02-02_20:20.dmn');
   });
 
   it('should create a new diagram', () => {

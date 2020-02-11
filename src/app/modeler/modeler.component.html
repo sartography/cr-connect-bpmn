@@ -104,7 +104,7 @@
 </mat-toolbar>
 <div fxLayout="column">
   <div class="diagram-parent">
-    <app-diagram #diagram (importDone)="handleImported($event)"></app-diagram>
+    <app-diagram #diagram (importDone)="handleImported($event)" [fileName]="getFileName()"></app-diagram>
 
     <div *ngIf="importError" class="import-error">
       <strong>Failed to render diagram: </strong>

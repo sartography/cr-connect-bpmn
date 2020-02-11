@@ -1,5 +1,6 @@
+import {formatDate} from '@angular/common';
 import {HttpErrorResponse} from '@angular/common/http';
-import {AfterViewInit, Component, ElementRef, EventEmitter, NgZone, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, NgZone, Output, ViewChild} from '@angular/core';
 import {ControlValueAccessor} from '@angular/forms';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import DmnModeler from 'dmn-js/lib/Modeler';
@@ -18,6 +19,7 @@ import {dmnModelerConfig} from './dmn-modeler-config';
   styleUrls: ['diagram.component.scss'],
 })
 export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
+  @Input() fileName: string;
   @ViewChild('containerRef', {static: true}) containerRef: ElementRef;
   @ViewChild('propertiesRef', {static: true}) propertiesRef: ElementRef;
   @Output() private importDone: EventEmitter<ImportEvent> = new EventEmitter();
@@ -118,7 +120,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
     this.saveDiagram();
     this.modeler.saveXML({format: true}, (err, xml) => {
       const blob = new Blob([xml], {type: 'text/xml'});
-      fileSaver.saveAs(blob, `BPMN Diagram - ${new Date().toISOString()}.xml`);
+      fileSaver.saveAs(blob, this.insertDateIntoFileName());
     });
   }
 
@@ -215,5 +217,20 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
 
   private getRandomString(len: number): string {
     return uuidv4().slice(0, len);
+  }
+
+  private insertDateIntoFileName(): string {
+    const arr = this.fileName.split('.');
+    const dateString = formatDate(new Date(), 'yyyy-MM-dd_HH:mm', 'en-us');
+
+    if (arr.length > 1) {
+      // Insert date between file name and extension
+      const ext = arr[arr.length - 1];
+      const name = arr.slice(0, -1);
+      return `${name.join('.')}_${dateString}.${ext}`;
+    } else {
+      // No extension in file name yet. Add it, based on the diagram type.
+      return `${this.fileName}_${dateString}.${this.diagramType}`;
+    }
   }
 }
