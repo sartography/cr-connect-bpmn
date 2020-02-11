@@ -73,7 +73,7 @@ export class FileListComponent implements OnInit {
 
   private _loadFileMetas() {
     this.api.getFileMetas({workflow_spec_id: this.workflowSpec.id}).subscribe(fms => {
-      this.fileMetas = fms;
+      this.fileMetas = fms.sort((a, b) => (a.name > b.name) ? 1 : -1);
       this._loadFileData();
     });
   }
