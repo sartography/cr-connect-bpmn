@@ -5,18 +5,26 @@ addons:
   chrome: stable
   sonarcloud:
     organization: "sartography"
+
 language: node_js
+
 node_js:
   - 12
+
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
+
 install:
   - npm install
+
 script:
   - npm run ci
+  - sonar-scanner
+
 before_deploy:
   - docker build -t sartography/cr-connect-bpmn .
+
 deploy:
   provider: script
   script: bash ./docker/docker_push.sh
