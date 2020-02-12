@@ -3,7 +3,6 @@ import {DebugNode} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatIconModule} from '@angular/material/icon';
 import * as FileSaver from 'file-saver';
-import MockDate from 'mockdate';
 import {ApiService, BPMN_DIAGRAM_DEFAULT, FileType, MockEnvironment} from 'sartography-workflow-lib';
 import {
   BPMN_DIAGRAM,
@@ -134,15 +133,14 @@ describe('DiagramComponent', () => {
   });
 
   it('should insert date into filename', () => {
-    MockDate.set('02/02/2020 20:20:020 GMT-0500');
+    spyOn((component as any), '_formatDate').and.returnValue('DATESTRING');
     component.fileName = 'file name with extension.bpmn';
     component.diagramType = FileType.BPMN;
-    expect((component as any).insertDateIntoFileName()).toEqual('file name with extension_2020-02-02_20:20.bpmn');
+    expect((component as any).insertDateIntoFileName()).toEqual('file name with extension_DATESTRING.bpmn');
 
     component.fileName = 'file name with no extension';
     component.diagramType = FileType.DMN;
-    expect((component as any).insertDateIntoFileName()).toEqual('file name with no extension_2020-02-02_20:20.dmn');
-    MockDate.reset();
+    expect((component as any).insertDateIntoFileName()).toEqual('file name with no extension_DATESTRING.dmn');
   });
 
   it('should create a new diagram', () => {

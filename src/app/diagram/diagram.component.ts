@@ -28,6 +28,9 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   private xml = '';
   private disabled = false;
 
+  // Hack so we can spy on this function
+  private _formatDate = formatDate;
+
   constructor(
     private zone: NgZone,
     private api: ApiService,
@@ -221,7 +224,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
 
   private insertDateIntoFileName(): string {
     const arr = this.fileName.split('.');
-    const dateString = formatDate(new Date(), 'yyyy-MM-dd_HH:mm', 'en-us');
+    const dateString = this._formatDate(new Date(), 'yyyy-MM-dd_HH:mm', 'en-us');
 
     if (arr.length > 1) {
       // Insert date between file name and extension
