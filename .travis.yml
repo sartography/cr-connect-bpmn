@@ -1,11 +1,6 @@
 sudo: required
 dist: trusty
 
-addons:
-  chrome: stable
-  sonarcloud:
-    organization: "sartography"
-
 language: node_js
 
 node_js:
@@ -18,9 +13,11 @@ before_script:
 install:
   - npm install
 
+addons:
+  chrome: stable
+
 script:
   - npm run ci
-  - sonar-scanner
 
 before_deploy:
   - docker build -t sartography/cr-connect-bpmn .
