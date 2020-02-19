@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cr-connect-bpmn
+  labels:
+    app: cr-connect-bpmn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cr-connect-bpmn
+  template:
+    metadata:
+      labels:
+        app: cr-connect-bpmn
+    spec:
+      containers:
+        - name: cr-connect-bpmn
+          image: docker-registry.bitdaddy.com:5000/sartography/cr-connect-bpmn
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: docker-registry
