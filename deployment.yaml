@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: cr-connect-bpmn
-          image: docker-registry.bitdaddy.com:5000/sartography/cr-connect-bpmn:latest
+          image: docker-registry.crc.sartography.com:5000/sartography/cr-connect-bpmn:latest
           ports:
             - containerPort: 80
       imagePullSecrets:
