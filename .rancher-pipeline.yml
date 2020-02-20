@@ -12,11 +12,4 @@ stages:
   - applyYamlConfig:
       path: ./deployment.yaml
 timeout: 60
-notification:
-  recipients:
-  - recipient: fred@frameworklabs.us
-    notifier: c-dl5v7:n-6w5dl
-  condition:
-  - Success
-  - Changed
-  - Failed
+notification: {}
