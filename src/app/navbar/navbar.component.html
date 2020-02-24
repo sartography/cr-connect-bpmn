@@ -1,0 +1,42 @@
+<nav *ngIf="isSignedIn() && user">
+  <a
+    [routerLink]="['/']"
+    class="site-title mat-display-1"
+    mat-button
+  >CR Connect</a>
+  <div class="flex-spacer"></div>
+  <ng-container *ngFor="let link of navLinks">
+    <a *ngIf="!link.links"
+       [id]="link.id"
+       [ngClass]="{'active': isLinkActive(link.path)}"
+       [routerLink]="link.path"
+       mat-button
+    >
+      {{link.label}}
+    </a>
+
+    <ng-container *ngIf="link.links">
+      <button
+        [attr.aria-label]="link.label"
+        [id]="link.id"
+        [matMenuTriggerFor]="menu"
+        mat-button
+      >
+        <mat-icon>{{link.icon}}</mat-icon>
+        {{link.label}}
+      </button>
+      <mat-menu #menu="matMenu" xPosition="before">
+        <button
+          *ngFor="let menuLink of link.links"
+          [id]="menuLink.id"
+          [ngClass]="{'active': isLinkActive(menuLink.path)}"
+          [routerLink]="menuLink.path"
+          mat-menu-item
+        >
+          <mat-icon *ngIf="menuLink.icon">{{menuLink.icon}}</mat-icon>
+          <span>{{menuLink.label}}</span>
+        </button>
+      </mat-menu>
+    </ng-container>
+  </ng-container>
+</nav>
