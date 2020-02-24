@@ -1,3 +1,4 @@
+import {PlatformLocation} from '@angular/common';
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
@@ -56,7 +57,8 @@ export class SignInComponent implements OnInit {
   constructor(
     @Inject('APP_ENVIRONMENT') private environment: AppEnvironment,
     private router: Router,
-    private api: ApiService
+    private api: ApiService,
+    private platformLocation: PlatformLocation
   ) {
   }
 
@@ -70,6 +72,7 @@ export class SignInComponent implements OnInit {
 
     // For testing purposes, create a user to simulate login.
     if (!this.environment.production) {
+      this.model.redirect_url = this.platformLocation.href + 'session';
       this.api.openSession(this.model);
     } else {
       this.error = new Error('This feature does not work in production.');
