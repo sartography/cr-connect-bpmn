@@ -7,9 +7,24 @@ describe('workspace-project App', () => {
     page = new AppPage();
   });
 
-  it('should display diagram', () => {
+  it('should display fake sign-in screen', () => {
     page.navigateTo();
-    expect(page.getDiagramContainer()).toBeTruthy();
+    expect(page.getText('h1')).toEqual('FAKE UVA NETBADGE SIGN IN (FOR TESTING ONLY)');
+  });
+
+  it('should click sign-in and navigate to home screen', () => {
+    page.clickAndExpectRoute('#sign_in', '/');
+    expect(page.getElements('app-file-list').count()).toBeGreaterThan(0);
+  });
+
+  it('should display diagram', async () => {
+    const el = await page.getElement('app-file-list mat-list-item');
+    const specId = await el.getAttribute('data-workflow-spec-id');
+    const fileMetaId = await el.getAttribute('data-file-meta-id');
+    const expectedRoute = `/modeler/${specId}/${fileMetaId}`;
+
+    page.clickAndExpectRoute('app-file-list mat-list-item', expectedRoute);
+    expect(page.getElements('.diagram-container').count()).toBeGreaterThan(0);
   });
 
   it('should show dialog to open a diagram file');
