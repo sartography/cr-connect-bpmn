@@ -26,7 +26,7 @@ import {
   mockWorkflowSpec0,
   mockWorkflowSpecs
 } from 'sartography-workflow-lib';
-import {BPMN_DIAGRAM, BPMN_DIAGRAM_WITH_WARNINGS} from '../../testing/mocks/diagram.mocks';
+import {BPMN_DIAGRAM, BPMN_DIAGRAM_EMPTY, BPMN_DIAGRAM_WITH_WARNINGS} from '../../testing/mocks/diagram.mocks';
 import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
 import {NewFileDialogComponent} from '../_dialogs/new-file-dialog/new-file-dialog.component';
 import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
@@ -238,11 +238,11 @@ describe('ModelerComponent', () => {
   });
 
   it('should update the diagram file on change', () => {
-    const valBefore = BPMN_DIAGRAM.replace('REPLACE_ME', 'raindrops_on_roses');
+    const valBefore = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'raindrops_on_roses');
     component.diagramComponent.writeValue(valBefore);
     expect(component.diagramComponent.value).toEqual(valBefore);
 
-    const newValue = BPMN_DIAGRAM.replace('REPLACE_ME', 'whiskers_on_kittens');
+    const newValue = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'whiskers_on_kittens');
     component.diagramComponent.writeValue(newValue);
 
     expect(component.diagramComponent.value).toEqual(newValue);
@@ -252,10 +252,14 @@ describe('ModelerComponent', () => {
   it('should save file changes when existing diagram is modified and then saved', () => {
     const saveFileChangesSpy = spyOn(component, 'saveFileChanges').and.stub();
     const editFileMetaSpy = spyOn(component, 'editFileMeta').and.stub();
-
+    const val = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'bright_copper_kettles');
+    component.diagramComponent.xml = val;
     component.workflowSpec = mockWorkflowSpec0;
     component.diagramFileMeta = mockFileMeta0;
-    component.diagramComponent.writeValue(BPMN_DIAGRAM.replace('REPLACE_ME', 'bright_copper_kettles'));
+
+    const newerValue = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'warm_woolen_mittens')
+    component.diagramComponent.writeValue(newerValue);
+    expect(component.diagramComponent.value).toEqual(newerValue);
     component.saveChanges();
 
     expect(saveFileChangesSpy).toHaveBeenCalled();
@@ -269,7 +273,9 @@ describe('ModelerComponent', () => {
     component.newDiagram(FileType.BPMN);
     expect(component.diagramFileMeta).toBeFalsy();
 
-    component.diagramComponent.writeValue(BPMN_DIAGRAM.replace('REPLACE_ME', 'warm_woolen_mittens'));
+    const val = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'brown_paper_packages_tied_up_with_strings');
+    component.diagramComponent.writeValue(val);
+    expect(component.diagramComponent.value).toEqual(val);
     component.saveChanges();
 
     expect(saveFileChangesSpy).not.toHaveBeenCalled();
@@ -283,7 +289,7 @@ describe('ModelerComponent', () => {
 
     component.workflowSpec = mockWorkflowSpec0;
     component.diagramFileMeta = mockFileMeta0;
-    component.diagramComponent.writeValue(BPMN_DIAGRAM.replace('REPLACE_ME', 'brown_paper_packages_tied_up_with_strings'));
+    component.diagramComponent.writeValue(BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'cream_colored_ponies'));
     component.saveFileChanges();
 
     expect(updateFileMetaSpy).toHaveBeenCalledWith(mockFileMeta0);
@@ -306,7 +312,7 @@ describe('ModelerComponent', () => {
   });
 
   it('should update file metadata for existing file', () => {
-    const newXml = BPMN_DIAGRAM.replace('REPLACE_ME', 'cream_colored_ponies');
+    const newXml = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'crisp_apple_strudels');
     const data: FileMetaDialogData = {
       fileName: mockFileMeta0.name,
       fileType: FileType.BPMN,
@@ -336,7 +342,7 @@ describe('ModelerComponent', () => {
   });
 
   it('should create new file metadata for new file', () => {
-    const newXml = BPMN_DIAGRAM.replace('REPLACE_ME', 'crisp_apple_strudels');
+    const newXml = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'doorbells');
     const data: FileMetaDialogData = {
       fileName: mockFileMeta0.name,
       fileType: FileType.BPMN,
@@ -400,8 +406,8 @@ describe('ModelerComponent', () => {
   });
 
   it('should start a new diagram', () => {
-    component.xml = BPMN_DIAGRAM.replace('REPLACE_ME', 'doorbells');
-    component.draftXml = BPMN_DIAGRAM.replace('REPLACE_ME', 'sleigh_bells');
+    component.xml = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'sleigh_bells');
+    component.draftXml = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'schnitzel_with_noodles');
     component.diagramFileMeta = mockFileMeta0;
     component.diagramFile = mockFileMeta0.file;
     component.workflowSpec = mockWorkflowSpec0;

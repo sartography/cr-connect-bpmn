@@ -1,3 +1,19 @@
+export const BPMN_DIAGRAM_EMPTY = `
+  <?xml version="1.0" encoding="UTF-8"?>
+  <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+               xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               id="sid-REPLACE_ME"
+               targetNamespace="http://bpmn.io/bpmn"
+               exporter="http://bpmn.io"
+               exporterVersion="0.10.1">
+    <process id="Process_REPLACE_ME" isExecutable="false" />
+    <bpmndi:BPMNDiagram id="BpmnDiagram_REPLACE_ME">
+      <bpmndi:BPMNPlane id="BpmnPlane_REPLACE_ME" bpmnElement="Process_REPLACE_ME" />
+    </bpmndi:BPMNDiagram>
+  </definitions>
+`;
+
 export const BPMN_DIAGRAM = `
   <?xml version="1.0" encoding="UTF-8"?>
   <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
