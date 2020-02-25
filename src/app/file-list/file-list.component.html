@@ -1,5 +1,9 @@
 <mat-list>
-  <mat-list-item *ngFor="let fm of fileMetas">
+  <mat-list-item
+    *ngFor="let fm of fileMetas"
+    [attr.data-workflow-spec-id]="workflowSpec.id"
+    [attr.data-file-meta-id]="fm.id"
+  >
     <mat-icon mat-list-icon (click)="editFile(fm.id)">{{fm.type | getIconCode}}</mat-icon>
     <ng-container *ngIf="fm.type === fileType.BPMN">
       <button mat-flat-button *ngIf="!fm.primary" (click)="makePrimary(fm)">
