@@ -239,7 +239,7 @@ describe('ModelerComponent', () => {
 
   it('should update the diagram file on change', () => {
     const initialValue = component.diagramComponent.value;
-    expect(initialValue).toBeFalsy();
+    expect(initialValue).toBeTruthy();
 
     const newValue = '<xml>newExpectedValue</xml>';
     component.diagramComponent.writeValue(newValue);

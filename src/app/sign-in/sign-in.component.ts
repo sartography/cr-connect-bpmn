@@ -37,7 +37,7 @@ export class SignInComponent implements OnInit {
     {
       key: 'first_name',
       type: 'input',
-      defaultValue: 'Cordi',
+      defaultValue: 'Addison',
       templateOptions: {
         label: 'First Name',
       },
@@ -45,7 +45,7 @@ export class SignInComponent implements OnInit {
     {
       key: 'last_name',
       type: 'input',
-      defaultValue: 'Nator',
+      defaultValue: 'Minh',
       templateOptions: {
         label: 'First Name',
       },

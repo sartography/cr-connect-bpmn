@@ -41,6 +41,7 @@ import {SignInComponent} from './sign-in/sign-in.component';
 import {SignOutComponent} from './sign-out/sign-out.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
 
+@Injectable()
 export class ThisEnvironment implements AppEnvironment {
   production = environment.production;
   api = environment.api;
