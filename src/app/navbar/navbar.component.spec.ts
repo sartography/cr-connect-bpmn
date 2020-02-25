@@ -5,8 +5,8 @@ import {MatMenuModule} from '@angular/material/menu';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import {ApiService, MockEnvironment, mockUser} from 'sartography-workflow-lib';
-
 import { NavbarComponent } from './navbar.component';
+
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -39,7 +39,7 @@ describe('NavbarComponent', () => {
 
   beforeEach(() => {
     localStorage.setItem('token', 'some_token');
-    httpMock = TestBed.get(HttpTestingController);
+    httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

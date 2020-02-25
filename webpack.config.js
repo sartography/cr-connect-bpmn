@@ -3,6 +3,11 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
+  resolve: {
+    alias: {
+      'inferno': 'inferno/dist/index.dev.esm.js'
+    }
+  },
   module: {
     rules: [
       {

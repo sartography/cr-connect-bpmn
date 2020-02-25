@@ -71,7 +71,7 @@ describe('WorkflowSpecListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkflowSpecListComponent);
     component = fixture.componentInstance;
-    httpMock = TestBed.get(HttpTestingController);
+    httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
 
     const sReq = httpMock.expectOne('apiRoot/workflow-specification');

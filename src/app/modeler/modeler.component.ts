@@ -34,7 +34,7 @@ export class ModelerComponent implements AfterViewInit {
   fileTypes = FileType;
   private xml = '';
   private draftXml = '';
-  @ViewChild(DiagramComponent, {static: false}) private diagramComponent: DiagramComponent;
+  @ViewChild(DiagramComponent) private diagramComponent: DiagramComponent;
   private diagramType: FileType;
   private workflowSpecId: string;
   private fileMetaId: number;

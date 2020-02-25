@@ -30,7 +30,7 @@ describe('DiagramComponent', () => {
       ]
     });
 
-    httpMock = TestBed.get(HttpTestingController);
+    httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(DiagramComponent);
     component = fixture.debugElement.componentInstance;
     component.fileName = '';
