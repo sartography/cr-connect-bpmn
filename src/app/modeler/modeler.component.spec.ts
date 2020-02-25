@@ -257,7 +257,7 @@ describe('ModelerComponent', () => {
     component.workflowSpec = mockWorkflowSpec0;
     component.diagramFileMeta = mockFileMeta0;
 
-    const newerValue = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'warm_woolen_mittens')
+    const newerValue = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'warm_woolen_mittens');
     component.diagramComponent.writeValue(newerValue);
     expect(component.diagramComponent.value).toEqual(newerValue);
     component.saveChanges();
