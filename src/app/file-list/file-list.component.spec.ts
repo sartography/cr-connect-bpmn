@@ -67,7 +67,7 @@ describe('FileListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FileListComponent);
     component = fixture.componentInstance;
-    httpMock = TestBed.get(HttpTestingController);
+    httpMock = TestBed.inject(HttpTestingController);
     component.workflowSpec = mockWorkflowSpec0;
     fixture.detectChanges();
 

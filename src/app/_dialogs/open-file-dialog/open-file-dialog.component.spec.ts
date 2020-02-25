@@ -54,7 +54,7 @@ describe('OpenFileDialogComponent', () => {
   }));
 
   beforeEach(() => {
-    httpMock = TestBed.get(HttpTestingController);
+    httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(OpenFileDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

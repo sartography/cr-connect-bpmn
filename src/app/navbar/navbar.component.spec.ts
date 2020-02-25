@@ -39,7 +39,7 @@ describe('NavbarComponent', () => {
 
   beforeEach(() => {
     localStorage.setItem('token', 'some_token');
-    httpMock = TestBed.get(HttpTestingController);
+    httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

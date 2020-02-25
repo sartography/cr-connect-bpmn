@@ -101,7 +101,7 @@ describe('ModelerComponent', () => {
       }
     })
       .compileComponents();
-    httpMock = TestBed.get(HttpTestingController);
+    httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(ModelerComponent);
     component = fixture.debugElement.componentInstance;
     component.diagramComponent = TestBed.createComponent(DiagramComponent).componentInstance;
@@ -238,8 +238,9 @@ describe('ModelerComponent', () => {
   });
 
   it('should update the diagram file on change', () => {
-    const initialValue = component.diagramComponent.value;
-    expect(initialValue).toBeTruthy();
+    const valBefore = '';
+    component.diagramComponent.writeValue(valBefore);
+    expect(component.diagramComponent.value).toEqual(valBefore);
 
     const newValue = '<xml>newExpectedValue</xml>';
     component.diagramComponent.writeValue(newValue);
@@ -249,6 +250,10 @@ describe('ModelerComponent', () => {
   });
 
   it('should save file changes when existing diagram is modified and then saved', () => {
+    const valBefore = '';
+    component.diagramComponent.writeValue(valBefore);
+    expect(component.diagramComponent.value).toEqual(valBefore);
+
     const saveFileChangesSpy = spyOn(component, 'saveFileChanges').and.stub();
     const editFileMetaSpy = spyOn(component, 'editFileMeta').and.stub();
 

@@ -3,6 +3,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
+import {MockEnvironment} from 'sartography-workflow-lib';
 
 import {AppComponent} from './app.component';
 import {FooterComponent} from './footer/footer.component';
@@ -24,7 +25,10 @@ describe('AppComponent', () => {
         MatIconModule,
         MatMenuModule,
         RouterTestingModule,
-      ]
+      ],
+      providers: [
+        {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+      ],
     })
       .compileComponents();
   }));
