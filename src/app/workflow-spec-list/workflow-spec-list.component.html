@@ -11,13 +11,13 @@
     <mat-card-header>
       <mat-card-title>
         <h1>
-          {{wfs.id}}
+          {{wfs.display_name}}
           <button mat-mini-fab color="primary" (click)="editWorkflowSpec(wfs)"><mat-icon>edit</mat-icon></button>
         </h1>
       </mat-card-title>
       <mat-card-subtitle>
         <h2>{{wfs.name}}</h2>
-        <h3>{{wfs.display_name}}</h3>
+        <h3>{{wfs.id}}</h3>
       </mat-card-subtitle>
       <span fxFlex></span>
       <button mat-icon-button title="Delete this workflow specification" color="warn" (click)="confirmDeleteWorkflowSpec(wfs)">
