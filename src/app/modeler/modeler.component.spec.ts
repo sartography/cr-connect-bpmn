@@ -238,11 +238,11 @@ describe('ModelerComponent', () => {
   });
 
   it('should update the diagram file on change', () => {
-    const valBefore = '';
+    const valBefore = BPMN_DIAGRAM.replace('REPLACE_ME', 'raindrops_on_roses');
     component.diagramComponent.writeValue(valBefore);
     expect(component.diagramComponent.value).toEqual(valBefore);
 
-    const newValue = '<xml>newExpectedValue</xml>';
+    const newValue = BPMN_DIAGRAM.replace('REPLACE_ME', 'whiskers_on_kittens');
     component.diagramComponent.writeValue(newValue);
 
     expect(component.diagramComponent.value).toEqual(newValue);
@@ -250,16 +250,12 @@ describe('ModelerComponent', () => {
   });
 
   it('should save file changes when existing diagram is modified and then saved', () => {
-    const valBefore = '';
-    component.diagramComponent.writeValue(valBefore);
-    expect(component.diagramComponent.value).toEqual(valBefore);
-
     const saveFileChangesSpy = spyOn(component, 'saveFileChanges').and.stub();
     const editFileMetaSpy = spyOn(component, 'editFileMeta').and.stub();
 
     component.workflowSpec = mockWorkflowSpec0;
     component.diagramFileMeta = mockFileMeta0;
-    component.diagramComponent.writeValue('<xml>newValue</xml>');
+    component.diagramComponent.writeValue(BPMN_DIAGRAM.replace('REPLACE_ME', 'bright_copper_kettles'));
     component.saveChanges();
 
     expect(saveFileChangesSpy).toHaveBeenCalled();
@@ -273,7 +269,7 @@ describe('ModelerComponent', () => {
     component.newDiagram(FileType.BPMN);
     expect(component.diagramFileMeta).toBeFalsy();
 
-    component.diagramComponent.writeValue('<xml>newValue</xml>');
+    component.diagramComponent.writeValue(BPMN_DIAGRAM.replace('REPLACE_ME', 'warm_woolen_mittens'));
     component.saveChanges();
 
     expect(saveFileChangesSpy).not.toHaveBeenCalled();
@@ -287,7 +283,7 @@ describe('ModelerComponent', () => {
 
     component.workflowSpec = mockWorkflowSpec0;
     component.diagramFileMeta = mockFileMeta0;
-    component.diagramComponent.writeValue('<xml>newValue</xml>');
+    component.diagramComponent.writeValue(BPMN_DIAGRAM.replace('REPLACE_ME', 'brown_paper_packages_tied_up_with_strings'));
     component.saveFileChanges();
 
     expect(updateFileMetaSpy).toHaveBeenCalledWith(mockFileMeta0);
@@ -310,7 +306,7 @@ describe('ModelerComponent', () => {
   });
 
   it('should update file metadata for existing file', () => {
-    const newXml = '<xml>New Value</xml>';
+    const newXml = BPMN_DIAGRAM.replace('REPLACE_ME', 'cream_colored_ponies');
     const data: FileMetaDialogData = {
       fileName: mockFileMeta0.name,
       fileType: FileType.BPMN,
@@ -340,7 +336,7 @@ describe('ModelerComponent', () => {
   });
 
   it('should create new file metadata for new file', () => {
-    const newXml = '<xml>New Value</xml>';
+    const newXml = BPMN_DIAGRAM.replace('REPLACE_ME', 'crisp_apple_strudels');
     const data: FileMetaDialogData = {
       fileName: mockFileMeta0.name,
       fileType: FileType.BPMN,
@@ -404,8 +400,8 @@ describe('ModelerComponent', () => {
   });
 
   it('should start a new diagram', () => {
-    component.xml = '<xml>old value</xml>';
-    component.draftXml = '<xml>even older value</xml>';
+    component.xml = BPMN_DIAGRAM.replace('REPLACE_ME', 'doorbells');
+    component.draftXml = BPMN_DIAGRAM.replace('REPLACE_ME', 'sleigh_bells');
     component.diagramFileMeta = mockFileMeta0;
     component.diagramFile = mockFileMeta0.file;
     component.workflowSpec = mockWorkflowSpec0;
