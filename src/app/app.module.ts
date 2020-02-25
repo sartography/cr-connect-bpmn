@@ -19,7 +19,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormlyModule} from '@ngx-formly/core';
 import {FormlyMaterialModule} from '@ngx-formly/material';
-import {AppEnvironment, AuthInterceptor, SessionRedirectComponent} from 'sartography-workflow-lib';
+import {AppEnvironment, AuthInterceptor, SartographyWorkflowLibModule} from 'sartography-workflow-lib';
 import {environment} from '../environments/environment';
 import {DeleteFileDialogComponent} from './_dialogs/delete-file-dialog/delete-file-dialog.component';
 import {DeleteWorkflowSpecDialogComponent} from './_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
@@ -34,12 +34,12 @@ import {AppComponent} from './app.component';
 import {DiagramComponent} from './diagram/diagram.component';
 import {FileListComponent} from './file-list/file-list.component';
 import {FooterComponent} from './footer/footer.component';
+import {HomeComponent} from './home/home.component';
 import {ModelerComponent} from './modeler/modeler.component';
 import {NavbarComponent} from './navbar/navbar.component';
 import {SignInComponent} from './sign-in/sign-in.component';
 import {SignOutComponent} from './sign-out/sign-out.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
-import { HomeComponent } from './home/home.component';
 
 export class ThisEnvironment implements AppEnvironment {
   production = environment.production;
@@ -78,7 +78,6 @@ export class AppFormlyConfig {
     NavbarComponent,
     NewFileDialogComponent,
     OpenFileDialogComponent,
-    SessionRedirectComponent,
     SignInComponent,
     SignOutComponent,
     WorkflowSpecDialogComponent,
@@ -106,7 +105,8 @@ export class AppFormlyConfig {
     MatToolbarModule,
     MatTooltipModule,
     ReactiveFormsModule,
-    AppRoutingModule,
+    SartographyWorkflowLibModule,
+    AppRoutingModule, // <-- This line MUST be last (https://angular.io/guide/router#module-import-order-matters)
   ],
   bootstrap: [AppComponent],
   entryComponents: [
