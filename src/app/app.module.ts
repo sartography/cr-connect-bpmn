@@ -119,7 +119,7 @@ export class AppFormlyConfig {
     WorkflowSpecDialogComponent,
   ],
   providers: [
-    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},
+    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
     {provide: 'APP_ENVIRONMENT', useClass: ThisEnvironment},
     {
       provide: HTTP_INTERCEPTORS,
