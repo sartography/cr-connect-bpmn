@@ -46,7 +46,7 @@
     "dmn-js-properties-panel": "^0.3.4",
     "file-saver": "^2.0.2",
     "rxjs": "~6.5.4",
-    "sartography-workflow-lib": "^0.0.54",
+    "sartography-workflow-lib": "^0.0.55",
     "tslib": "^1.10.0",
     "uuid": "^7.0.0",
     "zone.js": "~0.10.2"
