@@ -20,6 +20,12 @@ export interface WorkflowSpecDialogData {
   description: string;
 }
 
+export interface WorkflowSpecCategoryDialogData {
+  id: string;
+  name: string;
+  display_name: string;
+}
+
 export interface DeleteFileDialogData {
   confirm: boolean;
   fileMeta: FileMeta;

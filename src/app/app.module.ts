@@ -26,6 +26,7 @@ import {DeleteWorkflowSpecDialogComponent} from './_dialogs/delete-workflow-spec
 import {FileMetaDialogComponent} from './_dialogs/file-meta-dialog/file-meta-dialog.component';
 import {NewFileDialogComponent} from './_dialogs/new-file-dialog/new-file-dialog.component';
 import {OpenFileDialogComponent} from './_dialogs/open-file-dialog/open-file-dialog.component';
+import {WorkflowSpecCategoryDialogComponent} from './_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
 import {WorkflowSpecDialogComponent} from './_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
 import {EmailValidator, EmailValidatorMessage, ShowError} from './_forms/validators/formly.validator';
 import {GetIconCodePipe} from './_pipes/get-icon-code.pipe';
@@ -81,6 +82,7 @@ export class AppFormlyConfig {
     OpenFileDialogComponent,
     SignInComponent,
     SignOutComponent,
+    WorkflowSpecCategoryDialogComponent,
     WorkflowSpecDialogComponent,
     WorkflowSpecListComponent,
     HomeComponent,
@@ -116,6 +118,7 @@ export class AppFormlyConfig {
     FileMetaDialogComponent,
     NewFileDialogComponent,
     OpenFileDialogComponent,
+    WorkflowSpecCategoryDialogComponent,
     WorkflowSpecDialogComponent,
   ],
   providers: [

@@ -1,23 +1,30 @@
 
 <div class="container">
   <h1>Workflow Specifications</h1>
-  <button mat-flat-button color="primary" (click)="editWorkflowSpec()">
-    <mat-icon>library_add</mat-icon>
-    Add new workflow specification
-  </button>
+  <div fxLayout="row" fxLayoutGap="10px">
+    <button mat-flat-button color="primary" (click)="editWorkflowSpec()">
+      <mat-icon>library_add</mat-icon>
+      Add new workflow specification
+    </button>
+    <button mat-flat-button color="primary" (click)="addWorkflowSpecCategory()">
+      <mat-icon>library_add</mat-icon>
+      Add category
+    </button>
+  </div>
 </div>
-<div class="container">
-  <mat-card *ngFor="let wfs of workflowSpecs" class="mat-elevation-z0">
+<div class="container" *ngFor="let cat of workflowSpecsByCategory">
+  <h2>{{cat.display_name}}</h2>
+  <mat-card *ngFor="let wfs of cat.workflow_specs" class="mat-elevation-z0">
     <mat-card-header>
       <mat-card-title>
-        <h1>
+        <h3>
           {{wfs.display_name}}
           <button mat-mini-fab color="primary" (click)="editWorkflowSpec(wfs)"><mat-icon>edit</mat-icon></button>
-        </h1>
+        </h3>
       </mat-card-title>
       <mat-card-subtitle>
-        <h2>{{wfs.name}}</h2>
-        <h3>{{wfs.id}}</h3>
+        <h4>{{wfs.name}}</h4>
+        <h5>{{wfs.id}}</h5>
       </mat-card-subtitle>
       <span fxFlex></span>
       <button mat-icon-button title="Delete this workflow specification" color="warn" (click)="confirmDeleteWorkflowSpec(wfs)">
