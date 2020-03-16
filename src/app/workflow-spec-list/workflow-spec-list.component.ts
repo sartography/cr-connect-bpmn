@@ -152,11 +152,11 @@ export class WorkflowSpecListComponent implements OnInit {
     }
   }
 
-  private _upsertWorkflowCategorySpecification(data: WorkflowSpecCategoryDialogData) {
+  private _upsertWorkflowSpecCategory(data: WorkflowSpecCategoryDialogData) {
     if (data.id && data.name && data.display_name) {
 
       // Save old workflow spec id, in case it's changed
-      const specId = this.selectedSpec ? this.selectedSpec.id : undefined;
+      const catId = this.selectedCat ? this.selectedCat.id : undefined;
 
       const newCat: WorkflowSpecCategory = {
         id: data.id,
@@ -164,8 +164,8 @@ export class WorkflowSpecListComponent implements OnInit {
         display_name: data.display_name,
       };
 
-      if (specId) {
-        this._updateWorkflowSpecCategory(specId, newCat);
+      if (catId) {
+        this._updateWorkflowSpecCategory(catId, newCat);
       } else {
         this._addWorkflowSpecCategory(newCat);
       }
@@ -186,20 +186,6 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  private _updateWorkflowSpecCategory(specId: string, newCat: WorkflowSpecCategory) {
-    this.api.updateWorkflowSpecCategory(specId, newCat).subscribe(spec => {
-      this._loadWorkflowSpecs();
-      this._displayMessage('Saved changes to workflow spec.');
-    });
-  }
-
-  private _addWorkflowSpecCategory(newCat: WorkflowSpecCategory) {
-    this.api.addWorkflowSpecCategory(newCat).subscribe(spec => {
-      this._loadWorkflowSpecs();
-      this._displayMessage('Saved new workflow spec.');
-    });
-  }
-
   private _deleteWorkflowSpec(workflowSpec: WorkflowSpec) {
     this.api.deleteWorkflowSpecification(workflowSpec.id).subscribe(() => {
       this._loadWorkflowSpecs();
@@ -207,12 +193,30 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
+  private _updateWorkflowSpecCategory(catId: number, newCat: WorkflowSpecCategory) {
+    this.api.updateWorkflowSpecCategory(catId, newCat).subscribe(spec => {
+      this._loadWorkflowSpecs();
+      this._displayMessage('Saved changes to workflow spec category.');
+    });
+  }
+
+  private _addWorkflowSpecCategory(newCat: WorkflowSpecCategory) {
+    this.api.addWorkflowSpecCategory(newCat).subscribe(spec => {
+      this._loadWorkflowSpecs();
+      this._displayMessage('Saved new workflow spec category.');
+    });
+  }
+
+  private _deleteWorkflowSpecCategory(workflowSpecCategory: WorkflowSpecCategory) {
+    this.api.deleteWorkflowSpecCategory(workflowSpecCategory.id).subscribe(() => {
+      this._loadWorkflowSpecs();
+      this._displayMessage(`Deleted workflow spec category ${workflowSpecCategory.name}.`);
+    });
+  }
+
   private _displayMessage(message: string) {
     this.snackBar.open(message, 'Ok', {duration: 3000});
   }
 
-  addWorkflowSpecCategory() {
-
-  }
 }
 

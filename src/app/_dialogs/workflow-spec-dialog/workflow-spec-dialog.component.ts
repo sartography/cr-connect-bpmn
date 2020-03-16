@@ -47,7 +47,7 @@ export class WorkflowSpecDialogComponent {
       templateOptions: {
         label: 'Display Name',
         placeholder: 'Title of the workflow specification',
-        description: 'This is a human readable title for the workflow specification,' +
+        description: 'This is a human-readable title for the workflow specification,' +
           'which should be easy for others to read and remember.',
         required: true,
       },
