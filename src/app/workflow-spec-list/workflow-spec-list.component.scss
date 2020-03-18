@@ -1,4 +1,25 @@
-mat-card {
-  margin-bottom: 1em;
-  border: 1px solid #CCCCCC;
+.container {
+  padding: 3rem;
+}
+
+.category {
+  padding: 1rem 1rem 1rem 0;
+
+  h2 {
+    margin: 1rem 1rem 1rem 0;
+  }
+
+  .category-actions {
+    opacity: 0;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &:hover {
+    .category-actions {
+      opacity: 1;
+    }
+  }
 }

@@ -22,6 +22,7 @@ import {FormlyMaterialModule} from '@ngx-formly/material';
 import {AppEnvironment, AuthInterceptor, SartographyWorkflowLibModule} from 'sartography-workflow-lib';
 import {environment} from '../environments/environment';
 import {DeleteFileDialogComponent} from './_dialogs/delete-file-dialog/delete-file-dialog.component';
+import {DeleteWorkflowSpecCategoryDialogComponent} from './_dialogs/delete-workflow-spec-category-dialog/delete-workflow-spec-category-dialog.component';
 import {DeleteWorkflowSpecDialogComponent} from './_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
 import {FileMetaDialogComponent} from './_dialogs/file-meta-dialog/file-meta-dialog.component';
 import {NewFileDialogComponent} from './_dialogs/new-file-dialog/new-file-dialog.component';
@@ -41,6 +42,7 @@ import {NavbarComponent} from './navbar/navbar.component';
 import {SignInComponent} from './sign-in/sign-in.component';
 import {SignOutComponent} from './sign-out/sign-out.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
+import { WorkflowSpecCardComponent } from './workflow-spec-card/workflow-spec-card.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -71,6 +73,7 @@ export class AppFormlyConfig {
     AppComponent,
     DeleteFileDialogComponent,
     DeleteWorkflowSpecDialogComponent,
+    DeleteWorkflowSpecCategoryDialogComponent,
     DiagramComponent,
     FileListComponent,
     FileMetaDialogComponent,
@@ -86,6 +89,7 @@ export class AppFormlyConfig {
     WorkflowSpecDialogComponent,
     WorkflowSpecListComponent,
     HomeComponent,
+    WorkflowSpecCardComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -115,6 +119,7 @@ export class AppFormlyConfig {
   entryComponents: [
     DeleteFileDialogComponent,
     DeleteWorkflowSpecDialogComponent,
+    DeleteWorkflowSpecCategoryDialogComponent,
     FileMetaDialogComponent,
     NewFileDialogComponent,
     OpenFileDialogComponent,

@@ -1,23 +1,29 @@
-<mat-list>
-  <mat-list-item
-    *ngFor="let fm of fileMetas"
-    [attr.data-workflow-spec-id]="workflowSpec.id"
-    [attr.data-file-meta-id]="fm.id"
-  >
-    <mat-icon mat-list-icon (click)="editFile(fm.id)">{{fm.type | getIconCode}}</mat-icon>
-    <ng-container *ngIf="fm.type === fileType.BPMN">
-      <button mat-flat-button *ngIf="!fm.primary" (click)="makePrimary(fm)">
-        <mat-icon>radio_button_unchecked</mat-icon>
-        Make primary process
+<div class="file-list">
+  <mat-list>
+    <mat-list-item
+      *ngFor="let fm of fileMetas"
+      [attr.data-file-meta-id]="fm.id"
+      [attr.data-workflow-spec-id]="workflowSpec.id"
+    >
+      <mat-icon (click)="editFile(fm.id)" mat-list-icon>{{fm.type | getIconCode}}</mat-icon>
+      <ng-container *ngIf="fm.type === fileType.BPMN">
+        <button (click)="makePrimary(fm)" *ngIf="!fm.primary" mat-flat-button>
+          <mat-icon>radio_button_unchecked</mat-icon>
+          Make primary process
+        </button>
+        <button *ngIf="fm.primary" mat-flat-button>
+          <mat-icon>radio_button_checked</mat-icon>
+          Primary process
+        </button>
+      </ng-container>
+      <h4 (click)="editFile(fm.id)" mat-line>{{fm.name}}</h4>
+      <p (click)="editFile(fm.id)" mat-line>{{fm.last_updated | date}}</p>
+      <button (click)="editFile(fm.id)" class="mat-elevation-z0" color="primary" mat-icon-button>
+        <mat-icon>edit</mat-icon>
       </button>
-      <button mat-flat-button *ngIf="fm.primary">
-        <mat-icon>radio_button_checked</mat-icon>
-        Primary process
+      <button (click)="confirmDelete(fm)" class="mat-elevation-z0" color="warn" mat-icon-button>
+        <mat-icon>delete</mat-icon>
       </button>
-    </ng-container>
-    <h4 mat-line (click)="editFile(fm.id)">{{fm.name}}</h4>
-    <p mat-line (click)="editFile(fm.id)">{{fm.last_updated | date}}</p>
-    <button mat-icon-button color="primary" (click)="editFile(fm.id)" class="mat-elevation-z0"><mat-icon>edit</mat-icon></button>
-    <button mat-icon-button color="warn" (click)="confirmDelete(fm)" class="mat-elevation-z0"><mat-icon>delete</mat-icon></button>
-  </mat-list-item>
-</mat-list>
+    </mat-list-item>
+  </mat-list>
+</div>
