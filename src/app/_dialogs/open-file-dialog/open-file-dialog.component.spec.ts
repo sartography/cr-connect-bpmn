@@ -65,7 +65,6 @@ describe('OpenFileDialogComponent', () => {
     fixture.destroy();
   });
 
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });
