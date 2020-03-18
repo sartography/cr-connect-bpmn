@@ -3,6 +3,7 @@ import {FileMeta, FileType, WorkflowSpec, WorkflowSpecCategory} from 'sartograph
 export interface FileMetaDialogData {
   fileName: string;
   fileType: FileType;
+  file?: File;
 }
 
 export interface NewFileDialogData {

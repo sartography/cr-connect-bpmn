@@ -14,7 +14,7 @@ import {
   ApiService,
   MockEnvironment,
   mockWorkflowSpec0,
-  mockWorkflowSpec1,
+  mockWorkflowSpec1, mockWorkflowSpecCategories,
   mockWorkflowSpecs
 } from 'sartography-workflow-lib';
 import {DeleteWorkflowSpecDialogComponent} from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
@@ -69,15 +69,19 @@ describe('WorkflowSpecListComponent', () => {
   }));
 
   beforeEach(() => {
+    httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(WorkflowSpecListComponent);
     component = fixture.componentInstance;
-    httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
 
-    const sReq = httpMock.expectOne('apiRoot/workflow-specification');
-    expect(sReq.request.method).toEqual('GET');
-    sReq.flush(mockWorkflowSpecs);
+    const catReq = httpMock.expectOne('apiRoot/workflow-specification-category');
+    expect(catReq.request.method).toEqual('GET');
+    catReq.flush(mockWorkflowSpecCategories);
+    expect(component.categories.length).toBeGreaterThan(0);
 
+    const specReq = httpMock.expectOne('apiRoot/workflow-specification');
+    expect(specReq.request.method).toEqual('GET');
+    specReq.flush(mockWorkflowSpecs);
     expect(component.workflowSpecs.length).toBeGreaterThan(0);
   });
 

@@ -5,7 +5,7 @@
       [attr.data-file-meta-id]="fm.id"
       [attr.data-workflow-spec-id]="workflowSpec.id"
     >
-      <mat-icon (click)="editFile(fm.id)" mat-list-icon>{{fm.type | getIconCode}}</mat-icon>
+      <mat-icon (click)="editFile(fm)" mat-list-icon>{{fm.type | getIconCode}}</mat-icon>
       <ng-container *ngIf="fm.type === fileType.BPMN">
         <button (click)="makePrimary(fm)" *ngIf="!fm.primary" mat-flat-button>
           <mat-icon>radio_button_unchecked</mat-icon>
@@ -16,9 +16,9 @@
           Primary process
         </button>
       </ng-container>
-      <h4 (click)="editFile(fm.id)" mat-line>{{fm.name}}</h4>
-      <p (click)="editFile(fm.id)" mat-line>{{fm.last_updated | date}}</p>
-      <button (click)="editFile(fm.id)" class="mat-elevation-z0" color="primary" mat-icon-button>
+      <h4 (click)="editFile(fm)" mat-line>{{fm.name}}</h4>
+      <p (click)="editFile(fm)" mat-line>{{fm.last_updated | date}}</p>
+      <button (click)="editFile(fm)" class="mat-elevation-z0" color="primary" mat-icon-button>
         <mat-icon>edit</mat-icon>
       </button>
       <button (click)="confirmDelete(fm)" class="mat-elevation-z0" color="warn" mat-icon-button>

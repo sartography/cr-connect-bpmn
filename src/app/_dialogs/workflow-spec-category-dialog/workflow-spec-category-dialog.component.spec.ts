@@ -1,3 +1,4 @@
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
@@ -7,11 +8,12 @@ import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {FormlyModule} from '@ngx-formly/core';
 import {FormlyMaterialModule} from '@ngx-formly/material';
-import {mockWorkflowSpecCategory0} from 'sartography-workflow-lib';
+import {ApiService, MockEnvironment, mockWorkflowSpecCategory0} from 'sartography-workflow-lib';
 import {WorkflowSpecCategoryDialogData} from '../../_interfaces/dialog-data';
 import {WorkflowSpecCategoryDialogComponent} from './workflow-spec-category-dialog.component';
 
 describe('WorkflowSpecDialogComponent', () => {
+  let httpMock: HttpTestingController;
   let component: WorkflowSpecCategoryDialogComponent;
   let fixture: ComponentFixture<WorkflowSpecCategoryDialogComponent>;
 
@@ -22,6 +24,7 @@ describe('WorkflowSpecDialogComponent', () => {
         FormlyModule.forRoot(),
         FormlyMaterialModule,
         FormsModule,
+        HttpClientTestingModule,
         MatDialogModule,
         MatFormFieldModule,
         MatIconModule,
@@ -31,6 +34,8 @@ describe('WorkflowSpecDialogComponent', () => {
       ],
       declarations: [WorkflowSpecCategoryDialogComponent],
       providers: [
+        ApiService,
+        {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
         {
           provide: MatDialogRef,
           useValue: {
@@ -45,9 +50,15 @@ describe('WorkflowSpecDialogComponent', () => {
   }));
 
   beforeEach(() => {
+    httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(WorkflowSpecCategoryDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+    fixture.destroy();
   });
 
   it('should create', () => {

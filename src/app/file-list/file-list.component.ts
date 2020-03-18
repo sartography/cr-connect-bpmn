@@ -4,7 +4,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {Router} from '@angular/router';
 import {ApiService, FileMeta, FileType, WorkflowSpec} from 'sartography-workflow-lib';
 import {DeleteFileDialogComponent} from '../_dialogs/delete-file-dialog/delete-file-dialog.component';
-import {DeleteFileDialogData} from '../_interfaces/dialog-data';
+import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
+import {DeleteFileDialogData, FileMetaDialogData} from '../_interfaces/dialog-data';
 
 @Component({
   selector: 'app-file-list',
@@ -28,8 +29,38 @@ export class FileListComponent implements OnInit {
     this._loadFileMetas();
   }
 
-  editFile(fileMetaId: number) {
-    this.router.navigate([`/modeler/${this.workflowSpec.id}/${fileMetaId}`]);
+  editFile(fileMeta: FileMeta) {
+    if (fileMeta.type === FileType.BPMN ||fileMeta.type === FileType.DMN) {
+      this.router.navigate([`/modeler/${this.workflowSpec.id}/${fileMeta.id}`]);
+    } else {
+      // Show edit file meta dialog
+      this.editFileMeta(fileMeta);
+    }
+  }
+
+  editFileMeta(fm: FileMeta) {
+    const dialogRef = this.dialog.open(FileMetaDialogComponent, {
+      data: {
+        fileName: fm.name,
+        fileType: fm.type,
+        file: fm.file,
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((data: FileMetaDialogData) => {
+      if (data && data.fileName && data.fileType) {
+        const newFileMeta: FileMeta = {
+          content_type: data.fileType,
+          name: data.fileName,
+          type: data.fileType,
+          file: data.file,
+        };
+        this.api.updateFileMeta(newFileMeta).subscribe(() => {
+          // Reload all fileMetas when all have been updated.
+          this._loadFileMetas();
+        });
+      }
+    });
   }
 
   confirmDelete(fm: FileMeta) {
