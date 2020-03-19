@@ -12,6 +12,7 @@ import {
   WorkflowSpecCategoryDialogData,
   WorkflowSpecDialogData
 } from '../_interfaces/dialog-data';
+import {isNumberDefined} from '../_util/is-number-defined';
 
 interface WorklflowSpecCategoryGroup {
   id: number;
@@ -74,14 +75,14 @@ export class WorkflowSpecListComponent implements OnInit {
       height: '65vh',
       width: '50vw',
       data: {
-        id: this.selectedCat ? this.selectedCat.id : '',
+        id: this.selectedCat ? this.selectedCat.id : null,
         name: this.selectedCat ? this.selectedCat.name || this.selectedCat.id : '',
         display_name: this.selectedCat ? this.selectedCat.display_name : '',
       },
     });
 
     dialogRef.afterClosed().subscribe((data: WorkflowSpecCategoryDialogData) => {
-      if (data && data.id && data.name && data.display_name) {
+      if (data && isNumberDefined(data.id) && data.name && data.display_name) {
         this._upsertWorkflowSpecCategory(data);
       }
     });
