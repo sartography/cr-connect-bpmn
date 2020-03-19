@@ -172,7 +172,7 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   private _upsertWorkflowSpecCategory(data: WorkflowSpecCategoryDialogData) {
-    if (data.id && data.name && data.display_name) {
+    if (isNumberDefined(data.id) && data.name && data.display_name) {
 
       // Save old workflow spec id, in case it's changed
       const catId = this.selectedCat ? this.selectedCat.id : undefined;
@@ -183,7 +183,7 @@ export class WorkflowSpecListComponent implements OnInit {
         display_name: data.display_name,
       };
 
-      if (catId) {
+      if (isNumberDefined(catId)) {
         this._updateWorkflowSpecCategory(catId, newCat);
       } else {
         this._addWorkflowSpecCategory(newCat);

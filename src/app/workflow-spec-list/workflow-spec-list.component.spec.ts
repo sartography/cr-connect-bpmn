@@ -223,7 +223,7 @@ describe('WorkflowSpecListComponent', () => {
     const _addWorkflowSpecCategorySpy = spyOn((component as any), '_addWorkflowSpecCategory').and.stub();
     const _updateWorkflowSpecCategorySpy = spyOn((component as any), '_updateWorkflowSpecCategory').and.stub();
 
-    component.selectedSpec = undefined;
+    component.selectedCat = undefined;
     (component as any)._upsertWorkflowSpecCategory(mockWorkflowSpecCategory1 as WorkflowSpecCategoryDialogData);
     expect(_addWorkflowSpecCategorySpy).toHaveBeenCalled();
     expect(_updateWorkflowSpecCategorySpy).not.toHaveBeenCalled();
