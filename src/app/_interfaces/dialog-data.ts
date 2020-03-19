@@ -1,6 +1,7 @@
 import {FileMeta, FileType, WorkflowSpec, WorkflowSpecCategory} from 'sartography-workflow-lib';
 
 export interface FileMetaDialogData {
+  id?: number;
   fileName: string;
   fileType: FileType;
   file?: File;

@@ -119,8 +119,6 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   private _loadWorkflowSpecCategories() {
-    console.log('=== _loadWorkflowSpecCategories ===');
-
     this.api.getWorkflowSpecCategoryList().subscribe(cats => {
       this.categories = cats;
       this.workflowSpecsByCategory = [{
@@ -140,7 +138,6 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   private _loadWorkflowSpecs() {
-    console.log('=== _loadWorkflowSpecs ===');
    this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
       this.workflowSpecsByCategory.forEach(cat => {

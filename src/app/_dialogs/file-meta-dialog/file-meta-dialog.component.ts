@@ -30,6 +30,14 @@ export class FileMetaDialogComponent {
 
       this.fields = [
         {
+          key: 'id',
+          type: 'input',
+          defaultValue: this.data.id,
+          templateOptions: {
+            hide: true,
+          },
+        },
+        {
           key: 'fileName',
           type: 'input',
           defaultValue: this.data.fileName,
