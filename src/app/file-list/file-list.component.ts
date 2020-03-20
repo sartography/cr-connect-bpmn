@@ -1,10 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {Router} from '@angular/router';
-import {ApiService, FileMeta, FileType, WorkflowSpec} from 'sartography-workflow-lib';
+import {ActivatedRoute, Params, Router} from '@angular/router';
+import {ApiService, FileMeta, FileType, isNumberDefined, WorkflowSpec} from 'sartography-workflow-lib';
 import {DeleteFileDialogComponent} from '../_dialogs/delete-file-dialog/delete-file-dialog.component';
-import {DeleteFileDialogData} from '../_interfaces/dialog-data';
+import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
+import {DeleteFileDialogData, FileMetaDialogData} from '../_interfaces/dialog-data';
 
 @Component({
   selector: 'app-file-list',
@@ -19,6 +20,7 @@ export class FileListComponent implements OnInit {
   constructor(
     private api: ApiService,
     public dialog: MatDialog,
+    private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar,
   ) {
@@ -28,8 +30,58 @@ export class FileListComponent implements OnInit {
     this._loadFileMetas();
   }
 
-  editFile(fileMetaId: number) {
-    this.router.navigate([`/modeler/${this.workflowSpec.id}/${fileMetaId}`]);
+  editFile(fileMeta?: FileMeta) {
+    if (fileMeta && ((fileMeta.type === FileType.BPMN) || (fileMeta.type === FileType.DMN))) {
+      this.router.navigate([`/modeler/${this.workflowSpec.id}/${fileMeta.id}`]);
+    } else {
+      // Show edit file meta dialog
+      this.editFileMeta(fileMeta);
+    }
+  }
+
+  editFileMeta(fm: FileMeta) {
+    // Set route query string
+    this.router.navigate([], {
+      relativeTo: this.route,
+      fragment: this.workflowSpec.id,
+      queryParams: {
+        workflow_spec_id: this.workflowSpec.id
+      },
+      queryParamsHandling: 'merge'
+    }).finally(() => {
+      // Get file data
+      if (fm && isNumberDefined(fm.id)) {
+        this.api.getFileData(fm.id).subscribe(fileData => this._openFileDialog(fm, fileData));
+      } else {
+        this._openFileDialog();
+      }
+    });
+  }
+
+  private _openFileDialog(fm?: FileMeta, fileData?: Blob) {
+    const dialogRef = this.dialog.open(FileMetaDialogComponent, {
+      data: {
+        fileName: fm ? fm.name : undefined,
+        fileType: fm ? fm.type : undefined,
+        file: fileData ? fileData : undefined,
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((data: FileMetaDialogData) => {
+      if (data && data.fileName && data.fileType) {
+        const newFileMeta: FileMeta = {
+          content_type: data.fileType,
+          name: data.fileName,
+          type: data.fileType,
+          file: data.file,
+        };
+        this.api.updateFileMeta(newFileMeta).subscribe(() => {
+          // Reload all fileMetas when all have been updated.
+          this._loadFileMetas();
+        });
+      }
+    });
+
   }
 
   confirmDelete(fm: FileMeta) {
@@ -83,4 +135,5 @@ export class FileListComponent implements OnInit {
       this.api.getFileData(fm.id).subscribe((fd: File) => fm.file = fd);
     });
   }
+
 }

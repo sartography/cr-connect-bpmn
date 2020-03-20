@@ -1,5 +1,4 @@
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -8,15 +7,13 @@ import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {FormlyModule} from '@ngx-formly/core';
 import {FormlyMaterialModule} from '@ngx-formly/material';
-import {ApiService, MockEnvironment, mockWorkflowSpec0, mockWorkflowSpecCategories} from 'sartography-workflow-lib';
-import {WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
+import {mockWorkflowSpecCategory0} from 'sartography-workflow-lib';
+import {WorkflowSpecCategoryDialogData} from '../../_interfaces/dialog-data';
+import {WorkflowSpecCategoryDialogComponent} from './workflow-spec-category-dialog.component';
 
-import { WorkflowSpecDialogComponent } from './workflow-spec-dialog.component';
-
-describe('WorkflowSpecDialogComponent', () => {
-  let httpMock: HttpTestingController;
-  let component: WorkflowSpecDialogComponent;
-  let fixture: ComponentFixture<WorkflowSpecDialogComponent>;
+describe('WorkflowSpecCategoryDialogComponent', () => {
+  let component: WorkflowSpecCategoryDialogComponent;
+  let fixture: ComponentFixture<WorkflowSpecCategoryDialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -25,7 +22,6 @@ describe('WorkflowSpecDialogComponent', () => {
         FormlyModule.forRoot(),
         FormlyMaterialModule,
         FormsModule,
-        HttpClientTestingModule,
         MatDialogModule,
         MatFormFieldModule,
         MatIconModule,
@@ -33,10 +29,8 @@ describe('WorkflowSpecDialogComponent', () => {
         NoopAnimationsModule,
         ReactiveFormsModule,
       ],
-      declarations: [ WorkflowSpecDialogComponent ],
+      declarations: [WorkflowSpecCategoryDialogComponent],
       providers: [
-        ApiService,
-        {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
         {
           provide: MatDialogRef,
           useValue: {
@@ -54,24 +48,13 @@ describe('WorkflowSpecDialogComponent', () => {
         {provide: MAT_DIALOG_DATA, useValue: []},
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
-    httpMock = TestBed.inject(HttpTestingController);
-    fixture = TestBed.createComponent(WorkflowSpecDialogComponent);
+    fixture = TestBed.createComponent(WorkflowSpecCategoryDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-
-    const catReq = httpMock.expectOne('apiRoot/workflow-specification-category');
-    expect(catReq.request.method).toEqual('GET');
-    catReq.flush(mockWorkflowSpecCategories);
-    expect(component.categories.length).toBeGreaterThan(0);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-    fixture.destroy();
   });
 
   it('should create', () => {
@@ -80,7 +63,7 @@ describe('WorkflowSpecDialogComponent', () => {
 
   it('should save data on submit', () => {
     const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
-    const expectedData: WorkflowSpecDialogData = mockWorkflowSpec0 as WorkflowSpecDialogData;
+    const expectedData: WorkflowSpecCategoryDialogData = mockWorkflowSpecCategory0 as WorkflowSpecCategoryDialogData;
     component.model = expectedData;
     component.onSubmit();
     expect(closeSpy).toHaveBeenCalledWith(expectedData);

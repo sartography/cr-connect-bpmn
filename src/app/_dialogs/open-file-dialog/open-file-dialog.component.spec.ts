@@ -60,6 +60,11 @@ describe('OpenFileDialogComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    httpMock.verify();
+    fixture.destroy();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });

@@ -1,0 +1,28 @@
+mat-card {
+  margin-bottom: 1em;
+  border: 1px solid #CCCCCC;
+
+  mat-card-title {
+    h3 {
+      margin: 2rem 0 2rem 0;
+    }
+
+    .action-buttons {
+      opacity: 0;
+    }
+
+    &:hover {
+      .action-buttons {
+        opacity: 1;
+      }
+    }
+  }
+
+  mat-card-content {
+    padding-left: 16px;
+
+    dl { margin: 0 0 3rem 0; }
+    dt { font-weight: bold; }
+  }
+
+}

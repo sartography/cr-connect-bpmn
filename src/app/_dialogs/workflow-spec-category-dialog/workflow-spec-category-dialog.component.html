@@ -1,3 +1,7 @@
+<div mat-dialog-title>
+  <h1>Workflow Spec Category</h1>
+</div>
+
 <div mat-dialog-content>
   <form [formGroup]="form">
     <formly-form [model]="model" [fields]="fields" [options]="options" [form]="form"></formly-form>
@@ -5,6 +9,6 @@
 </div>
 
 <div mat-dialog-actions>
-  <button [disabled]="!model.fileName" (click)="onSubmit()" color="primary" mat-flat-button>Save</button>
+  <button [disabled]="form.invalid" (click)="onSubmit()" color="primary" mat-flat-button>Save</button>
   <button (click)="onNoClick()" mat-flat-button>Cancel</button>
 </div>

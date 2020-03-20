@@ -149,7 +149,7 @@ describe('FileListComponent', () => {
   it('should navigate to modeler to edit a file', () => {
     const routerNavigateSpy = spyOn((component as any).router, 'navigate');
     component.workflowSpec = mockWorkflowSpec0;
-    component.editFile(mockFileMeta0.id);
+    component.editFile(mockFileMeta0);
     expect(routerNavigateSpy).toHaveBeenCalledWith([`/modeler/${mockWorkflowSpec0.id}/${mockFileMeta0.id}`]);
   });
 

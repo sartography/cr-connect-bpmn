@@ -1,8 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
-import {ApiService} from 'sartography-workflow-lib';
-import {getDiagramTypeFromXml} from '../../_util/diagram-type';
-import {cleanUpFilename} from '../../_util/string-clean';
+import {ApiService, cleanUpFilename, getDiagramTypeFromXml} from 'sartography-workflow-lib';
 
 @Component({
   selector: 'app-open-file-dialog',

@@ -14,6 +14,8 @@ export class GetIconCodePipe implements PipeTransform {
         return 'image';
       case FileType.DMN:
         return 'view_list';
+      default:
+        return 'insert_drive_file';
     }
   }
 }

@@ -14,11 +14,16 @@ import {
   ApiService,
   MockEnvironment,
   mockWorkflowSpec0,
-  mockWorkflowSpec1,
+  mockWorkflowSpec1, mockWorkflowSpecCategories, mockWorkflowSpecCategory0, mockWorkflowSpecCategory1,
   mockWorkflowSpecs
 } from 'sartography-workflow-lib';
 import {DeleteWorkflowSpecDialogComponent} from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
-import {DeleteWorkflowSpecDialogData, WorkflowSpecDialogData} from '../_interfaces/dialog-data';
+import {
+  DeleteWorkflowSpecCategoryDialogData,
+  DeleteWorkflowSpecDialogData,
+  WorkflowSpecCategoryDialogData,
+  WorkflowSpecDialogData
+} from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {FileListComponent} from '../file-list/file-list.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list.component';
@@ -69,15 +74,19 @@ describe('WorkflowSpecListComponent', () => {
   }));
 
   beforeEach(() => {
+    httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(WorkflowSpecListComponent);
     component = fixture.componentInstance;
-    httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
 
-    const sReq = httpMock.expectOne('apiRoot/workflow-specification');
-    expect(sReq.request.method).toEqual('GET');
-    sReq.flush(mockWorkflowSpecs);
+    const catReq = httpMock.expectOne('apiRoot/workflow-specification-category');
+    expect(catReq.request.method).toEqual('GET');
+    catReq.flush(mockWorkflowSpecCategories);
+    expect(component.categories.length).toBeGreaterThan(0);
 
+    const specReq = httpMock.expectOne('apiRoot/workflow-specification');
+    expect(specReq.request.method).toEqual('GET');
+    specReq.flush(mockWorkflowSpecs);
     expect(component.workflowSpecs.length).toBeGreaterThan(0);
   });
 
@@ -96,6 +105,7 @@ describe('WorkflowSpecListComponent', () => {
       name: '',
       display_name: '',
       description: '',
+      workflow_spec_category_id: 0,
     };
 
     const _upsertWorkflowSpecificationSpy = spyOn((component as any), '_upsertWorkflowSpecification')
@@ -185,6 +195,102 @@ describe('WorkflowSpecListComponent', () => {
     wfsReq.flush(null);
 
     expect(loadWorkflowSpecsSpy).toHaveBeenCalled();
+  });
+
+  it('should show a metadata dialog when editing a workflow spec category', () => {
+    let mockCatData: WorkflowSpecCategoryDialogData = {
+      id: null,
+      name: '',
+      display_name: '',
+    };
+
+    const _upsertWorkflowSpecCategorySpy = spyOn((component as any), '_upsertWorkflowSpecCategory')
+      .and.stub();
+    const openDialogSpy = spyOn(component.dialog, 'open')
+      .and.returnValue({afterClosed: () => of(mockCatData)} as any);
+
+    component.editWorkflowSpecCategory(mockWorkflowSpecCategory0);
+    expect(openDialogSpy).toHaveBeenCalled();
+    expect(_upsertWorkflowSpecCategorySpy).not.toHaveBeenCalled();
+
+    mockCatData = mockWorkflowSpecCategory0 as WorkflowSpecCategoryDialogData;
+    component.editWorkflowSpecCategory(mockWorkflowSpecCategory0);
+    expect(openDialogSpy).toHaveBeenCalled();
+    expect(_upsertWorkflowSpecCategorySpy).toHaveBeenCalled();
+  });
+
+  it('should edit an existing workflow spec category but add a new workflow spec category', () => {
+    const _addWorkflowSpecCategorySpy = spyOn((component as any), '_addWorkflowSpecCategory').and.stub();
+    const _updateWorkflowSpecCategorySpy = spyOn((component as any), '_updateWorkflowSpecCategory').and.stub();
+
+    component.selectedCat = undefined;
+    (component as any)._upsertWorkflowSpecCategory(mockWorkflowSpecCategory1 as WorkflowSpecCategoryDialogData);
+    expect(_addWorkflowSpecCategorySpy).toHaveBeenCalled();
+    expect(_updateWorkflowSpecCategorySpy).not.toHaveBeenCalled();
+
+    _addWorkflowSpecCategorySpy.calls.reset();
+    _updateWorkflowSpecCategorySpy.calls.reset();
+
+    component.selectedCat = mockWorkflowSpecCategory0;
+    const modifiedData: WorkflowSpecCategoryDialogData = createClone()(mockWorkflowSpecCategory0);
+    modifiedData.display_name = 'Modified';
+    (component as any)._upsertWorkflowSpecCategory(modifiedData);
+    expect(_addWorkflowSpecCategorySpy).not.toHaveBeenCalled();
+    expect(_updateWorkflowSpecCategorySpy).toHaveBeenCalled();
+  });
+
+  it('should add a workflow spec', () => {
+    const _loadWorkflowSpecCategoriesSpy = spyOn((component as any), '_loadWorkflowSpecCategories').and.stub();
+    const _displayMessageSpy = spyOn((component as any), '_displayMessage').and.stub();
+    (component as any)._addWorkflowSpecCategory(mockWorkflowSpecCategory0);
+    const catReq = httpMock.expectOne(`apiRoot/workflow-specification-category`);
+    expect(catReq.request.method).toEqual('POST');
+    catReq.flush(mockWorkflowSpecCategory0);
+
+    expect(_loadWorkflowSpecCategoriesSpy).toHaveBeenCalled();
+    expect(_displayMessageSpy).toHaveBeenCalled();
+  });
+
+  it('should edit a workflow spec category', () => {
+    const _loadWorkflowSpecCategoriesSpy = spyOn((component as any), '_loadWorkflowSpecCategories').and.stub();
+    const _displayMessageSpy = spyOn((component as any), '_displayMessage').and.stub();
+    (component as any)._updateWorkflowSpecCategory(mockWorkflowSpecCategory0.id, mockWorkflowSpecCategory0);
+    const catReq = httpMock.expectOne(`apiRoot/workflow-specification-category/${mockWorkflowSpecCategory0.id}`);
+    expect(catReq.request.method).toEqual('PUT');
+    catReq.flush(mockWorkflowSpecCategory0);
+
+    expect(_loadWorkflowSpecCategoriesSpy).toHaveBeenCalled();
+    expect(_displayMessageSpy).toHaveBeenCalled();
+  });
+
+  it('should show a confirmation dialog before deleting a workflow spec category', () => {
+    const mockConfirmDeleteData: DeleteWorkflowSpecCategoryDialogData = {
+      confirm: false,
+      category: mockWorkflowSpecCategory0
+    };
+
+    const _deleteWorkflowSpecCategorySpy = spyOn((component as any), '_deleteWorkflowSpecCategory').and.stub();
+    const openDialogSpy = spyOn(component.dialog, 'open')
+      .and.returnValue({afterClosed: () => of(mockConfirmDeleteData)} as any);
+
+    component.confirmDeleteWorkflowSpecCategory(mockWorkflowSpecCategory0);
+    expect(openDialogSpy).toHaveBeenCalled();
+    expect(_deleteWorkflowSpecCategorySpy).not.toHaveBeenCalled();
+
+    mockConfirmDeleteData.confirm = true;
+    component.confirmDeleteWorkflowSpecCategory(mockWorkflowSpecCategory0);
+    expect(openDialogSpy).toHaveBeenCalled();
+    expect(_deleteWorkflowSpecCategorySpy).toHaveBeenCalled();
+  });
+
+  it('should delete a workflow spec category', () => {
+    const _loadWorkflowSpecCategoriesSpy = spyOn((component as any), '_loadWorkflowSpecCategories').and.stub();
+    (component as any)._deleteWorkflowSpecCategory(mockWorkflowSpecCategory0);
+    const catReq = httpMock.expectOne(`apiRoot/workflow-specification-category/${mockWorkflowSpecCategory0.id}`);
+    expect(catReq.request.method).toEqual('DELETE');
+    catReq.flush(null);
+
+    expect(_loadWorkflowSpecCategoriesSpy).toHaveBeenCalled();
   });
 
 });
