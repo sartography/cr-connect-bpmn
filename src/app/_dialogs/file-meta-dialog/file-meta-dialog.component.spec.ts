@@ -56,7 +56,7 @@ describe('EditFileMetaDialogComponent', () => {
       fileType: FileType.BPMN,
     };
 
-    component.data = dataBefore;
+    component.model = dataBefore;
     component.onSubmit();
     expect(closeSpy).toHaveBeenCalledWith(dataBefore);
   });
@@ -68,7 +68,7 @@ describe('EditFileMetaDialogComponent', () => {
       fileType: FileType.BPMN,
     };
 
-    component.data = dataBefore;
+    component.model = dataBefore;
     component.onNoClick();
     expect(closeSpy).toHaveBeenCalledWith();
   });
@@ -80,7 +80,7 @@ describe('EditFileMetaDialogComponent', () => {
       fileType: FileType.BPMN,
     };
 
-    component.data = dataBefore;
+    component.model = dataBefore;
     component.onSubmit();
     const expectedData: FileMetaDialogData = createClone()(dataBefore);
     expectedData.fileName = 'green_eggs.v1-2020-01-01.XML.bpmn';
