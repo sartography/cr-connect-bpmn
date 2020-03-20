@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ApiService, WorkflowSpec, WorkflowSpecCategory} from 'sartography-workflow-lib';
+import {ApiService, isNumberDefined, WorkflowSpec, WorkflowSpecCategory} from 'sartography-workflow-lib';
 import {DeleteWorkflowSpecCategoryDialogComponent} from '../_dialogs/delete-workflow-spec-category-dialog/delete-workflow-spec-category-dialog.component';
 import {DeleteWorkflowSpecDialogComponent} from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
 import {WorkflowSpecCategoryDialogComponent} from '../_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
@@ -12,7 +12,6 @@ import {
   WorkflowSpecCategoryDialogData,
   WorkflowSpecDialogData
 } from '../_interfaces/dialog-data';
-import {isNumberDefined} from '../_util/is-number-defined';
 
 interface WorklflowSpecCategoryGroup {
   id: number;
@@ -138,13 +137,13 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   private _loadWorkflowSpecs() {
-   this.api.getWorkflowSpecList().subscribe(wfs => {
+    this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
       this.workflowSpecsByCategory.forEach(cat => {
         cat.workflow_specs = this.workflowSpecs.filter(wf => wf.workflow_spec_category_id === cat.id);
       });
     });
-   }
+  }
 
   private _upsertWorkflowSpecification(data: WorkflowSpecDialogData) {
     if (data.id && data.name && data.display_name && data.description) {

@@ -3,16 +3,21 @@ import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {ApiService, FileMeta, FileType, WorkflowSpec} from 'sartography-workflow-lib';
-import {BpmnWarning} from '../_interfaces/bpmn-warning';
-import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData} from '../_interfaces/dialog-data';
-import {ImportEvent} from '../_interfaces/import-event';
-import {getDiagramTypeFromXml} from '../_util/diagram-type';
-import {isNumberDefined} from '../_util/is-number-defined';
-import {DiagramComponent} from '../diagram/diagram.component';
+import {
+  ApiService,
+  FileMeta,
+  FileType,
+  getDiagramTypeFromXml,
+  isNumberDefined,
+  WorkflowSpec
+} from 'sartography-workflow-lib';
 import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
 import {NewFileDialogComponent} from '../_dialogs/new-file-dialog/new-file-dialog.component';
 import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
+import {BpmnWarning} from '../_interfaces/bpmn-warning';
+import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData} from '../_interfaces/dialog-data';
+import {ImportEvent} from '../_interfaces/import-event';
+import {DiagramComponent} from '../diagram/diagram.component';
 
 @Component({
   selector: 'app-modeler',
@@ -115,7 +120,7 @@ export class ModelerComponent implements AfterViewInit {
     this.xml = (event.target as FileReader).result.toString();
     const diagramType = getDiagramTypeFromXml(this.xml);
     this.diagramComponent.openDiagram(this.xml, diagramType);
-  }
+  };
 
   readFile(file: File) {
     // FileReader must be instantiated this way so unit test can spy on it.
@@ -157,8 +162,7 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   openFileDialog() {
-    const dialogRef = this.dialog.open(OpenFileDialogComponent, {
-    });
+    const dialogRef = this.dialog.open(OpenFileDialogComponent, {});
 
     dialogRef.afterClosed().subscribe((data: OpenFileDialogData) => {
       if (data && data.file) {
@@ -169,8 +173,7 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   newFileDialog() {
-    const dialogRef = this.dialog.open(NewFileDialogComponent, {
-    });
+    const dialogRef = this.dialog.open(NewFileDialogComponent, {});
 
     dialogRef.afterClosed().subscribe((data: NewFileDialogData) => {
       if (data && data.fileType) {
@@ -185,6 +188,7 @@ export class ModelerComponent implements AfterViewInit {
       data: {
         fileName: this.diagramFile ? this.diagramFile.name : this.fileName || '',
         fileType: this.diagramType || getDiagramTypeFromXml(this.xml),
+        file: this.diagramFile || undefined,
       },
     });
 

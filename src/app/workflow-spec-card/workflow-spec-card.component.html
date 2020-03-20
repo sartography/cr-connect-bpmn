@@ -1,4 +1,4 @@
-<mat-card class="mat-elevation-z0">
+<mat-card class="mat-elevation-z0" [id]="workflowSpec.id">
   <mat-card-header>
     <mat-card-title fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
       <h3>{{workflowSpec.display_name}}</h3>
@@ -18,13 +18,5 @@
     <app-file-list [workflowSpec]="workflowSpec"></app-file-list>
   </mat-card-content>
   <mat-card-actions>
-    <button [queryParams]="{action: 'newFile'}" [routerLink]="['/modeler/' + workflowSpec.id]" mat-button>
-      <mat-icon>note_add</mat-icon>
-      Add new BPMN or DMN file
-    </button>
-    <button [queryParams]="{action: 'openFile'}" [routerLink]="['/modeler/' + workflowSpec.id]" mat-button>
-      <mat-icon>cloud_upload</mat-icon>
-      Upload BPMN or DMN file
-    </button>
   </mat-card-actions>
 </mat-card>

@@ -2,9 +2,8 @@ import {Component, Inject} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
-import {FileType} from 'sartography-workflow-lib';
+import {cleanUpFilename, FileType} from 'sartography-workflow-lib';
 import {FileMetaDialogData} from '../../_interfaces/dialog-data';
-import {cleanUpFilename} from '../../_util/string-clean';
 
 @Component({
   selector: 'app-new-file-dialog',
@@ -21,55 +20,47 @@ export class FileMetaDialogComponent {
     public dialogRef: MatDialogRef<FileMetaDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: FileMetaDialogData
   ) {
-      const fileTypeOptions = Object.entries(FileType).map(ft => {
-        return {
-          label: ft[0],
-          value: ft[1]
-        };
-      });
+    const fileTypeOptions = Object.entries(FileType).map(ft => {
+      return {
+        label: ft[0],
+        value: ft[1]
+      };
+    });
 
-      this.fields = [
-        {
-          key: 'id',
-          type: 'input',
-          defaultValue: this.data.id,
-          templateOptions: {
-            hide: true,
-          },
+    this.fields = [
+      {
+        key: 'fileName',
+        type: 'input',
+        defaultValue: this.data.fileName,
+        templateOptions: {
+          label: 'File Name',
+          placeholder: 'Name of file',
+          description: 'Enter a name, in lowercase letters, separated by underscores, that is easy for you to remember.' +
+            'It will be converted to all_lowercase_with_underscores when you save.',
+          required: true,
         },
-        {
-          key: 'fileName',
-          type: 'input',
-          defaultValue: this.data.fileName,
-          templateOptions: {
-            label: 'File Name',
-            placeholder: 'Name of workflow specification',
-            description: 'Enter a name, in lowercase letters, separated by underscores, that is easy for you to remember.' +
-              'It will be converted to all_lowercase_with_underscores when you save.',
-            required: true,
-          },
+      },
+      {
+        key: 'fileType',
+        type: 'select',
+        defaultValue: this.data.fileType,
+        templateOptions: {
+          label: 'File Type',
+          placeholder: 'Extension of file',
+          required: true,
+          options: fileTypeOptions,
         },
-        {
-          key: 'fileType',
-          type: 'select',
-          defaultValue: this.data.fileType,
-          templateOptions: {
-            label: 'File Type',
-            placeholder: 'Extension of file',
-            required: true,
-            options: fileTypeOptions,
-          },
+      },
+      {
+        key: 'file',
+        type: 'file',
+        defaultValue: this.data.file,
+        templateOptions: {
+          label: 'File',
+          required: true,
         },
-        {
-          key: 'file',
-          type: 'file',
-          defaultValue: this.data.file,
-          templateOptions: {
-            label: 'File',
-            required: true,
-          },
-        }
-      ];
+      }
+    ];
   }
 
   onNoClick() {

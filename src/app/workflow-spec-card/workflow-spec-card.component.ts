@@ -1,5 +1,7 @@
 import {Component, Input, OnInit, TemplateRef} from '@angular/core';
-import {WorkflowSpec} from 'sartography-workflow-lib';
+import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {ApiService, WorkflowSpec} from 'sartography-workflow-lib';
 
 @Component({
   selector: 'app-workflow-spec-card',
@@ -16,4 +18,8 @@ export class WorkflowSpecCardComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  openFileDialog() {
+
+
+  }
 }

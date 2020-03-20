@@ -5,11 +5,16 @@ import {ControlValueAccessor} from '@angular/forms';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import DmnModeler from 'dmn-js/lib/Modeler';
 import * as fileSaver from 'file-saver';
-import {ApiService, BPMN_DIAGRAM_DEFAULT, DMN_DIAGRAM_DEFAULT, FileType} from 'sartography-workflow-lib';
+import {
+  ApiService,
+  BPMN_DIAGRAM_DEFAULT,
+  DMN_DIAGRAM_DEFAULT,
+  FileType,
+  getDiagramTypeFromXml
+} from 'sartography-workflow-lib';
 import {v4 as uuidv4} from 'uuid';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {ImportEvent} from '../_interfaces/import-event';
-import {getDiagramTypeFromXml} from '../_util/diagram-type';
 import {bpmnModelerConfig} from './bpmn-modeler-config';
 import {dmnModelerConfig} from './dmn-modeler-config';
 

@@ -2,10 +2,9 @@ import {Component, Inject} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormlyFieldConfig, FormlyFormOptions, FormlyTemplateOptions} from '@ngx-formly/core';
-import {ApiService} from 'sartography-workflow-lib';
+import {ApiService, toSnakeCase} from 'sartography-workflow-lib';
 import {v4 as uuidv4} from 'uuid';
 import {WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
-import {toSnakeCase} from '../../_util/string-clean';
 
 @Component({
   selector: 'app-workflow-spec-dialog',

@@ -27,3 +27,17 @@
     </mat-list-item>
   </mat-list>
 </div>
+<div class="file-list-actions">
+  <button [queryParams]="{action: 'newFile'}" [routerLink]="['/modeler/' + workflowSpec.id]" mat-button>
+    <mat-icon>note_add</mat-icon>
+    Add new BPMN or DMN file
+  </button>
+  <button [queryParams]="{action: 'openFile'}" [routerLink]="['/modeler/' + workflowSpec.id]" mat-button>
+    <mat-icon>cloud_upload</mat-icon>
+    Upload BPMN or DMN file
+  </button>
+  <button (click)="editFile()" mat-button>
+    <mat-icon>cloud_upload</mat-icon>
+    Upload Template file
+  </button>
+</div>
