@@ -51,15 +51,15 @@ export class FileMetaDialogComponent {
           options: fileTypeOptions,
         },
       },
-      {
-        key: 'file',
-        type: 'file',
-        defaultValue: this.data.file,
-        templateOptions: {
-          label: 'File',
-          required: true,
-        },
-      }
+      // {
+      //   key: 'file',
+      //   type: 'file',
+      //   defaultValue: this.data.file,
+      //   templateOptions: {
+      //     label: 'File',
+      //     required: true,
+      //   },
+      // }
     ];
   }
 
@@ -68,8 +68,8 @@ export class FileMetaDialogComponent {
   }
 
   onSubmit() {
-    this.data.fileName = cleanUpFilename(this.data.fileName, this.data.fileType);
-    this.dialogRef.close(this.data);
+    this.model.fileName = cleanUpFilename(this.model.fileName, this.model.fileType);
+    this.dialogRef.close(this.model);
   }
 
 }

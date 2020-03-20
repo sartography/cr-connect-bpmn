@@ -120,7 +120,7 @@ export class ModelerComponent implements AfterViewInit {
     this.xml = (event.target as FileReader).result.toString();
     const diagramType = getDiagramTypeFromXml(this.xml);
     this.diagramComponent.openDiagram(this.xml, diagramType);
-  };
+  }
 
   readFile(file: File) {
     // FileReader must be instantiated this way so unit test can spy on it.
