@@ -206,7 +206,11 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
 
     this.modeler.on('import.done', ({error}) => {
       if (!error) {
-        this.modeler.getActiveViewer().get('canvas').zoom('fit-viewport');
+        const activeView = this.modeler.getActiveView();
+        if (activeView.type === 'drd') {
+          this.modeler.getActiveViewer().get('canvas').zoom('fit-viewport');
+        }
+
         window.scrollTo({
           top: 0,
           left: 0,
