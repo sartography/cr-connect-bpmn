@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {ApiService, FileMeta, FileType, isNumberDefined, WorkflowSpec} from 'sartography-workflow-lib';
+import {ApiService, FileMeta, FileParams, FileType, isNumberDefined, WorkflowSpec} from 'sartography-workflow-lib';
 import {DeleteFileDialogComponent} from '../_dialogs/delete-file-dialog/delete-file-dialog.component';
 import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
 import {DeleteFileDialogData, FileMetaDialogData} from '../_interfaces/dialog-data';
@@ -70,15 +70,30 @@ export class FileListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((data: FileMetaDialogData) => {
       if (data && data.fileName && data.fileType) {
         const newFileMeta: FileMeta = {
+          id: data.id,
           content_type: data.fileType,
           name: data.fileName,
           type: data.fileType,
           file: data.file,
         };
-        this.api.updateFileMeta(newFileMeta).subscribe(() => {
-          // Reload all fileMetas when all have been updated.
-          this._loadFileMetas();
-        });
+
+        if (isNumberDefined(data.id)) {
+          // Update existing file
+          this.api.updateFileMeta(newFileMeta).subscribe(() => {
+            this.api.updateFileData(newFileMeta).subscribe(() => {
+              this._loadFileMetas();
+            });
+          });
+        } else {
+          // Add new file
+          const fileParams: FileParams = {
+            workflow_spec_id: this.workflowSpec.id,
+          };
+
+          this.api.addFileMeta(fileParams, newFileMeta).subscribe(dbFm => {
+            this._loadFileMetas();
+          });
+        }
       }
     });
 
