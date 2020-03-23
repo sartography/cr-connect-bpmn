@@ -1,6 +1,12 @@
+@import "../../config";
+
 mat-card {
   margin-bottom: 1em;
-  border: 1px solid #CCCCCC;
+  border: 1px solid $brand-gray;
+
+  &.master-status {
+    border: 2px dashed $brand-accent;
+  }
 
   mat-card-title {
     h3 {

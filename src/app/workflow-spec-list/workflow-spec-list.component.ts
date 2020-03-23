@@ -233,5 +233,23 @@ export class WorkflowSpecListComponent implements OnInit {
     this.snackBar.open(message, 'Ok', {duration: 3000});
   }
 
+  onWorkflowUpdated(spec: WorkflowSpec) {
+    if (spec.is_status) {
+      // Mark all other specs as not is_status
+      let numUpdated = this.workflowSpecs.length - 1;
+      this.workflowSpecs.forEach(wfs => {
+        if (wfs.id !== spec.id) {
+          wfs.is_status = false;
+          this.api.updateWorkflowSpecification(wfs.id, wfs).subscribe(() => {
+            numUpdated--;
+            if (numUpdated === 0) {
+              this._loadWorkflowSpecCategories();
+            }
+          });
+        }
+      });
+    }
+    this._loadWorkflowSpecCategories();
+  }
 }
 

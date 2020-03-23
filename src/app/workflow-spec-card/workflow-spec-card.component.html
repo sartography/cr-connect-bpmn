@@ -1,10 +1,21 @@
-<mat-card class="mat-elevation-z0" [id]="workflowSpec.id">
+<mat-card class="mat-elevation-z0 {{workflowSpec.is_status ? 'master-status' : ''}}" [id]="workflowSpec.id">
   <mat-card-header>
     <mat-card-title fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
       <h3>{{workflowSpec.display_name}}</h3>
       <div class="action-buttons">
         <ng-container *ngTemplateOutlet="actionButtons"></ng-container>
       </div>
+      <span fxFlex></span>
+      <ng-container>
+        <button (click)="makeMasterStatus()" *ngIf="!workflowSpec.is_status" mat-button color="accent">
+          <mat-icon>radio_button_unchecked</mat-icon>
+          Master status spec
+        </button>
+        <button *ngIf="workflowSpec.is_status" (click)="makeMasterStatus()" mat-button color="accent">
+          <mat-icon>radio_button_checked</mat-icon>
+          Master status spec
+        </button>
+      </ng-container>
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
