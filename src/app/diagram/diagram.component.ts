@@ -202,11 +202,15 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
 
     this.modeler.on('commandStack.changed', () => this.saveDiagram());
 
-    this.modeler.on('views.changed', event => this.saveDiagram());
+    this.modeler.on('views.changed', () => {
+      this.modeler.getActiveViewer().get('eventBus').on('commandStack.changed', () => this.saveDiagram());
+      this.saveDiagram();
+    });
 
     this.modeler.on('import.done', ({error}) => {
       if (!error) {
         const activeView = this.modeler.getActiveView();
+
         if (activeView.type === 'drd') {
           this.modeler.getActiveViewer().get('canvas').zoom('fit-viewport');
         }
