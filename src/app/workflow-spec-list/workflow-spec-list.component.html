@@ -25,7 +25,10 @@
         </div>
       </div>
       <div *ngFor="let wfs of cat.workflow_specs" class="workflow-spec">
-        <app-workflow-spec-card [workflowSpec]="wfs" [actionButtons]="actionButtons">
+        <app-workflow-spec-card
+          [workflowSpec]="wfs"
+          [actionButtons]="actionButtons"
+          (workflowUpdated)="onWorkflowUpdated($event)">
         </app-workflow-spec-card>
         <ng-template #actionButtons>
           <div class="workflow-spec-actions">

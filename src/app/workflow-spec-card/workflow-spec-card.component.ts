@@ -1,6 +1,4 @@
-import {Component, Input, OnInit, TemplateRef} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import {Component, EventEmitter, Input, OnInit, Output, TemplateRef} from '@angular/core';
 import {ApiService, WorkflowSpec} from 'sartography-workflow-lib';
 
 @Component({
@@ -11,15 +9,20 @@ import {ApiService, WorkflowSpec} from 'sartography-workflow-lib';
 export class WorkflowSpecCardComponent implements OnInit {
   @Input() workflowSpec: WorkflowSpec;
   @Input() actionButtons: TemplateRef<any>;
+  @Output() workflowUpdated: EventEmitter<WorkflowSpec> = new EventEmitter();
 
-  constructor() {
+  constructor(
+    private api: ApiService
+  ) {
   }
 
   ngOnInit(): void {
   }
 
-  openFileDialog() {
-
-
+  makeMasterStatus() {
+    this.workflowSpec.is_status = true;
+    this.api.updateWorkflowSpecification(this.workflowSpec.id, this.workflowSpec).subscribe(spec => {
+      this.workflowUpdated.emit(spec);
+    });
   }
 }

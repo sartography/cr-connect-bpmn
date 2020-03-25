@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {cleanUpFilename, FileType} from 'sartography-workflow-lib';
@@ -51,15 +51,18 @@ export class FileMetaDialogComponent {
           options: fileTypeOptions,
         },
       },
-      // {
-      //   key: 'file',
-      //   type: 'file',
-      //   defaultValue: this.data.file,
-      //   templateOptions: {
-      //     label: 'File',
-      //     required: true,
-      //   },
-      // }
+      {
+        key: 'file',
+        type: 'file',
+        defaultValue: this.data.file,
+        templateOptions: {
+          label: 'File',
+          required: true,
+        },
+        modelOptions: {
+          updateOn: 'change'
+        },
+      }
     ];
   }
 
@@ -72,4 +75,16 @@ export class FileMetaDialogComponent {
     this.dialogRef.close(this.model);
   }
 
+  onModelChange(model: any) {
+    console.log('model', model);
+    if (model.file && typeof model.file === 'object' && model.file instanceof Blob) {
+      // Upload file
+      const fileReader = new (window as any).FileReader();
+      fileReader.onload = (event: ProgressEvent) => {
+        const stringContent = (event.target as FileReader).result.toString();
+        console.log(stringContent);
+      };
+      fileReader.readAsText(model.file);
+    }
+  }
 }
