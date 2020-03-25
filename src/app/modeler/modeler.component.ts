@@ -295,10 +295,9 @@ export class ModelerComponent implements AfterViewInit {
     this.xml = this.draftXml;
     this.diagramFileMeta.file = new File([this.xml], this.diagramFileMeta.name, {type: 'text/xml'});
 
-    this.api.updateFileData(this.diagramFileMeta).subscribe(() => {
-      this.api.updateFileMeta(this.diagramFileMeta).subscribe(() => {
-        this.snackBar.open(`Saved changes to file metadata ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
-      });
+    this.api.updateFileData(this.diagramFileMeta).subscribe(newFileMeta => {
+      this.diagramFileMeta = newFileMeta;
+      this.snackBar.open(`Saved changes to file metadata ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
     });
   }
 

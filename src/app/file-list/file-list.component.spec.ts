@@ -11,6 +11,7 @@ import {of} from 'rxjs';
 import {
   ApiService,
   FileMeta,
+  FileType,
   MockEnvironment,
   mockFileMeta0,
   mockFileMetas,
@@ -20,6 +21,8 @@ import {DeleteFileDialogComponent} from '../_dialogs/delete-file-dialog/delete-f
 import {DeleteFileDialogData} from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {FileListComponent} from './file-list.component';
+import createClone from 'rfdc';
+
 
 describe('FileListComponent', () => {
   let httpMock: HttpTestingController;
@@ -146,11 +149,58 @@ describe('FileListComponent', () => {
     expect(loadFileMetasSpy).toHaveBeenCalled();
   });
 
-  it('should navigate to modeler to edit a file', () => {
+  it('should navigate to modeler to edit a BPMN or DMN file', () => {
     const routerNavigateSpy = spyOn((component as any).router, 'navigate');
     component.workflowSpec = mockWorkflowSpec0;
     component.editFile(mockFileMeta0);
     expect(routerNavigateSpy).toHaveBeenCalledWith([`/modeler/${mockWorkflowSpec0.id}/${mockFileMeta0.id}`]);
+
+    routerNavigateSpy.calls.reset();
+    const mockDmnMeta = createClone()(mockFileMeta0);
+    mockDmnMeta.type = FileType.DMN;
+    component.editFile(mockDmnMeta);
+    expect(routerNavigateSpy).toHaveBeenCalledWith([`/modeler/${mockWorkflowSpec0.id}/${mockDmnMeta.id}`]);
+  });
+
+  it('should open file metadata dialog for non-BPMN files', () => {
+    const routerNavigateSpy = spyOn((component as any).router, 'navigate');
+    const editFileMetaSpy = spyOn(component, 'editFileMeta');
+    component.workflowSpec = mockWorkflowSpec0;
+    const mockDocMeta = createClone()(mockFileMeta0);
+    mockDocMeta.type = FileType.DOCX;
+    component.editFile(mockDocMeta);
+    expect(routerNavigateSpy).not.toHaveBeenCalled();
+    expect(editFileMetaSpy).toHaveBeenCalledWith(mockDocMeta);
+
+    routerNavigateSpy.calls.reset();
+    editFileMetaSpy.calls.reset();
+    component.editFile(null);
+    expect(routerNavigateSpy).not.toHaveBeenCalled();
+    expect(editFileMetaSpy).toHaveBeenCalledWith(null);
+  });
+
+  it('should change route and then open file metadata dialog', () => {
+    const routerNavigateSpy = spyOn((component as any).router, 'navigate')
+      .and.returnValue({finally: finallyCallback => finallyCallback()});
+    const _openFileDialogSpy = spyOn((component as any), '_openFileDialog').and.stub();
+    component.workflowSpec = mockWorkflowSpec0;
+    const mockDocMeta = createClone()(mockFileMeta0);
+    mockDocMeta.type = FileType.DOCX;
+    component.editFileMeta(mockDocMeta);
+    expect(routerNavigateSpy).toHaveBeenCalled();
+
+    const fakeBlob = new Blob(['I am a fake blob. A real blob says "blorp blorp blorp."']);
+    const fReq = httpMock.expectOne(`apiRoot/file/${mockDocMeta.id}/data`);
+    expect(fReq.request.method).toEqual('GET');
+    fReq.flush(fakeBlob);
+    expect(_openFileDialogSpy).toHaveBeenCalledWith(mockDocMeta, fakeBlob);
+
+    routerNavigateSpy.calls.reset();
+    _openFileDialogSpy.calls.reset();
+
+    component.editFileMeta(null);
+    expect(routerNavigateSpy).toHaveBeenCalled();
+    expect(_openFileDialogSpy).toHaveBeenCalledWith();
   });
 
   it('should flag a file as primary', () => {

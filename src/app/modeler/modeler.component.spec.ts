@@ -283,7 +283,6 @@ describe('ModelerComponent', () => {
   });
 
   it('should save file changes', () => {
-    const updateFileMetaSpy = spyOn(component.api, 'updateFileMeta').and.returnValue(of(mockFileMeta0));
     const updateFileDataSpy = spyOn(component.api, 'updateFileData').and.returnValue(of(mockFileMeta0));
     const snackBarOpenSpy = spyOn(component.snackBar, 'open').and.stub();
 
@@ -292,7 +291,6 @@ describe('ModelerComponent', () => {
     component.diagramComponent.writeValue(BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'cream_colored_ponies'));
     component.saveFileChanges();
 
-    expect(updateFileMetaSpy).toHaveBeenCalledWith(mockFileMeta0);
     expect(updateFileDataSpy).toHaveBeenCalledWith(mockFileMeta0);
     expect(snackBarOpenSpy).toHaveBeenCalled();
   });
