@@ -1,11 +1,20 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-import {ApiService, FileMeta, FileParams, FileType, isNumberDefined, WorkflowSpec} from 'sartography-workflow-lib';
+import {ActivatedRoute, Router} from '@angular/router';
+import {
+  ApiService,
+  FileMeta,
+  FileParams,
+  FileType,
+  getFileType,
+  isNumberDefined,
+  WorkflowSpec
+} from 'sartography-workflow-lib';
 import {DeleteFileDialogComponent} from '../_dialogs/delete-file-dialog/delete-file-dialog.component';
-import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
-import {DeleteFileDialogData, FileMetaDialogData} from '../_interfaces/dialog-data';
+import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
+import {DeleteFileDialogData, OpenFileDialogData} from '../_interfaces/dialog-data';
+import * as fileSaver from 'file-saver';
 
 @Component({
   selector: 'app-file-list',
@@ -40,63 +49,14 @@ export class FileListComponent implements OnInit {
   }
 
   editFileMeta(fm: FileMeta) {
-    // Set route query string
-    this.router.navigate([], {
-      relativeTo: this.route,
-      fragment: this.workflowSpec.id,
-      queryParams: {
-        workflow_spec_id: this.workflowSpec.id
-      },
-      queryParamsHandling: 'merge'
-    }).finally(() => {
-      // Get file data
-      if (fm && isNumberDefined(fm.id)) {
-        this.api.getFileData(fm.id).subscribe(fileData => this._openFileDialog(fm, fileData));
-      } else {
-        this._openFileDialog();
-      }
-    });
-  }
-
-  private _openFileDialog(fm?: FileMeta, fileData?: Blob) {
-    const dialogRef = this.dialog.open(FileMetaDialogComponent, {
-      data: {
-        fileName: fm ? fm.name : undefined,
-        fileType: fm ? fm.type : undefined,
-        file: fileData ? fileData : undefined,
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((data: FileMetaDialogData) => {
-      if (data && data.fileName && data.fileType) {
-        const newFileMeta: FileMeta = {
-          id: data.id,
-          content_type: data.fileType,
-          name: data.fileName,
-          type: data.fileType,
-          file: data.file,
-        };
-
-        if (isNumberDefined(data.id)) {
-          // Update existing file
-          this.api.updateFileMeta(newFileMeta).subscribe(() => {
-            this.api.updateFileData(newFileMeta).subscribe(() => {
-              this._loadFileMetas();
-            });
-          });
-        } else {
-          // Add new file
-          const fileParams: FileParams = {
-            workflow_spec_id: this.workflowSpec.id,
-          };
-
-          this.api.addFileMeta(fileParams, newFileMeta).subscribe(dbFm => {
-            this._loadFileMetas();
-          });
-        }
-      }
-    });
-
+    if (fm && isNumberDefined(fm.id)) {
+      this.api.getFileData(fm.id).subscribe(fileData => {
+        const file = new File([fileData], fm.name, {type: fm.content_type});
+        this._openFileDialog(fm, file);
+      });
+    } else {
+      this._openFileDialog();
+    }
   }
 
   confirmDelete(fm: FileMeta) {
@@ -131,6 +91,49 @@ export class FileListComponent implements OnInit {
     }
   }
 
+  private _openFileDialog(fm?: FileMeta, file?: File) {
+    console.log('fm.id', fm && fm.id);
+    const dialogData: OpenFileDialogData = {
+      fileMetaId: fm ? fm.id : undefined,
+      file: file,
+      mode: 'local',
+      fileTypes: [FileType.DOCX],
+    };
+    const dialogRef = this.dialog.open(OpenFileDialogComponent, {data: dialogData});
+
+    dialogRef.afterClosed().subscribe((data: OpenFileDialogData) => {
+      if (data && data.file) {
+        const newFileMeta: FileMeta = {
+          id: data.fileMetaId,
+          content_type: data.file.type,
+          name: data.file.name,
+          type: getFileType(data.file),
+          file: data.file,
+          workflow_spec_id: this.workflowSpec.id,
+        };
+
+        console.log('data.fileMetaId', data.fileMetaId);
+        console.log('isNumberDefined(data.fileMetaId)', isNumberDefined(data.fileMetaId));
+        if (isNumberDefined(data.fileMetaId)) {
+          // Update existing file
+          this.api.updateFileData(newFileMeta).subscribe(() => {
+            this._loadFileMetas();
+          });
+        } else {
+          // Add new file
+          const fileParams: FileParams = {
+            workflow_spec_id: this.workflowSpec.id,
+          };
+
+          this.api.addFileMeta(fileParams, newFileMeta).subscribe(dbFm => {
+            this._loadFileMetas();
+          });
+        }
+      }
+    });
+
+  }
+
   private _deleteFile(fileMeta: FileMeta) {
     this.api.deleteFileMeta(fileMeta.id).subscribe(() => {
       this._loadFileMetas();
@@ -151,4 +154,10 @@ export class FileListComponent implements OnInit {
     });
   }
 
+  downloadFile(fm: FileMeta) {
+    this.api.getFileData(fm.id).subscribe(fileBlob => {
+      const blob = new Blob([fileBlob], {type: fm.content_type});
+      fileSaver.saveAs(blob, fm.name);
+    });
+  }
 }

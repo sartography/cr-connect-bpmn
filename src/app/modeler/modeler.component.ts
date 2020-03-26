@@ -162,7 +162,11 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   openFileDialog() {
-    const dialogRef = this.dialog.open(OpenFileDialogComponent, {});
+    const dialogData: OpenFileDialogData = {
+      file: undefined,
+      fileTypes: [FileType.DMN, FileType.BPMN],
+    };
+    const dialogRef = this.dialog.open(OpenFileDialogComponent, {data: dialogData});
 
     dialogRef.afterClosed().subscribe((data: OpenFileDialogData) => {
       if (data && data.file) {

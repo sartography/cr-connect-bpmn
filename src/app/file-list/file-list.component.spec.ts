@@ -179,28 +179,54 @@ describe('FileListComponent', () => {
     expect(editFileMetaSpy).toHaveBeenCalledWith(null);
   });
 
-  it('should change route and then open file metadata dialog', () => {
-    const routerNavigateSpy = spyOn((component as any).router, 'navigate')
-      .and.returnValue({finally: finallyCallback => finallyCallback()});
+  it('should open file metadata dialog', () => {
     const _openFileDialogSpy = spyOn((component as any), '_openFileDialog').and.stub();
     component.workflowSpec = mockWorkflowSpec0;
-    const mockDocMeta = createClone()(mockFileMeta0);
+    const mockDocMeta: FileMeta = createClone()(mockFileMeta0);
     mockDocMeta.type = FileType.DOCX;
     component.editFileMeta(mockDocMeta);
-    expect(routerNavigateSpy).toHaveBeenCalled();
 
     const fakeBlob = new Blob(['I am a fake blob. A real blob says "blorp blorp blorp."']);
+    const expectedFile = new File([fakeBlob], mockDocMeta.name, {type: mockDocMeta.content_type});
     const fReq = httpMock.expectOne(`apiRoot/file/${mockDocMeta.id}/data`);
     expect(fReq.request.method).toEqual('GET');
     fReq.flush(fakeBlob);
-    expect(_openFileDialogSpy).toHaveBeenCalledWith(mockDocMeta, fakeBlob);
+    expect(_openFileDialogSpy).toHaveBeenCalledWith(mockDocMeta, expectedFile);
 
-    routerNavigateSpy.calls.reset();
     _openFileDialogSpy.calls.reset();
 
     component.editFileMeta(null);
-    expect(routerNavigateSpy).toHaveBeenCalled();
     expect(_openFileDialogSpy).toHaveBeenCalledWith();
+  });
+
+  it('should upload new file from file dialog', () => {
+    const openDialogSpy = spyOn(component.dialog, 'open')
+      .and.returnValue({afterClosed: () => of({file: mockFileMeta0.file})} as any);
+    const _loadFileMetasSpy = spyOn((component as any), '_loadFileMetas').and.stub();
+    component.workflowSpec = mockWorkflowSpec0;
+
+    (component as any)._openFileDialog();
+    const addReq = httpMock.expectOne(`apiRoot/file?workflow_spec_id=${mockWorkflowSpec0.id}`);
+    expect(addReq.request.method).toEqual('POST');
+    addReq.flush(mockFileMeta0);
+
+    expect(openDialogSpy).toHaveBeenCalled();
+    expect(_loadFileMetasSpy).toHaveBeenCalled();
+  });
+
+  it('should update existing file from file dialog', () => {
+    const openDialogSpy = spyOn(component.dialog, 'open')
+      .and.returnValue({afterClosed: () => of({fileMetaId: mockFileMeta0.id, file: mockFileMeta0.file})} as any);
+    const _loadFileMetasSpy = spyOn((component as any), '_loadFileMetas').and.stub();
+    component.workflowSpec = mockWorkflowSpec0;
+
+    (component as any)._openFileDialog(mockFileMeta0, mockFileMeta0.file);
+    const updateReq = httpMock.expectOne(`apiRoot/file/${mockFileMeta0.id}/data`);
+    expect(updateReq.request.method).toEqual('PUT');
+    updateReq.flush(mockFileMeta0);
+
+    expect(openDialogSpy).toHaveBeenCalled();
+    expect(_loadFileMetasSpy).toHaveBeenCalled();
   });
 
   it('should flag a file as primary', () => {

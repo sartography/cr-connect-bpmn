@@ -71,18 +71,16 @@ describe('OpenFileDialogComponent', () => {
 
   it('should save data on submit', () => {
     const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
-    const expectedData: OpenFileDialogData = { file: mockFileMeta0.file };
-
-    component.diagramFile = expectedData.file;
+    component.data.file = mockFileMeta0.file;
     component.onSubmit();
-    expect(closeSpy).toHaveBeenCalledWith(expectedData);
+    expect(closeSpy).toHaveBeenCalledWith(component.data);
   });
 
   it('should not change data on cancel', () => {
     const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
     const expectedData: OpenFileDialogData = { file: mockFileMeta0.file };
 
-    component.diagramFile = expectedData.file;
+    component.data.file = expectedData.file;
     component.onNoClick();
     expect(closeSpy).toHaveBeenCalledWith();
   });
@@ -97,23 +95,23 @@ describe('OpenFileDialogComponent', () => {
     const req = httpMock.expectOne(url);
     expect(req.request.method).toEqual('GET');
     req.flush('<xml></xml>');
-    expect(component.diagramFile).toBeTruthy();
-    expect(component.diagramFile.name).toEqual(expectedName);
+    expect(component.data.file).toBeTruthy();
+    expect(component.data.file.name).toEqual(expectedName);
     expect(onSubmitSpy).toHaveBeenCalled();
   });
 
   it('should get the diagram file name', () => {
-    component.diagramFile = undefined;
+    component.data.file = undefined;
     expect(component.getFileName()).toEqual('Click to select a file');
 
-    component.diagramFile = mockFileMeta0.file;
+    component.data.file = mockFileMeta0.file;
     expect(component.getFileName()).toEqual(mockFileMeta0.file.name);
   });
 
   it('should get a file from the file input field event', () => {
     const event = {target: {files: [mockFileMeta0.file]}};
     (component as any).onFileSelected(event);
-    expect(component.diagramFile).toEqual(mockFileMeta0.file);
+    expect(component.data.file).toEqual(mockFileMeta0.file);
   });
 
   it('should determine if a string is a valid URL', () => {

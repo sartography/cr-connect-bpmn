@@ -1,7 +1,7 @@
 <div mat-dialog-title>
   <ng-container *ngIf="!mode">Where is your file?</ng-container>
-  <ng-container *ngIf="mode === 'local'">Upload a local BPMN/DMN file</ng-container>
-  <ng-container *ngIf="mode === 'remote'">Open a BPMN/DMN file from URL</ng-container>
+  <ng-container *ngIf="mode === 'local'">Upload a local {{fileTypesString()}} file</ng-container>
+  <ng-container *ngIf="mode === 'remote'">Open a {{fileTypesString()}} file from URL</ng-container>
   <span fxFlex></span>
   <button mat-icon-button mat-dialog-close=""><mat-icon>close</mat-icon></button>
 </div>
@@ -9,11 +9,11 @@
   <div *ngIf="!mode" class="select-mode" fxLayoutAlign="center center">
     <button (click)="mode = 'local'" color="primary" mat-flat-button>
       <mat-icon>code</mat-icon>
-      Upload a local BPMN/DMN file
+      Upload a local {{fileTypesString()}} file
     </button>
     <button (click)="mode = 'remote'" color="primary" mat-flat-button>
       <mat-icon>link</mat-icon>
-      Open a BPMN/DMN file from URL
+      Open a {{fileTypesString()}} file from URL
     </button>
   </div>
 
@@ -22,18 +22,18 @@
       <span matPrefix><mat-icon>folder_open</mat-icon> &nbsp;</span>
       <input [value]="getFileName()" disabled matInput type="text">
     </mat-form-field>
-    <input #fileInput (change)="onFileSelected($event)" accept=".bpmn,.dmn,.xml,application/xml,text/xml" hidden id="file"
+    <input #fileInput (change)="onFileSelected($event)" accept="{{fileExtensions()}}" hidden id="file"
            type="file">
-    <button (click)="onSubmit()" [disabled]="!diagramFile" color="primary" mat-flat-button>Upload File</button>
-    <button (click)="mode = undefined" mat-flat-button>Cancel</button>
+    <button (click)="onSubmit()" [disabled]="!data.file" color="primary" mat-flat-button>Upload File</button>
+    <button (click)="cancel()" mat-flat-button>Cancel</button>
   </div>
 
   <div *ngIf="mode === 'remote'">
     <mat-form-field>
       <span matPrefix><mat-icon>link</mat-icon> &nbsp;</span>
-      <input [(ngModel)]="url" matInput type="url" placeholder="BPMN/DMN File URL">
+      <input [(ngModel)]="url" matInput type="url" placeholder="{{fileTypesString()}} File URL">
     </mat-form-field>
     <button (click)="onSubmitUrl()" [disabled]="!isValidUrl()" color="primary" mat-flat-button>Fetch File</button>
-    <button (click)="mode = undefined" mat-flat-button>Cancel</button>
+    <button (click)="cancel()" mat-flat-button>Cancel</button>
   </div>
 </div>

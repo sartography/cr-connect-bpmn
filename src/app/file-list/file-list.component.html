@@ -18,6 +18,9 @@
       </ng-container>
       <h4 (click)="editFile(fm)" mat-line>{{fm.name}}</h4>
       <p (click)="editFile(fm)" mat-line>{{fm.last_updated | date}}</p>
+      <button (click)="downloadFile(fm)" class="mat-elevation-z0" color="primary" mat-icon-button>
+        <mat-icon>save_alt</mat-icon>
+      </button>
       <button (click)="editFile(fm)" class="mat-elevation-z0" color="primary" mat-icon-button>
         <mat-icon>edit</mat-icon>
       </button>

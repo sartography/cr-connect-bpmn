@@ -12,7 +12,10 @@ export interface NewFileDialogData {
 }
 
 export interface OpenFileDialogData {
+  fileMetaId?: number;
   file: File;
+  mode?: string;
+  fileTypes?: FileType[];
 }
 
 export interface WorkflowSpecDialogData {
