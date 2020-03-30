@@ -30,6 +30,7 @@ export interface WorkflowSpecCategoryDialogData {
   id: number;
   name: string;
   display_name: string;
+  display_order?: number;
 }
 
 export interface DeleteFileDialogData {

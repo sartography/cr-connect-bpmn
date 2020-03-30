@@ -3,7 +3,7 @@ import {FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {toSnakeCase} from 'sartography-workflow-lib';
-import {WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
+import {WorkflowSpecCategoryDialogData, WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
 
 @Component({
   selector: 'app-workflow-spec-category-dialog',
@@ -50,11 +50,24 @@ export class WorkflowSpecCategoryDialogComponent {
         required: true,
       },
     },
+    {
+      key: 'display_order',
+      type: 'input',
+      defaultValue: this.data.display_order,
+      templateOptions: {
+        type: 'number',
+        label: 'Display Order',
+        placeholder: 'Title of the workflow spec category',
+        description: 'This is a human-readable title for the workflow spec category,' +
+          'which should be easy for others to read and remember.',
+        required: true,
+      },
+    },
   ];
 
   constructor(
     public dialogRef: MatDialogRef<WorkflowSpecCategoryDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: WorkflowSpecDialogData,
+    @Inject(MAT_DIALOG_DATA) public data: WorkflowSpecCategoryDialogData,
   ) {
   }
 

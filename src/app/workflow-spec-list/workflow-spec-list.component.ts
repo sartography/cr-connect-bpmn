@@ -177,6 +177,7 @@ export class WorkflowSpecListComponent implements OnInit {
         id: data.id,
         name: data.name,
         display_name: data.display_name,
+        display_order: data.display_order,
       };
 
       if (isNumberDefined(catId)) {
