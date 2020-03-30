@@ -91,6 +91,7 @@ export class WorkflowSpecListComponent implements OnInit {
         id: this.selectedCat ? this.selectedCat.id : null,
         name: this.selectedCat ? this.selectedCat.name || this.selectedCat.id : '',
         display_name: this.selectedCat ? this.selectedCat.display_name : '',
+        display_order: this.selectedCat ? this.selectedCat.display_order : null,
       },
     });
 
@@ -133,7 +134,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _loadWorkflowSpecCategories() {
     this.api.getWorkflowSpecCategoryList().subscribe(cats => {
-      this.categories = cats;
+      this.categories = cats.sort((a, b) => (a.display_order < b.display_order) ? -1 : 1);
       this.workflowSpecsByCategory = [{
         id: null,
         name: 'none',
@@ -249,12 +250,12 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   onWorkflowUpdated(spec: WorkflowSpec) {
-    if (spec.is_status) {
-      // Mark all other specs as not is_status
+    if (spec.is_master_spec) {
+      // Mark all other specs as not is_master_spec
       let numUpdated = this.workflowSpecs.length - 1;
       this.workflowSpecs.forEach(wfs => {
         if (wfs.id !== spec.id) {
-          wfs.is_status = false;
+          wfs.is_master_spec = false;
           this.api.updateWorkflowSpecification(wfs.id, wfs).subscribe(() => {
             numUpdated--;
             if (numUpdated === 0) {

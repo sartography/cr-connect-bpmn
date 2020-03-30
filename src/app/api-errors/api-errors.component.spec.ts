@@ -22,11 +22,14 @@ describe('ApiErrorsComponent', () => {
         {
           provide: MatBottomSheetRef,
           useValue: {
-            close: (dialogResult: any) => {
+            dismiss: (dialogResult: any) => {
             }
           }
         },
-        {provide: MAT_BOTTOM_SHEET_DATA, useValue: []},
+        {provide: MAT_BOTTOM_SHEET_DATA, useValue: {apiErrors: [{
+          status_code: 400,
+          code: 'error_code'
+        }]}},
       ]
 
     })
@@ -41,5 +44,14 @@ describe('ApiErrorsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+    expect(component.data).toBeTruthy();
+    expect(component.apiErrors).toBeTruthy();
   });
+
+  it('should dismiss', () => {
+    const dismissSpy = spyOn((component as any)._bottomSheetRef, 'dismiss').and.stub();
+    component.dismiss(new MouseEvent('click'));
+    expect(dismissSpy).toHaveBeenCalled();
+  });
+
 });

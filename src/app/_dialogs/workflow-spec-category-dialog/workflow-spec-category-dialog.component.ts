@@ -57,9 +57,8 @@ export class WorkflowSpecCategoryDialogComponent {
       templateOptions: {
         type: 'number',
         label: 'Display Order',
-        placeholder: 'Title of the workflow spec category',
-        description: 'This is a human-readable title for the workflow spec category,' +
-          'which should be easy for others to read and remember.',
+        placeholder: 'Order in which category will be displayed',
+        description: 'Sort order that the category should appear in. Lower numbers will appear first.',
         required: true,
       },
     },

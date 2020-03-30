@@ -149,7 +149,7 @@ describe('WorkflowSpecListComponent', () => {
     _updateWorkflowSpecSpy.calls.reset();
 
     component.selectedSpec = mockWorkflowSpec0;
-    const modifiedData: WorkflowSpecDialogData = createClone()(mockWorkflowSpec0);
+    const modifiedData: WorkflowSpecDialogData = createClone({circles: true})(mockWorkflowSpec0);
     modifiedData.display_name = 'Modified';
     (component as any)._upsertWorkflowSpecification(modifiedData);
     expect(_addWorkflowSpecSpy).not.toHaveBeenCalled();
@@ -245,7 +245,7 @@ describe('WorkflowSpecListComponent', () => {
     _updateWorkflowSpecCategorySpy.calls.reset();
 
     component.selectedCat = mockWorkflowSpecCategory0;
-    const modifiedData: WorkflowSpecCategoryDialogData = createClone()(mockWorkflowSpecCategory0);
+    const modifiedData: WorkflowSpecCategoryDialogData = createClone({circles: true})(mockWorkflowSpecCategory0);
     modifiedData.display_name = 'Modified';
     (component as any)._upsertWorkflowSpecCategory(modifiedData);
     expect(_addWorkflowSpecCategorySpy).not.toHaveBeenCalled();

@@ -20,7 +20,7 @@ export class WorkflowSpecCardComponent implements OnInit {
   }
 
   makeMasterStatus() {
-    this.workflowSpec.is_status = true;
+    this.workflowSpec.is_master_spec = true;
     this.api.updateWorkflowSpecification(this.workflowSpec.id, this.workflowSpec).subscribe(spec => {
       this.workflowUpdated.emit(spec);
     });
