@@ -1,5 +1,6 @@
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef} from '@angular/material/bottom-sheet';
 import {MatCardModule} from '@angular/material/card';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatIconModule} from '@angular/material/icon';
@@ -25,6 +26,7 @@ import {
   WorkflowSpecDialogData
 } from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
+import {ApiErrorsComponent} from '../api-errors/api-errors.component';
 import {FileListComponent} from '../file-list/file-list.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list.component';
 
@@ -38,6 +40,7 @@ describe('WorkflowSpecListComponent', () => {
       imports: [
         BrowserAnimationsModule,
         HttpClientTestingModule,
+        MatBottomSheetModule,
         MatCardModule,
         MatDialogModule,
         MatIconModule,
@@ -46,6 +49,7 @@ describe('WorkflowSpecListComponent', () => {
         RouterTestingModule,
       ],
       declarations: [
+        ApiErrorsComponent,
         DeleteWorkflowSpecDialogComponent,
         FileListComponent,
         GetIconCodePipe,
@@ -62,10 +66,19 @@ describe('WorkflowSpecListComponent', () => {
           }
         },
         {provide: MAT_DIALOG_DATA, useValue: []},
+        {
+          provide: MatBottomSheetRef,
+          useValue: {
+            dismiss: () => {
+            },
+          }
+        },
+        {provide: MAT_BOTTOM_SHEET_DATA, useValue: []},
       ]
     }).overrideModule(BrowserDynamicTestingModule, {
       set: {
         entryComponents: [
+          ApiErrorsComponent,
           DeleteWorkflowSpecDialogComponent,
         ]
       }
@@ -105,7 +118,7 @@ describe('WorkflowSpecListComponent', () => {
       name: '',
       display_name: '',
       description: '',
-      workflow_spec_category_id: 0,
+      category_id: 0,
     };
 
     const _upsertWorkflowSpecificationSpy = spyOn((component as any), '_upsertWorkflowSpecification')

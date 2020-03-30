@@ -32,7 +32,10 @@
         </app-workflow-spec-card>
         <ng-template #actionButtons>
           <div class="workflow-spec-actions">
-            <button mat-mini-fab color="primary" (click)="editWorkflowSpec(wfs)">
+            <button mat-mini-fab title="Check for errors in this workflow specification" color="accent" (click)="validateWorkflowSpec(wfs)">
+              <mat-icon>verified_user</mat-icon>
+            </button>
+            <button mat-mini-fab title="Edit this workflow specification" color="primary" (click)="editWorkflowSpec(wfs)">
               <mat-icon>edit</mat-icon>
             </button>
             <button mat-icon-button title="Delete this workflow specification" color="warn" (click)="confirmDeleteWorkflowSpec(wfs)">

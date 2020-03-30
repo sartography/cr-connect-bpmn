@@ -1,0 +1,7 @@
+@import "../../config";
+
+::ng-deep mat-list-item.api-error, mat-list-item.api-error:hover {
+  border-left: 4px solid $brand-warning;
+  background-color: $brand-warning-light;
+  cursor: default;
+}

@@ -2,6 +2,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {Injectable, NgModule} from '@angular/core';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatDialogModule} from '@angular/material/dialog';
@@ -47,6 +48,7 @@ import {SignInComponent} from './sign-in/sign-in.component';
 import {SignOutComponent} from './sign-out/sign-out.component';
 import {WorkflowSpecCardComponent} from './workflow-spec-card/workflow-spec-card.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
+import { ApiErrorsComponent } from './api-errors/api-errors.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -78,6 +80,7 @@ export class ThisEnvironment implements AppEnvironment {
     WorkflowSpecListComponent,
     HomeComponent,
     WorkflowSpecCardComponent,
+    ApiErrorsComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -86,6 +89,7 @@ export class ThisEnvironment implements AppEnvironment {
     FormlyModule,
     FormsModule,
     HttpClientModule,
+    MatBottomSheetModule,
     MatButtonModule,
     MatCardModule,
     MatDialogModule,
@@ -106,6 +110,7 @@ export class ThisEnvironment implements AppEnvironment {
   ],
   bootstrap: [AppComponent],
   entryComponents: [
+    ApiErrorsComponent,
     DeleteFileDialogComponent,
     DeleteWorkflowSpecDialogComponent,
     DeleteWorkflowSpecCategoryDialogComponent,

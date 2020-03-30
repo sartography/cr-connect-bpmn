@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {MatBottomSheet} from '@angular/material/bottom-sheet';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ApiService, isNumberDefined, WorkflowSpec, WorkflowSpecCategory} from 'sartography-workflow-lib';
@@ -12,6 +13,7 @@ import {
   WorkflowSpecCategoryDialogData,
   WorkflowSpecDialogData
 } from '../_interfaces/dialog-data';
+import {ApiErrorsComponent} from '../api-errors/api-errors.component';
 
 interface WorklflowSpecCategoryGroup {
   id: number;
@@ -35,6 +37,7 @@ export class WorkflowSpecListComponent implements OnInit {
   constructor(
     private api: ApiService,
     private snackBar: MatSnackBar,
+    private bottomSheet: MatBottomSheet,
     public dialog: MatDialog
   ) {
     this._loadWorkflowSpecCategories();
@@ -43,20 +46,31 @@ export class WorkflowSpecListComponent implements OnInit {
   ngOnInit() {
   }
 
+  validateWorkflowSpec(wfs: WorkflowSpec) {
+    this.api.validateWorkflowSpecification(wfs.id).subscribe(apiErrors => {
+      if (apiErrors && apiErrors.length > 0) {
+          this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors: apiErrors}});
+      } else {
+        this.snackBar.open('Workflow specification is valid!', 'Ok', {duration: 5000});
+      }
+    });
+  }
+
   editWorkflowSpec(selectedSpec?: WorkflowSpec) {
     this.selectedSpec = selectedSpec;
+    const dialogData: WorkflowSpecDialogData = {
+        id: this.selectedSpec ? this.selectedSpec.id : '',
+        name: this.selectedSpec ? this.selectedSpec.name || this.selectedSpec.id : '',
+        display_name: this.selectedSpec ? this.selectedSpec.display_name : '',
+        description: this.selectedSpec ? this.selectedSpec.description : '',
+        category_id: this.selectedSpec ? this.selectedSpec.category_id : null,
+    };
 
     // Open new filename/workflow spec dialog
     const dialogRef = this.dialog.open(WorkflowSpecDialogComponent, {
       height: '65vh',
       width: '50vw',
-      data: {
-        id: this.selectedSpec ? this.selectedSpec.id : '',
-        name: this.selectedSpec ? this.selectedSpec.name || this.selectedSpec.id : '',
-        display_name: this.selectedSpec ? this.selectedSpec.display_name : '',
-        description: this.selectedSpec ? this.selectedSpec.description : '',
-        workflow_spec_category_id: this.selectedSpec ? this.selectedSpec.workflow_spec_category_id : '',
-      },
+      data: dialogData,
     });
 
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
@@ -140,7 +154,7 @@ export class WorkflowSpecListComponent implements OnInit {
     this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
       this.workflowSpecsByCategory.forEach(cat => {
-        cat.workflow_specs = this.workflowSpecs.filter(wf => wf.workflow_spec_category_id === cat.id);
+        cat.workflow_specs = this.workflowSpecs.filter(wf => wf.category_id === cat.id);
       });
     });
   }
@@ -156,7 +170,7 @@ export class WorkflowSpecListComponent implements OnInit {
         name: data.name,
         display_name: data.display_name,
         description: data.description,
-        workflow_spec_category_id: data.workflow_spec_category_id,
+        category_id: data.category_id,
       };
 
       if (specId) {
