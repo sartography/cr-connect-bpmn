@@ -112,8 +112,6 @@ export class FileListComponent implements OnInit {
           workflow_spec_id: this.workflowSpec.id,
         };
 
-        console.log('data.fileMetaId', data.fileMetaId);
-        console.log('isNumberDefined(data.fileMetaId)', isNumberDefined(data.fileMetaId));
         if (isNumberDefined(data.fileMetaId)) {
           // Update existing file
           this.api.updateFileData(newFileMeta).subscribe(() => {

@@ -1,5 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef} from '@angular/material/bottom-sheet';
+import {MatIconModule} from '@angular/material/icon';
+import {MatListModule} from '@angular/material/list';
 
 import { ApiErrorsComponent } from './api-errors.component';
 
@@ -9,7 +11,13 @@ describe('ApiErrorsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ApiErrorsComponent ],
+      declarations: [
+        ApiErrorsComponent
+      ],
+      imports: [
+        MatIconModule,
+        MatListModule,
+      ],
       providers: [
         {
           provide: MatBottomSheetRef,
