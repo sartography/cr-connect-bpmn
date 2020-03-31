@@ -24,7 +24,7 @@ describe('workspace-project App', () => {
     const fileMetaId = await el.getAttribute('data-file-meta-id');
     const expectedRoute = `/modeler/${specId}/${fileMetaId}`;
 
-    page.clickAndExpectRoute('app-file-list mat-list-item', expectedRoute);
+    page.clickAndExpectRoute('app-file-list mat-list-item h4', expectedRoute);
     expect(page.getElements('.diagram-container').count()).toBeGreaterThan(0);
   });
 
