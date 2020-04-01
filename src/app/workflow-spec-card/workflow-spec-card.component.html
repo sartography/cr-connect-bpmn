@@ -5,17 +5,13 @@
       <div class="action-buttons">
         <ng-container *ngTemplateOutlet="actionButtons"></ng-container>
       </div>
-      <span fxFlex></span>
-      <ng-container>
-        <button (click)="makeMasterStatus()" *ngIf="!workflowSpec.is_master_spec" mat-button color="accent">
-          <mat-icon>radio_button_unchecked</mat-icon>
-          Master status spec
-        </button>
-        <button *ngIf="workflowSpec.is_master_spec" (click)="makeMasterStatus()" mat-button color="accent">
-          <mat-icon>radio_button_checked</mat-icon>
-          Master status spec
-        </button>
-      </ng-container>
+      <div
+        *ngIf="workflowSpec.is_master_spec"
+        class="master-status-label"
+        matTooltip="This workflow specification controls the availability of the other workflow specifications"
+      >
+        Master status spec
+      </div>
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>

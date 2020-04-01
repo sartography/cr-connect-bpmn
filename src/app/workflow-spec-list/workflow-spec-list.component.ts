@@ -30,6 +30,7 @@ interface WorklflowSpecCategoryGroup {
 export class WorkflowSpecListComponent implements OnInit {
   workflowSpecs: WorkflowSpec[] = [];
   selectedSpec: WorkflowSpec;
+  masterStatusSpec: WorkflowSpec;
   selectedCat: WorkflowSpecCategory;
   workflowSpecsByCategory: WorklflowSpecCategoryGroup[] = [];
   categories: WorkflowSpecCategory[];
@@ -155,7 +156,13 @@ export class WorkflowSpecListComponent implements OnInit {
     this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
       this.workflowSpecsByCategory.forEach(cat => {
-        cat.workflow_specs = this.workflowSpecs.filter(wf => wf.category_id === cat.id);
+        cat.workflow_specs = this.workflowSpecs.filter(wf => {
+          if (wf.is_master_spec) {
+            this.masterStatusSpec = wf;
+          } else {
+            return wf.category_id === cat.id;
+          }
+        });
       });
     });
   }
