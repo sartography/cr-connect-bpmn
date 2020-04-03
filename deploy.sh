@@ -1,7 +1,11 @@
 #!/bin/bash
 
+# Install AWS CLI
+pip install --user awscli;
+export PATH=$PATH:$HOME/.local/bin;
+
 # Build and push Docker image to Docker Hub
-echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin;
 docker build --no-cache -t sartography/cr-connect-bpmn:latest . || exit 1;
 docker push sartography/cr-connect-bpmn:latest || exit 1;
 

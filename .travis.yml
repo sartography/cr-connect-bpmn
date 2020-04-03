@@ -22,10 +22,6 @@ addons:
 script:
   - npm run ci
 
-after_success:
-  - pip install --user awscli
-  - export PATH=$PATH:$HOME/.local/bin
-
 deploy:
   provider: script
   script: bash ./deploy.sh
