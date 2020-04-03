@@ -19,11 +19,19 @@ addons:
 script:
   - npm run ci
 
-before_deploy:
-  - docker build -t sartography/cr-connect-bpmn .
+after_success:
+  - pip install --user awscli
+  - export PATH=$PATH:$HOME/.local/bin
 
 deploy:
   provider: script
-  script: bash ./docker/docker_push.sh
+  script: bash ./deploy.sh
   on:
     branch: master
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+    recipients:
+      - dan@sartography.com
