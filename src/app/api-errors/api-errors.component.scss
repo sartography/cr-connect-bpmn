@@ -4,4 +4,13 @@
   border-left: 4px solid $brand-warning;
   background-color: $brand-warning-light;
   cursor: default;
+
+  .mat-line {
+    text-overflow: initial;
+    height: auto;
+
+    code {
+      white-space: normal;
+    }
+  }
 }
