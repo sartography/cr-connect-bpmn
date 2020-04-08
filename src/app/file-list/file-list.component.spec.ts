@@ -1,3 +1,4 @@
+import {HttpHeaders} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
@@ -91,8 +92,12 @@ describe('FileListComponent', () => {
 
     fmsNoFiles.forEach((fm, i) => {
       const fReq = httpMock.expectOne(`apiRoot/file/${fm.id}/data`);
+      const mockHeaders = new HttpHeaders()
+        .append('last-modified', justFiles[i].lastModified.toString())
+        .append('content-type', justFiles[i].type);
+      fReq.flush(new ArrayBuffer(8), {headers: mockHeaders});
+
       expect(fReq.request.method).toEqual('GET');
-      fReq.flush(justFiles[i]);
       expect(component.fileMetas[i].file).toBeTruthy();
     });
   });
@@ -186,11 +191,18 @@ describe('FileListComponent', () => {
     mockDocMeta.type = FileType.DOCX;
     component.editFileMeta(mockDocMeta);
 
-    const fakeBlob = new Blob(['I am a fake blob. A real blob says "blorp blorp blorp."']);
-    const expectedFile = new File([fakeBlob], mockDocMeta.name, {type: mockDocMeta.content_type});
+    const expectedFile = new File([], mockDocMeta.name, {
+      type: mockDocMeta.content_type,
+      lastModified: mockDocMeta.file.lastModified
+    });
     const fReq = httpMock.expectOne(`apiRoot/file/${mockDocMeta.id}/data`);
+
+    const mockHeaders = new HttpHeaders()
+      .append('last-modified', expectedFile.lastModified.toString())
+      .append('content-type', mockDocMeta.content_type);
     expect(fReq.request.method).toEqual('GET');
-    fReq.flush(fakeBlob);
+    fReq.flush(new ArrayBuffer(8), {headers: mockHeaders});
+    expect(fReq.request.method).toEqual('GET');
     expect(_openFileDialogSpy).toHaveBeenCalledWith(mockDocMeta, expectedFile);
 
     _openFileDialogSpy.calls.reset();

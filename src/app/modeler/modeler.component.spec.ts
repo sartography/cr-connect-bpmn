@@ -1,12 +1,14 @@
-import {HttpErrorResponse} from '@angular/common/http';
+import {HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {DebugNode} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef} from '@angular/material/bottom-sheet';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatToolbarModule} from '@angular/material/toolbar';
@@ -56,10 +58,12 @@ describe('ModelerComponent', () => {
         BrowserAnimationsModule,
         FormsModule,
         HttpClientTestingModule,
+        MatBottomSheetModule,
         MatDialogModule,
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
+        MatListModule,
         MatMenuModule,
         MatSnackBarModule,
         MatToolbarModule,
@@ -80,6 +84,14 @@ describe('ModelerComponent', () => {
         },
         {provide: MAT_DIALOG_DATA, useValue: []},
         {
+          provide: MatBottomSheetRef,
+          useValue: {
+            dismiss: () => {
+            },
+          }
+        },
+        {provide: MAT_BOTTOM_SHEET_DATA, useValue: []},
+        {
           provide: ActivatedRoute, useValue: {
             queryParams: of(convertToParamMap({
               action: ''
@@ -99,8 +111,10 @@ describe('ModelerComponent', () => {
           OpenFileDialogComponent,
         ]
       }
-    })
-      .compileComponents();
+    }).compileComponents();
+  }));
+
+  beforeEach(() => {
     httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(ModelerComponent);
     component = fixture.debugElement.componentInstance;
@@ -118,10 +132,13 @@ describe('ModelerComponent', () => {
 
     mockFileMetas.forEach((fm, i) => {
       const fmReq = httpMock.expectOne(`apiRoot/file/${fm.id}/data`);
+      const mockHeaders = new HttpHeaders()
+        .append('last-modified', mockFileMetas[i].file.lastModified.toString())
+        .append('content-type', mockFileMetas[i].content_type);
       expect(fmReq.request.method).toEqual('GET');
-      fmReq.flush(mockFileMetas[i].file);
+      fmReq.flush(new ArrayBuffer(8), {headers: mockHeaders});
     });
-  }));
+  });
 
   afterEach(() => {
     httpMock.verify();
@@ -374,12 +391,20 @@ describe('ModelerComponent', () => {
   });
 
   it('should load files from the database', () => {
+    const mockHeaders = new HttpHeaders()
+      .append('last-modified', mockFileMeta0.file.lastModified.toString())
+      .append('content-type', mockFileMeta0.content_type);
+    const mockResponse = new HttpResponse<ArrayBuffer>({
+      body: new ArrayBuffer(8),
+      headers: mockHeaders,
+    });
+
     const getWorkflowSpecSpy = spyOn(component.api, 'getWorkflowSpecification')
       .and.returnValue(of(mockWorkflowSpec0));
     const getFileMetasSpy = spyOn(component.api, 'getFileMetas')
       .and.returnValue(of(mockFileMetas));
     const getFileDataSpy = spyOn(component.api, 'getFileData')
-      .and.returnValue(of(mockFileMeta0));
+      .and.returnValue(of(mockResponse));
     component.loadFilesFromDb();
 
     expect(getWorkflowSpecSpy).toHaveBeenCalled();
@@ -423,6 +448,12 @@ describe('ModelerComponent', () => {
   it('should get a file metadata display string', () => {
     expect(component.getFileMetaDisplayString(undefined)).toEqual('Loading...');
     const expectedString = 'one-fish.bpmn - v1.0 (Jan 23, 2020)';
+
+    const file = new File([], 'one-fish.bpmn', {
+      type: 'text/xml',
+      lastModified: new Date('2020-01-23T12:34:12.345Z').getTime(),
+    });
+    mockFileMeta0.file = file;
     expect(component.getFileMetaDisplayString(mockFileMeta0)).toEqual(expectedString);
   });
 
@@ -441,6 +472,11 @@ describe('ModelerComponent', () => {
           Version: 1.0
       `;
 
+    const file = new File([], 'one-fish.bpmn', {
+      type: 'text/xml',
+      lastModified: new Date('2020-01-23T12:34:12.345Z').getTime(),
+    });
+    mockFileMeta0.file = file;
     expect(component.getFileMetaTooltipText(mockFileMeta0)).toEqual(expectedString);
   });
 

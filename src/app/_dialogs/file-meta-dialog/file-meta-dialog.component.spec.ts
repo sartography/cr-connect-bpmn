@@ -4,6 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {FormlyModule} from '@ngx-formly/core';
+import {FormlyMaterialModule} from '@ngx-formly/material';
 import createClone from 'rfdc';
 import {FileType} from 'sartography-workflow-lib';
 import {FileMetaDialogData} from '../../_interfaces/dialog-data';
@@ -19,6 +21,8 @@ describe('EditFileMetaDialogComponent', () => {
       imports: [
         BrowserAnimationsModule,
         FormsModule,
+        FormlyModule.forRoot(),
+        FormlyMaterialModule,
         MatDialogModule,
         MatFormFieldModule,
         MatInputModule,

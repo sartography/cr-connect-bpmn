@@ -1,5 +1,6 @@
 import {DatePipe} from '@angular/common';
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {MatBottomSheet} from '@angular/material/bottom-sheet';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ActivatedRoute, Params, Router} from '@angular/router';
@@ -9,6 +10,7 @@ import {
   FileType,
   getDiagramTypeFromXml,
   isNumberDefined,
+  newFileFromResponse,
   WorkflowSpec
 } from 'sartography-workflow-lib';
 import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
@@ -17,6 +19,7 @@ import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-di
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData} from '../_interfaces/dialog-data';
 import {ImportEvent} from '../_interfaces/import-event';
+import {ApiErrorsComponent} from '../api-errors/api-errors.component';
 import {DiagramComponent} from '../diagram/diagram.component';
 
 @Component({
@@ -46,6 +49,7 @@ export class ModelerComponent implements AfterViewInit {
 
   constructor(
     private api: ApiService,
+    private bottomSheet: MatBottomSheet,
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
     private route: ActivatedRoute,
@@ -76,11 +80,11 @@ export class ModelerComponent implements AfterViewInit {
     } = event;
 
     if (type === 'success') {
-      console.log(`Rendered diagram (${warnings.length} warnings)`);
+      this.snackBar.open(`Rendered diagram with ${warnings.length} warnings`, 'Ok', {duration: 5000});
     }
 
     if (type === 'error') {
-      console.error('Failed to render diagram', error);
+      this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors: [error]}});
     }
 
     this.importError = error;
@@ -120,7 +124,7 @@ export class ModelerComponent implements AfterViewInit {
     this.xml = (event.target as FileReader).result.toString();
     const diagramType = getDiagramTypeFromXml(this.xml);
     this.diagramComponent.openDiagram(this.xml, diagramType);
-  }
+  };
 
   readFile(file: File) {
     // FileReader must be instantiated this way so unit test can spy on it.
@@ -204,9 +208,13 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   getFileMetaDisplayString(fileMeta: FileMeta) {
+
+    console.log(fileMeta);
     if (fileMeta) {
-      const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
-      return `${fileMeta.name} - v${fileMeta.version} (${lastUpdated})`;
+      const lastUpdated = new DatePipe('en-us').transform(fileMeta.file.lastModified);
+      return fileMeta.name +
+        (fileMeta.latest_version ? ` - v${fileMeta.latest_version}` : '') +
+        (lastUpdated ? ` (${lastUpdated})` : '');
     } else {
       return 'Loading...';
     }
@@ -216,7 +224,11 @@ export class ModelerComponent implements AfterViewInit {
     const spec = this.workflowSpec;
 
     if (spec) {
-      const lastUpdated = new DatePipe('en-us').transform(fileMeta.last_updated);
+      console.log('fileMeta.file.lastModified', fileMeta.file.lastModified);
+      const lastUpdatedDate = new Date(fileMeta.file.lastModified);
+
+      console.log('lastUpdatedDate', lastUpdatedDate);
+      const lastUpdated = new DatePipe('en-us').transform(lastUpdatedDate);
       return `
           Workflow spec ID: ${spec.id}
           Workflow name: ${spec.name}
@@ -224,7 +236,7 @@ export class ModelerComponent implements AfterViewInit {
           Description: ${spec.description}
           File name: ${fileMeta.name}
           Last updated: ${lastUpdated}
-          Version: ${fileMeta.version}
+          Version: ${fileMeta.latest_version}
       `;
     } else {
       return 'Loading...';
@@ -237,10 +249,10 @@ export class ModelerComponent implements AfterViewInit {
       this.api.getFileMetas({workflow_spec_id: wfs.id}).subscribe(files => {
         this.bpmnFiles = [];
         files.forEach(f => {
-          this.api.getFileData(f.id).subscribe(d => {
+          this.api.getFileData(f.id).subscribe(response => {
             if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
               f.content_type = 'text/xml';
-              f.file = new File([d], f.name, {type: f.content_type});
+              f.file = newFileFromResponse(f, response);
               this.bpmnFiles.push(f);
 
               if (f.id === this.fileMetaId) {

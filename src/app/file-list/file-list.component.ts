@@ -8,7 +8,7 @@ import {
   FileParams,
   FileType,
   getFileType,
-  isNumberDefined,
+  isNumberDefined, newFileFromResponse,
   WorkflowSpec
 } from 'sartography-workflow-lib';
 import {DeleteFileDialogComponent} from '../_dialogs/delete-file-dialog/delete-file-dialog.component';
@@ -50,8 +50,8 @@ export class FileListComponent implements OnInit {
 
   editFileMeta(fm: FileMeta) {
     if (fm && isNumberDefined(fm.id)) {
-      this.api.getFileData(fm.id).subscribe(fileData => {
-        const file = new File([fileData], fm.name, {type: fm.content_type});
+      this.api.getFileData(fm.id).subscribe(response => {
+        const file = newFileFromResponse(fm, response);
         this._openFileDialog(fm, file);
       });
     } else {
@@ -92,7 +92,6 @@ export class FileListComponent implements OnInit {
   }
 
   private _openFileDialog(fm?: FileMeta, file?: File) {
-    console.log('fm.id', fm && fm.id);
     const dialogData: OpenFileDialogData = {
       fileMetaId: fm ? fm.id : undefined,
       file: file,
@@ -148,13 +147,15 @@ export class FileListComponent implements OnInit {
 
   private _loadFileData() {
     this.fileMetas.forEach(fm => {
-      this.api.getFileData(fm.id).subscribe((fd: File) => fm.file = fd);
+      this.api.getFileData(fm.id).subscribe(response => {
+        fm.file = newFileFromResponse(fm, response);
+      });
     });
   }
 
   downloadFile(fm: FileMeta) {
-    this.api.getFileData(fm.id).subscribe(fileBlob => {
-      const blob = new Blob([fileBlob], {type: fm.content_type});
+    this.api.getFileData(fm.id).subscribe(response => {
+      const blob = new Blob([response.body], {type: fm.content_type});
       fileSaver.saveAs(blob, fm.name);
     });
   }
