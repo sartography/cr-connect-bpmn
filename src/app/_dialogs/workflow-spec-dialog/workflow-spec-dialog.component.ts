@@ -90,6 +90,18 @@ export class WorkflowSpecDialogComponent {
             required: true,
           },
         },
+        {
+          key: 'display_order',
+          type: 'input',
+          defaultValue: this.data.display_order,
+          templateOptions: {
+            type: 'number',
+            label: 'Display Order',
+            placeholder: 'Order in which spec will be displayed',
+            description: 'Sort order that the spec should appear in within its category. Lower numbers will appear first.',
+            required: true,
+          },
+        },
       ];
     });
   }

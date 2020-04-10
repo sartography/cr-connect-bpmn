@@ -2,7 +2,15 @@ import {Component, OnInit} from '@angular/core';
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ApiService, isNumberDefined, WorkflowSpec, WorkflowSpecCategory} from 'sartography-workflow-lib';
+import createClone from 'rfdc';
+import {
+  ApiService,
+  isNumberDefined,
+  moveArrayElementDown,
+  moveArrayElementUp,
+  WorkflowSpec,
+  WorkflowSpecCategory
+} from 'sartography-workflow-lib';
 import {DeleteWorkflowSpecCategoryDialogComponent} from '../_dialogs/delete-workflow-spec-category-dialog/delete-workflow-spec-category-dialog.component';
 import {DeleteWorkflowSpecDialogComponent} from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
 import {WorkflowSpecCategoryDialogComponent} from '../_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
@@ -15,11 +23,13 @@ import {
 } from '../_interfaces/dialog-data';
 import {ApiErrorsComponent} from '../api-errors/api-errors.component';
 
-interface WorklflowSpecCategoryGroup {
+
+interface WorkflowSpecCategoryGroup {
   id: number;
   name: string;
   display_name: string;
   workflow_specs?: WorkflowSpec[];
+  display_order: number;
 }
 
 @Component({
@@ -32,7 +42,7 @@ export class WorkflowSpecListComponent implements OnInit {
   selectedSpec: WorkflowSpec;
   masterStatusSpec: WorkflowSpec;
   selectedCat: WorkflowSpecCategory;
-  workflowSpecsByCategory: WorklflowSpecCategoryGroup[] = [];
+  workflowSpecsByCategory: WorkflowSpecCategoryGroup[] = [];
   categories: WorkflowSpecCategory[];
 
   constructor(
@@ -50,7 +60,7 @@ export class WorkflowSpecListComponent implements OnInit {
   validateWorkflowSpec(wfs: WorkflowSpec) {
     this.api.validateWorkflowSpecification(wfs.id).subscribe(apiErrors => {
       if (apiErrors && apiErrors.length > 0) {
-          this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors: apiErrors}});
+        this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors: apiErrors}});
       } else {
         this.snackBar.open('Workflow specification is valid!', 'Ok', {duration: 5000});
       }
@@ -59,12 +69,14 @@ export class WorkflowSpecListComponent implements OnInit {
 
   editWorkflowSpec(selectedSpec?: WorkflowSpec) {
     this.selectedSpec = selectedSpec;
+    const hasDisplayOrder = this.selectedSpec && isNumberDefined(this.selectedSpec.display_order);
     const dialogData: WorkflowSpecDialogData = {
-        id: this.selectedSpec ? this.selectedSpec.id : '',
-        name: this.selectedSpec ? this.selectedSpec.name || this.selectedSpec.id : '',
-        display_name: this.selectedSpec ? this.selectedSpec.display_name : '',
-        description: this.selectedSpec ? this.selectedSpec.description : '',
-        category_id: this.selectedSpec ? this.selectedSpec.category_id : null,
+      id: this.selectedSpec ? this.selectedSpec.id : '',
+      name: this.selectedSpec ? this.selectedSpec.name || this.selectedSpec.id : '',
+      display_name: this.selectedSpec ? this.selectedSpec.display_name : '',
+      description: this.selectedSpec ? this.selectedSpec.description : '',
+      category_id: this.selectedSpec ? this.selectedSpec.category_id : null,
+      display_order: hasDisplayOrder ? this.selectedSpec.display_order : 0,
     };
 
     // Open new filename/workflow spec dialog
@@ -81,7 +93,7 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  editWorkflowSpecCategory(selectedCat?: WorkflowSpecCategory) {
+  editWorkflowSpecCategory(selectedCat?: WorkflowSpecCategoryGroup) {
     this.selectedCat = selectedCat;
 
     // Open new filename/workflow spec dialog
@@ -133,14 +145,95 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
+  onWorkflowUpdated(spec: WorkflowSpec) {
+    if (spec.is_master_spec) {
+      // Mark all other specs as not is_master_spec
+      let numUpdated = this.workflowSpecs.length - 1;
+      this.workflowSpecs.forEach(wfs => {
+        if (wfs.id !== spec.id) {
+          wfs.is_master_spec = false;
+          this.api.updateWorkflowSpecification(wfs.id, wfs).subscribe(() => {
+            numUpdated--;
+            if (numUpdated === 0) {
+              this._loadWorkflowSpecCategories();
+            }
+          });
+        }
+      });
+    }
+    this._loadWorkflowSpecCategories();
+  }
+
+  editCategoryDisplayOrder(catId: number, direction: number, cats: WorkflowSpecCategoryGroup[]) {
+    // Remove the fake category with category-less specs
+    const realCats = cats.filter(cat => isNumberDefined(cat.id));
+    const i = realCats.findIndex(spec => spec.id === catId);
+    if (i !== -1) {
+      if (direction === 1) {
+        moveArrayElementDown(realCats, i);
+      } else if (direction === -1) {
+        moveArrayElementUp(realCats, i);
+      }
+    } else {
+      this.snackBar.open('Category not found. Reload the page and try again.');
+      return;
+    }
+
+    let numUpdated = 0;
+    realCats.forEach((cat, j) => {
+      if (isNumberDefined(cat.id)) {
+        const newCat: WorkflowSpecCategoryGroup = createClone()(cat);
+        delete newCat.workflow_specs;
+
+        newCat.display_order = j;
+        this.api.updateWorkflowSpecCategory(cat.id, newCat as WorkflowSpecCategory).subscribe(() => {
+          numUpdated++;
+          if (numUpdated === realCats.length) {
+            this._loadWorkflowSpecCategories();
+          }
+        });
+      }
+    });
+  }
+
+  editSpecDisplayOrder(specId: string, direction: number, specs: WorkflowSpec[]) {
+    const i = specs.findIndex(spec => spec.id === specId);
+    if (i !== -1) {
+      if (direction === 1) {
+        moveArrayElementDown(specs, i);
+      } else if (direction === -1) {
+        moveArrayElementUp(specs, i);
+      }
+    } else {
+      this.snackBar.open('Spec not found. Reload the page and try again.');
+      return;
+    }
+
+    let numUpdated = 0;
+    specs.forEach((spec, j) => {
+      spec.display_order = j;
+      this.api.updateWorkflowSpecification(spec.id, spec).subscribe(() => {
+        numUpdated++;
+        if (numUpdated === specs.length) {
+          this._loadWorkflowSpecCategories();
+        }
+      });
+    });
+  }
+
+  sortByDisplayOrder = (a, b) => (a.display_order < b.display_order) ? -1 : 1;
+
   private _loadWorkflowSpecCategories() {
     this.api.getWorkflowSpecCategoryList().subscribe(cats => {
-      this.categories = cats.sort((a, b) => (a.display_order < b.display_order) ? -1 : 1);
+      this.categories = cats.sort(this.sortByDisplayOrder);
+
+      // Add a container for specs without a category
       this.workflowSpecsByCategory = [{
         id: null,
         name: 'none',
         display_name: 'No category',
         workflow_specs: [],
+        display_order: -1, // Display it at the top
       }];
 
       this.categories.forEach((cat, i) => {
@@ -156,13 +249,15 @@ export class WorkflowSpecListComponent implements OnInit {
     this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
       this.workflowSpecsByCategory.forEach(cat => {
-        cat.workflow_specs = this.workflowSpecs.filter(wf => {
-          if (wf.is_master_spec) {
-            this.masterStatusSpec = wf;
-          } else {
-            return wf.category_id === cat.id;
-          }
-        });
+        cat.workflow_specs = this.workflowSpecs
+          .filter(wf => {
+            if (wf.is_master_spec) {
+              this.masterStatusSpec = wf;
+            } else {
+              return wf.category_id === cat.id;
+            }
+          })
+          .sort(this.sortByDisplayOrder);
       });
     });
   }
@@ -179,6 +274,7 @@ export class WorkflowSpecListComponent implements OnInit {
         display_name: data.display_name,
         description: data.description,
         category_id: data.category_id,
+        display_order: data.display_order,
       };
 
       if (specId) {
@@ -254,25 +350,6 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _displayMessage(message: string) {
     this.snackBar.open(message, 'Ok', {duration: 3000});
-  }
-
-  onWorkflowUpdated(spec: WorkflowSpec) {
-    if (spec.is_master_spec) {
-      // Mark all other specs as not is_master_spec
-      let numUpdated = this.workflowSpecs.length - 1;
-      this.workflowSpecs.forEach(wfs => {
-        if (wfs.id !== spec.id) {
-          wfs.is_master_spec = false;
-          this.api.updateWorkflowSpecification(wfs.id, wfs).subscribe(() => {
-            numUpdated--;
-            if (numUpdated === 0) {
-              this._loadWorkflowSpecCategories();
-            }
-          });
-        }
-      });
-    }
-    this._loadWorkflowSpecCategories();
   }
 }
 

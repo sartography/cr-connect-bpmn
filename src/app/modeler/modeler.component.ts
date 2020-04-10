@@ -208,8 +208,6 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   getFileMetaDisplayString(fileMeta: FileMeta) {
-
-    console.log(fileMeta);
     if (fileMeta) {
       const lastUpdated = new DatePipe('en-us').transform(fileMeta.file.lastModified);
       return fileMeta.name +
@@ -224,10 +222,7 @@ export class ModelerComponent implements AfterViewInit {
     const spec = this.workflowSpec;
 
     if (spec) {
-      console.log('fileMeta.file.lastModified', fileMeta.file.lastModified);
       const lastUpdatedDate = new Date(fileMeta.file.lastModified);
-
-      console.log('lastUpdatedDate', lastUpdatedDate);
       const lastUpdated = new DatePipe('en-us').transform(lastUpdatedDate);
       return `
           Workflow spec ID: ${spec.id}

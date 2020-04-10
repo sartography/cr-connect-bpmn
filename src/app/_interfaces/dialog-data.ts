@@ -25,6 +25,7 @@ export interface WorkflowSpecDialogData {
   display_name: string;
   description: string;
   category_id: number;
+  display_order: number;
 }
 
 export interface WorkflowSpecCategoryDialogData {

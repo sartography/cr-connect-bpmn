@@ -119,6 +119,7 @@ describe('WorkflowSpecListComponent', () => {
       display_name: '',
       description: '',
       category_id: 0,
+      display_order: 0,
     };
 
     const _upsertWorkflowSpecificationSpy = spyOn((component as any), '_upsertWorkflowSpecification')
@@ -305,5 +306,11 @@ describe('WorkflowSpecListComponent', () => {
 
     expect(_loadWorkflowSpecCategoriesSpy).toHaveBeenCalled();
   });
+
+  it('should test validateWorkflowSpec');
+  it('should test onWorkflowUpdated');
+  it('should test editCategoryDisplayOrder');
+  it('should test editSpecDisplayOrder');
+  it('should test _loadWorkflowSpecs with is_master_spec');
 
 });
