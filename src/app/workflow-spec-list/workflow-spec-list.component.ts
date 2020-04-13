@@ -24,7 +24,7 @@ import {
 import {ApiErrorsComponent} from '../api-errors/api-errors.component';
 
 
-interface WorkflowSpecCategoryGroup {
+export interface WorkflowSpecCategoryGroup {
   id: number;
   name: string;
   display_name: string;
@@ -44,6 +44,8 @@ export class WorkflowSpecListComponent implements OnInit {
   selectedCat: WorkflowSpecCategory;
   workflowSpecsByCategory: WorkflowSpecCategoryGroup[] = [];
   categories: WorkflowSpecCategory[];
+  moveUp = moveArrayElementUp;
+  moveDown = moveArrayElementDown;
 
   constructor(
     private api: ApiService,
@@ -145,80 +147,14 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  onWorkflowUpdated(spec: WorkflowSpec) {
-    if (spec.is_master_spec) {
-      // Mark all other specs as not is_master_spec
-      let numUpdated = this.workflowSpecs.length - 1;
-      this.workflowSpecs.forEach(wfs => {
-        if (wfs.id !== spec.id) {
-          wfs.is_master_spec = false;
-          this.api.updateWorkflowSpecification(wfs.id, wfs).subscribe(() => {
-            numUpdated--;
-            if (numUpdated === 0) {
-              this._loadWorkflowSpecCategories();
-            }
-          });
-        }
-      });
-    }
-    this._loadWorkflowSpecCategories();
-  }
-
   editCategoryDisplayOrder(catId: number, direction: number, cats: WorkflowSpecCategoryGroup[]) {
-    // Remove the fake category with category-less specs
-    const realCats = cats.filter(cat => isNumberDefined(cat.id));
-    const i = realCats.findIndex(spec => spec.id === catId);
-    if (i !== -1) {
-      if (direction === 1) {
-        moveArrayElementDown(realCats, i);
-      } else if (direction === -1) {
-        moveArrayElementUp(realCats, i);
-      }
-    } else {
-      this.snackBar.open('Category not found. Reload the page and try again.');
-      return;
-    }
-
-    let numUpdated = 0;
-    realCats.forEach((cat, j) => {
-      if (isNumberDefined(cat.id)) {
-        const newCat: WorkflowSpecCategoryGroup = createClone()(cat);
-        delete newCat.workflow_specs;
-
-        newCat.display_order = j;
-        this.api.updateWorkflowSpecCategory(cat.id, newCat as WorkflowSpecCategory).subscribe(() => {
-          numUpdated++;
-          if (numUpdated === realCats.length) {
-            this._loadWorkflowSpecCategories();
-          }
-        });
-      }
-    });
+    const reorderedCats = this._reorder(catId, direction, cats) as WorkflowSpecCategoryGroup[];
+    this._updateCatDisplayOrders(reorderedCats);
   }
 
   editSpecDisplayOrder(specId: string, direction: number, specs: WorkflowSpec[]) {
-    const i = specs.findIndex(spec => spec.id === specId);
-    if (i !== -1) {
-      if (direction === 1) {
-        moveArrayElementDown(specs, i);
-      } else if (direction === -1) {
-        moveArrayElementUp(specs, i);
-      }
-    } else {
-      this.snackBar.open('Spec not found. Reload the page and try again.');
-      return;
-    }
-
-    let numUpdated = 0;
-    specs.forEach((spec, j) => {
-      spec.display_order = j;
-      this.api.updateWorkflowSpecification(spec.id, spec).subscribe(() => {
-        numUpdated++;
-        if (numUpdated === specs.length) {
-          this._loadWorkflowSpecCategories();
-        }
-      });
-    });
+    const reorderedSpecs = this._reorder(specId, direction, specs) as WorkflowSpec[];
+    this._updateSpecDisplayOrders(reorderedSpecs);
   }
 
   sortByDisplayOrder = (a, b) => (a.display_order < b.display_order) ? -1 : 1;
@@ -350,6 +286,59 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _displayMessage(message: string) {
     this.snackBar.open(message, 'Ok', {duration: 3000});
+  }
+
+  private _reorder(
+    id: number|string, direction: number,
+    list: Array<WorkflowSpecCategoryGroup|WorkflowSpec>
+  ): Array<WorkflowSpecCategoryGroup|WorkflowSpec> {
+    const listClone = createClone({circles: true})(list);
+    const reorderedList = listClone.filter(item => item.id !== null && item.id !== undefined);
+    const i = reorderedList.findIndex(spec => spec.id === id);
+    if (i !== -1) {
+      if (direction === 1) {
+        this.moveDown(reorderedList, i);
+      } else if (direction === -1) {
+        this.moveUp(reorderedList, i);
+      }
+
+      return reorderedList;
+    } else {
+      this.snackBar.open('Item not found. Reload the page and try again.');
+      return [];
+    }
+  }
+
+  private _updateCatDisplayOrders(cats: WorkflowSpecCategory[]) {
+    let numUpdated = 0;
+    cats.forEach((cat, j) => {
+      if (isNumberDefined(cat.id)) {
+        const newCat: WorkflowSpecCategoryGroup = createClone({circles: true})(cat);
+        delete newCat.workflow_specs;
+
+        newCat.display_order = j;
+        this.api.updateWorkflowSpecCategory(cat.id, newCat as WorkflowSpecCategory).subscribe(updatedCat => {
+          numUpdated++;
+          if (numUpdated === cats.length) {
+            this._loadWorkflowSpecCategories();
+          }
+        });
+      }
+    });
+  }
+
+  private _updateSpecDisplayOrders(specs: WorkflowSpec[]) {
+    let numUpdated = 0;
+    specs.forEach((spec, j) => {
+      const newSpec = createClone({circles: true})(spec);
+      newSpec.display_order = j;
+      this.api.updateWorkflowSpecification(newSpec.id, newSpec).subscribe(() => {
+        numUpdated++;
+        if (numUpdated === specs.length) {
+          this._loadWorkflowSpecCategories();
+        }
+      });
+    });
   }
 }
 

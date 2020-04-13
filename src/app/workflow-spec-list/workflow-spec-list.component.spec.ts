@@ -15,9 +15,13 @@ import {
   ApiService,
   MockEnvironment,
   mockWorkflowSpec0,
-  mockWorkflowSpec1, mockWorkflowSpecCategories, mockWorkflowSpecCategory0, mockWorkflowSpecCategory1,
-  mockWorkflowSpecs
+  mockWorkflowSpec1, mockWorkflowSpec2,
+  mockWorkflowSpecCategories,
+  mockWorkflowSpecCategory0,
+  mockWorkflowSpecCategory1, mockWorkflowSpecCategory2,
+  mockWorkflowSpecs, moveArrayElementUp, WorkflowSpec, WorkflowSpecCategory
 } from 'sartography-workflow-lib';
+import {ApiError} from 'sartography-workflow-lib/lib/types/api';
 import {DeleteWorkflowSpecDialogComponent} from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
 import {
   DeleteWorkflowSpecCategoryDialogData,
@@ -28,7 +32,7 @@ import {
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {ApiErrorsComponent} from '../api-errors/api-errors.component';
 import {FileListComponent} from '../file-list/file-list.component';
-import {WorkflowSpecListComponent} from './workflow-spec-list.component';
+import {WorkflowSpecCategoryGroup, WorkflowSpecListComponent} from './workflow-spec-list.component';
 
 describe('WorkflowSpecListComponent', () => {
   let httpMock: HttpTestingController;
@@ -307,10 +311,167 @@ describe('WorkflowSpecListComponent', () => {
     expect(_loadWorkflowSpecCategoriesSpy).toHaveBeenCalled();
   });
 
-  it('should test validateWorkflowSpec');
-  it('should test onWorkflowUpdated');
-  it('should test editCategoryDisplayOrder');
-  it('should test editSpecDisplayOrder');
-  it('should test _loadWorkflowSpecs with is_master_spec');
+  it('should validate workflow spec', () => {
+    const bottomSheetSpy = spyOn((component as any).bottomSheet, 'open').and.stub();
+    const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
+
+    component.validateWorkflowSpec(mockWorkflowSpec0);
+    const validReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}/validate`);
+    expect(validReq.request.method).toEqual('GET');
+    validReq.flush(null);
+    expect(bottomSheetSpy).not.toHaveBeenCalled();
+    expect(snackBarSpy).toHaveBeenCalled();
+
+    bottomSheetSpy.calls.reset();
+    snackBarSpy.calls.reset();
+
+    component.validateWorkflowSpec(mockWorkflowSpec0);
+    const invalidReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}/validate`);
+    expect(invalidReq.request.method).toEqual('GET');
+
+    const mockError: ApiError = {
+      status_code: 42,
+      code: 'random_number',
+      message: 'Pick a number, any number',
+      task_id: 'abc123',
+      task_name: 'task_random_num',
+      file_name: 'random.bpmn',
+      tag: 'bpmn:definitions',
+    };
+    invalidReq.flush([mockError]);
+    expect(bottomSheetSpy).toHaveBeenCalled();
+    expect(snackBarSpy).not.toHaveBeenCalled();
+
+  });
+
+  it('should edit category display order', () => {
+    const _reorderSpy = spyOn((component as any), '_reorder').and.stub();
+    const _updateCatDisplayOrdersSpy = spyOn((component as any), '_updateCatDisplayOrders').and.stub();
+
+    component.editCategoryDisplayOrder(2, -1, mockWorkflowSpecCategories);
+    expect(_reorderSpy).toHaveBeenCalled();
+    expect(_updateCatDisplayOrdersSpy).toHaveBeenCalled();
+  });
+
+  it('should edit workflow spec display order', () => {
+    const _reorderSpy = spyOn((component as any), '_reorder').and.stub();
+    const _updateSpecDisplayOrdersSpy = spyOn((component as any), '_updateSpecDisplayOrders').and.stub();
+
+    component.editSpecDisplayOrder('few_things', -1, mockWorkflowSpecs);
+    expect(_reorderSpy).toHaveBeenCalled();
+    expect(_updateSpecDisplayOrdersSpy).toHaveBeenCalled();
+  });
+
+  it('should reorder categories', () => {
+    const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
+    const moveUpSpy = spyOn(component, 'moveUp').and.callThrough();
+    const moveDownSpy = spyOn(component, 'moveDown').and.callThrough();
+    const expectedCatsAfter = [ mockWorkflowSpecCategory1, mockWorkflowSpecCategory0, mockWorkflowSpecCategory2 ];
+
+    expect((component as any)._reorder(99, 1, mockWorkflowSpecCategories)).toEqual([]);
+    expect(snackBarSpy).toHaveBeenCalled();
+    expect(moveUpSpy).not.toHaveBeenCalled();
+    expect(moveDownSpy).not.toHaveBeenCalled();
+
+    snackBarSpy.calls.reset();
+    moveUpSpy.calls.reset();
+    moveDownSpy.calls.reset();
+    expect((component as any)._reorder(1, -1, mockWorkflowSpecCategories)).toEqual(expectedCatsAfter);
+    expect(snackBarSpy).not.toHaveBeenCalled();
+    expect(moveUpSpy).toHaveBeenCalled();
+    expect(moveDownSpy).not.toHaveBeenCalled();
+
+    snackBarSpy.calls.reset();
+    moveUpSpy.calls.reset();
+    moveDownSpy.calls.reset();
+    expect((component as any)._reorder(0, 1, mockWorkflowSpecCategories)).toEqual(expectedCatsAfter);
+    expect(snackBarSpy).not.toHaveBeenCalled();
+    expect(moveUpSpy).not.toHaveBeenCalled();
+    expect(moveDownSpy).toHaveBeenCalled();
+  });
+
+  it('should reorder specs', () => {
+    const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
+    const moveUpSpy = spyOn(component, 'moveUp').and.callThrough();
+    const moveDownSpy = spyOn(component, 'moveDown').and.callThrough();
+    const specsAfter = [
+      mockWorkflowSpec1,
+      mockWorkflowSpec0,
+      mockWorkflowSpec2,
+    ];
+
+    expect((component as any)._reorder('nonexistent_id', 1, mockWorkflowSpecs)).toEqual([]);
+    expect(snackBarSpy).toHaveBeenCalled();
+    expect(moveUpSpy).not.toHaveBeenCalled();
+    expect(moveDownSpy).not.toHaveBeenCalled();
+
+    snackBarSpy.calls.reset();
+    moveUpSpy.calls.reset();
+    moveDownSpy.calls.reset();
+    expect((component as any)._reorder(mockWorkflowSpec1.id, -1, mockWorkflowSpecs)).toEqual(specsAfter);
+    expect(snackBarSpy).not.toHaveBeenCalled();
+    expect(moveUpSpy).toHaveBeenCalled();
+    expect(moveDownSpy).not.toHaveBeenCalled();
+
+    snackBarSpy.calls.reset();
+    moveUpSpy.calls.reset();
+    moveDownSpy.calls.reset();
+    expect((component as any)._reorder(mockWorkflowSpec0.id, 1, mockWorkflowSpecs)).toEqual(specsAfter);
+    expect(snackBarSpy).not.toHaveBeenCalled();
+    expect(moveUpSpy).not.toHaveBeenCalled();
+    expect(moveDownSpy).toHaveBeenCalled();
+  });
+
+  it('should update all category display orders', () => {
+    const _loadWorkflowSpecCategoriesSpy = spyOn((component as any), '_loadWorkflowSpecCategories').and.stub();
+    (component as any)._updateCatDisplayOrders(mockWorkflowSpecCategories);
+
+    mockWorkflowSpecCategories.forEach((spec, i) => {
+      const req = httpMock.expectOne(`apiRoot/workflow-specification-category/${spec.id}`);
+      expect(req.request.method).toEqual('PUT');
+      req.flush(mockWorkflowSpecCategories[i]);
+    });
+
+    expect(_loadWorkflowSpecCategoriesSpy).toHaveBeenCalled();
+  });
+
+  it('should update all spec display orders', () => {
+    const _loadWorkflowSpecCategoriesSpy = spyOn((component as any), '_loadWorkflowSpecCategories').and.stub();
+    (component as any)._updateSpecDisplayOrders(mockWorkflowSpecs);
+
+    mockWorkflowSpecs.forEach((spec, i) => {
+      const req = httpMock.expectOne(`apiRoot/workflow-specification/${spec.id}`);
+      expect(req.request.method).toEqual('PUT');
+      req.flush(mockWorkflowSpecs[i]);
+    });
+
+    expect(_loadWorkflowSpecCategoriesSpy).toHaveBeenCalled();
+  });
+
+  it('should load master workflow spec', () => {
+    const mockMasterSpec: WorkflowSpec = {
+      id: 'master_status_spec',
+      name: 'master_status_spec',
+      display_name: 'master_status_spec',
+      description: 'master_status_spec',
+      is_master_spec: true,
+      display_order: null,
+      category_id: null,
+    };
+    (component as any)._loadWorkflowSpecs();
+    const allSpecs = createClone({circles: true})(mockWorkflowSpecs);
+    allSpecs.push(mockMasterSpec);
+
+    const req = httpMock.expectOne(`apiRoot/workflow-specification`);
+    expect(req.request.method).toEqual('GET');
+    req.flush(allSpecs);
+
+    expect(component.workflowSpecs).toEqual(allSpecs);
+    expect(component.workflowSpecsByCategory).toBeTruthy();
+    component.workflowSpecsByCategory.forEach(cat => {
+      expect(cat.workflow_specs).not.toContain(mockMasterSpec);
+    });
+    expect(component.masterStatusSpec).toEqual(mockMasterSpec);
+  });
 
 });

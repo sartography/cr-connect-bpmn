@@ -9,7 +9,6 @@ import {ApiService, WorkflowSpec} from 'sartography-workflow-lib';
 export class WorkflowSpecCardComponent implements OnInit {
   @Input() workflowSpec: WorkflowSpec;
   @Input() actionButtons: TemplateRef<any>;
-  @Output() workflowUpdated: EventEmitter<WorkflowSpec> = new EventEmitter();
 
   constructor(
     private api: ApiService
@@ -17,12 +16,5 @@ export class WorkflowSpecCardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  }
-
-  makeMasterStatus() {
-    this.workflowSpec.is_master_spec = true;
-    this.api.updateWorkflowSpecification(this.workflowSpec.id, this.workflowSpec).subscribe(spec => {
-      this.workflowUpdated.emit(spec);
-    });
   }
 }
