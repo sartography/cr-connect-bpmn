@@ -26,7 +26,7 @@ import {
   SartographyPipesModule,
   SartographyWorkflowLibModule
 } from 'sartography-workflow-lib';
-import {environment} from '../environments/environment';
+import {environment} from '../environments/environment.runtime';
 import {DeleteFileDialogComponent} from './_dialogs/delete-file-dialog/delete-file-dialog.component';
 import {DeleteWorkflowSpecCategoryDialogComponent} from './_dialogs/delete-workflow-spec-category-dialog/delete-workflow-spec-category-dialog.component';
 import {DeleteWorkflowSpecDialogComponent} from './_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
