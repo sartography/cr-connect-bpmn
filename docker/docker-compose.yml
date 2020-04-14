@@ -10,9 +10,9 @@ services:
     environment:
       - POSTGRES_USER=crc_user
       - POSTGRES_PASSWORD=crc_pass
-      - POSTGRES_MULTIPLE_DATABASES=crc_test,crc_dev
+      - POSTGRES_MULTIPLE_DATABASES=crc_test,crc_dev,pb_test,pb
     healthcheck:
-      test: ["CMD", "ping", "-h", "localhost"]
+      test: ["CMD", "pg_isready"]
       timeout: 20s
       retries: 10
 
@@ -29,3 +29,15 @@ services:
     ports:
       - "5000:5000"
     command: ./wait-for-it.sh db:5432 -t 0 -- ./docker_run.sh
+
+  pb:
+    container_name: pb
+    image: sartography/protocol-builder-mock
+    volumes:
+      - ./flask-config/config_pb.py:/protocol-builder-mock/instance/config.py
+    environment:
+      - FLASK_APP=/protocol-builder-mock/app.py
+    ports:
+      - "5001:5001"
+    command: ./wait-for-it.sh db:5432 -t 0 -- ./docker_run.sh
+
