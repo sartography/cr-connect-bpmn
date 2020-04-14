@@ -8,8 +8,9 @@ ADD package.json /crc-bpmn/
 
 COPY . /crc-bpmn/
 
+ARG build_config=staging
 RUN npm install && \
-    npm run build:${APP_ENVIRONMENT}
+    npm run build:$build_config
 
 ### STAGE 2: Run ###
 FROM nginx:alpine
