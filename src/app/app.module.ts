@@ -36,6 +36,7 @@ import {OpenFileDialogComponent} from './_dialogs/open-file-dialog/open-file-dia
 import {WorkflowSpecCategoryDialogComponent} from './_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
 import {WorkflowSpecDialogComponent} from './_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
 import {GetIconCodePipe} from './_pipes/get-icon-code.pipe';
+import {ApiErrorsComponent} from './api-errors/api-errors.component';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {DiagramComponent} from './diagram/diagram.component';
@@ -48,13 +49,11 @@ import {SignInComponent} from './sign-in/sign-in.component';
 import {SignOutComponent} from './sign-out/sign-out.component';
 import {WorkflowSpecCardComponent} from './workflow-spec-card/workflow-spec-card.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
-import { ApiErrorsComponent } from './api-errors/api-errors.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
   production = environment.production;
   api = environment.api;
-  googleAnalyticsKey = environment.googleAnalyticsKey;
   irbUrl = environment.irbUrl;
 }
 
