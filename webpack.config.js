@@ -23,7 +23,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules\/(?!(dmn-js|dmn-js-drd|dmn-js-shared|dmn-js-decision-table|table-js|dmn-js-literal-expression|diagram-js)\/).*/,
-        loader: 'babel-loader',
+        loader: require.resolve('babel-loader'),
         options: {
           presets: ['@babel/preset-react', '@babel/preset-env']
         }

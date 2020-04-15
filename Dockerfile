@@ -5,6 +5,7 @@ RUN mkdir /crc-bpmn
 WORKDIR /crc-bpmn
 
 ADD package.json /crc-bpmn/
+ADD package-lock.json /crc-bpmn/
 
 COPY . /crc-bpmn/
 
@@ -14,8 +15,8 @@ RUN npm install && \
 
 ### STAGE 2: Run ###
 FROM nginx
-COPY --from=builder /crc-frontend/dist/* /usr/share/nginx/html/
-COPY --from=builder /crc-frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /crc-bpmn/dist/* /usr/share/nginx/html/
+COPY --from=builder /crc-bpmn/nginx.conf /etc/nginx/conf.d/default.conf
 COPY ./docker/substitute-env-variables.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh", "/usr/share/nginx/html/index.html"]
