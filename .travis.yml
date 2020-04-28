@@ -1,17 +1,18 @@
 sudo: required
-dist: trusty
+
+dist: bionic
 
 language: node_js
 
 node_js:
   - 12
 
+python:
+  - "3.7"
+
 services:
   - docker
-
-before_script:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
+  - xvfb
 
 install:
   - npm install
