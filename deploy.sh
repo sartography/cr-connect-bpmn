@@ -1,16 +1,22 @@
 #!/bin/bash
 
-# Install AWS CLI
-pip install --user awscli;
-export PATH=$PATH:$HOME/.local/bin;
-
 # Build and push Docker image to Docker Hub
-echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin;
-docker build \
-  --build-arg build_config="$DEPLOY_BUILD_CONFIG" \
-  --no-cache -t sartography/cr-connect-bpmn:latest . \
-  || exit 1;
-docker push sartography/cr-connect-bpmn:latest || exit 1;
+echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin || exit 1
+REPO="sartography/cr-connect-bpmn"
+TAG=$(if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "$TRAVIS_BRANCH" ; fi)
+COMMIT=${TRAVIS_COMMIT::8}
 
-# Notify UVA DCOS that Docker image has been updated
-aws sqs send-message --queue-url 'https://queue.amazonaws.com/474683445819/dcos-refresh' --message-body 'crconnect/bpmn' || exit 1;
+docker build -f Dockerfile -t "$REPO:$COMMIT" . || exit 1
+docker tag "$REPO:$COMMIT" "$REPO:$TAG" || exit 1
+docker tag "$REPO:$COMMIT" "$REPO:travis-$TRAVIS_BUILD_NUMBER" || exit 1
+docker push "$REPO" || exit 1
+
+# Wait for Docker Hub
+echo "Publishing to Docker Hub..."
+sleep 30
+
+# Notify DC/OS that Docker image has been updated
+echo "Refreshing DC/OS..."
+STAGE=$(if [ "$TRAVIS_BRANCH" == "master" ]; then echo "production"; else echo "$TRAVIS_BRANCH" ; fi)
+echo "STAGE = $STAGE"
+aws sqs send-message --region "$AWS_DEFAULT_REGION" --queue-url "$AWS_SQS_URL" --message-body "crconnect/$STAGE/bpmn" || exit 1
