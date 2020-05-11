@@ -14,6 +14,15 @@ services:
   - docker
   - xvfb
 
+before_install:
+  - |
+    branches=('dev' 'testing' 'demo' 'training' 'staging')
+    if [[ " ${arr[@]} " =~ " ${TRAVIS_BRANCH} " ]]; then
+      export E2E_TAG="$TRAVIS_BRANCH"
+    else
+      export E2E_TAG="latest"
+    fi
+
 install:
   - npm install
 
