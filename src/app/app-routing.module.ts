@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {SessionRedirectComponent} from 'sartography-workflow-lib';
+import {environment} from '../environments/environment.runtime';
 import {HomeComponent} from './home/home.component';
 import {ModelerComponent} from './modeler/modeler.component';
 import {SignInComponent} from './sign-in/sign-in.component';
@@ -10,6 +11,11 @@ import {SignOutComponent} from './sign-out/sign-out.component';
 const routes: Routes = [
   {
     path: '',
+    pathMatch: 'full',
+    redirectTo: environment.homeRoute,
+  },
+  {
+    path: 'home',
     component: HomeComponent
   },
   {

@@ -13,7 +13,7 @@ describe('workspace-project App', () => {
   });
 
   it('should click sign-in and navigate to home screen', () => {
-    page.clickAndExpectRoute('#sign_in', '/');
+    page.clickAndExpectRoute('#sign_in', '/home');
     expect(page.getElements('app-workflow-spec-list').count()).toBeGreaterThan(0);
     expect(page.getElements('app-file-list').count()).toBeGreaterThan(0);
   });

@@ -52,6 +52,7 @@ import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
+  homeRoute = environment.homeRoute;
   production = environment.production;
   api = environment.api;
   irbUrl = environment.irbUrl;
