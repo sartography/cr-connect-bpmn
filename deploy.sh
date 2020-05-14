@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Install AWS CLI
+pip install --user awscli;
+export PATH=$PATH:$HOME/.local/bin;
+
 function branch_to_tag () {
   if [ "$1" == "latest" ]; then echo "production"; else echo "$1" ; fi
 }
