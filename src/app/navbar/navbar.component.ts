@@ -16,7 +16,7 @@ interface NavItem {
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
   navLinks: NavItem[];
   user: User;
   isSignedIn = isSignedIn;
@@ -26,9 +26,6 @@ export class NavbarComponent implements OnInit {
     private api: ApiService,
   ) {
     this._loadUser();
-  }
-
-  ngOnInit() {
   }
 
   isLinkActive(path: string) {
