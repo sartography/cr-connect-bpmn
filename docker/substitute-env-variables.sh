@@ -7,7 +7,7 @@ if [[ -z $1 ]]; then
 fi
 
 # Replace strings in the given file that have the format ${ENV_VAR}
-envsubst '\$PRODUCTION \$API_URL \$IRB_URL' < "$1" > "$1".tmp && mv "$1".tmp "$1"
+envsubst '\$PRODUCTION \$API_URL \$IRB_URL \$PORT0' < "$1" > "$1".tmp && mv "$1".tmp "$1"
 
 # Set DEBUG=true in order to log the replaced file
 if [ "$DEBUG" = true ] ; then
