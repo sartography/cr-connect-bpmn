@@ -1,18 +1,22 @@
 #!/bin/bash
 
-# The first parameter is the path to the file which should be substituted
+# The first parameter is a comma-delimited list of paths to files which should be substituted
 if [[ -z $1 ]]; then
-  echo 'ERROR: No target file given.'
+  echo 'ERROR: No target files given.'
   exit 1
 fi
 
-# Replace strings in the given file that have the format ${ENV_VAR}
-envsubst '\$PRODUCTION \$API_URL \$IRB_URL \$PORT0' < "$1" > "$1".tmp && mv "$1".tmp "$1"
+env_list='\$PRODUCTION \$API_URL \$IRB_URL \$HOME_ROUTE \$PORT0'
+for i in $(echo $1 | sed "s/,/ /g")
+do
+  # Replace strings in the given file(s) in env_list
+  envsubst "$env_list" < "$i" > "$i".tmp && mv "$i".tmp "$i"
 
-# Set DEBUG=true in order to log the replaced file
-if [ "$DEBUG" = true ] ; then
-  exec cat $1
-fi
+  # Set DEBUG=true in order to log the replaced file
+  if [ "$DEBUG" = true ] ; then
+    exec cat $i
+  fi
+done
 
 # Execute all other commands with parameters
 exec "${@:2}"

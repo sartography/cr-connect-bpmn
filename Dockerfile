@@ -22,11 +22,8 @@ COPY --from=builder /crc-bpmn/nginx.conf /etc/nginx/conf.d/default.conf
 COPY ./docker/substitute-env-variables.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
-# Substitute environment variables in nginx configuration
-CMD ["./entrypoint.sh", "/etc/nginx/conf.d/default.conf"]
-
-# Substitute environment variables in index.html
-ENTRYPOINT ["./entrypoint.sh", "/usr/share/nginx/html/index.html"]
+# Substitute environment variables in nginx configuration and index.html
+ENTRYPOINT ["./entrypoint.sh", "/usr/share/nginx/html/index.html,/etc/nginx/conf.d/default.conf"]
 
 ### STAGE 3: Profit! ###
 CMD ["nginx", "-g", "daemon off;"]
