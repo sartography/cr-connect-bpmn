@@ -31,6 +31,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   private diagramType: FileType;
   private modeler: BpmnModeler | DmnModeler;
   private xml = '';
+  private svg;
   private disabled = false;
 
   // Hack so we can spy on this function
@@ -46,12 +47,16 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
     return this.xml;
   }
 
+  get svgValue(): string {
+    return this.svg;
+  }
+
   ngAfterViewInit() {
     this.initializeModeler(this.diagramType);
     this.openDiagram(this.xml);
   }
 
-  onChange(value: any) {
+  onChange(newValue: string, svgValue: string) {
   }
 
   onTouched() {
@@ -74,12 +79,12 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
       this.openDiagram(value);
     }
     this.xml = value;
-    this.onChange(this.xml);
+    this.onChange(this.xml, this.svg);
   }
 
   // Allows Angular to register a function to call when the model changes.
   // Save the function as a property to call later here.
-  registerOnChange(fn: (newXmlValue: string) => void): void {
+  registerOnChange(fn: (newXmlValue: string, newSvgValue: string) => void): void {
     this.onChange = fn;
   }
 
@@ -118,9 +123,12 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   }
 
   saveDiagram() {
-    this.modeler.saveXML({format: true}, (err, xml) => {
-      this.xml = xml;
-      this.writeValue(xml);
+    this.modeler.saveSVG((svgErr, svg) => {
+      this.svg = svg;
+      this.modeler.saveXML({format: true}, (xmlErr, xml) => {
+        this.xml = xml;
+        this.writeValue(xml);
+      });
     });
   }
 

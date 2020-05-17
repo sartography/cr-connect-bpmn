@@ -17,9 +17,13 @@ RUN npm install && \
 FROM nginx
 COPY --from=builder /crc-bpmn/dist/* /usr/share/nginx/html/
 COPY --from=builder /crc-bpmn/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Script for substituting environment variables
 COPY ./docker/substitute-env-variables.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
-ENTRYPOINT ["./entrypoint.sh", "/usr/share/nginx/html/index.html"]
+
+# Substitute environment variables in nginx configuration and index.html
+ENTRYPOINT ["./entrypoint.sh", "/usr/share/nginx/html/index.html,/etc/nginx/conf.d/default.conf"]
 
 ### STAGE 3: Profit! ###
 CMD ["nginx", "-g", "daemon off;"]
