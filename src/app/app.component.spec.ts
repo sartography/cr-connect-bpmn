@@ -1,8 +1,10 @@
+import {HttpClient} from '@angular/common/http';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {Component} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
-import {MockEnvironment} from 'sartography-workflow-lib';
+import {ApiService, MockEnvironment} from 'sartography-workflow-lib';
 import {AppComponent} from './app.component';
 
 
@@ -32,10 +34,13 @@ describe('AppComponent', () => {
         MockFooterComponent
       ],
       imports: [
+        HttpClientTestingModule,
         BrowserAnimationsModule,
         RouterTestingModule,
       ],
       providers: [
+        HttpClient,
+        ApiService,
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
       ],
     })

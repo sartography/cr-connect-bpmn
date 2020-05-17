@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {isSignedIn} from 'sartography-workflow-lib';
+import {ApiService} from 'sartography-workflow-lib';
 
 @Component({
   selector: 'app-root',
@@ -8,5 +8,11 @@ import {isSignedIn} from 'sartography-workflow-lib';
 })
 export class AppComponent {
   title = 'CR Connect Configuration';
-  isSignedIn = isSignedIn;
+
+  constructor(private apiService: ApiService) {
+  }
+
+  get isSignedIn() {
+    return this.apiService.isSignedIn();
+  }
 }

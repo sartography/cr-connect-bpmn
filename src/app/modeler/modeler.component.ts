@@ -42,6 +42,7 @@ export class ModelerComponent implements AfterViewInit {
   fileTypes = FileType;
   private xml = '';
   private draftXml = '';
+  private svg = '';
   @ViewChild(DiagramComponent) private diagramComponent: DiagramComponent;
   private diagramType: FileType;
   private workflowSpecId: string;
@@ -67,8 +68,9 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.diagramComponent.registerOnChange((newXmlValue: string) => {
+    this.diagramComponent.registerOnChange((newXmlValue: string, newSvgValue: string) => {
       this.draftXml = newXmlValue;
+      this.svg = newSvgValue;
     });
   }
 
@@ -158,6 +160,7 @@ export class ModelerComponent implements AfterViewInit {
   newDiagram(diagramType?: FileType) {
     this.xml = '';
     this.draftXml = '';
+    this.svg = '';
     this.fileName = '';
     this.diagramFileMeta = undefined;
     this.diagramFile = undefined;
@@ -305,6 +308,11 @@ export class ModelerComponent implements AfterViewInit {
   private saveFileChanges() {
     this.xml = this.draftXml;
     this.diagramFileMeta.file = new File([this.xml], this.diagramFileMeta.name, {type: 'text/xml'});
+
+    if (this.svg && this.svg !== '') {
+      const svgFile = new File([this.svg], this.diagramFileMeta.name, {type: 'text/xml'});
+      // this.api.updateFileData();
+    }
 
     this.api.updateFileData(this.diagramFileMeta).subscribe(newFileMeta => {
       this.diagramFileMeta = newFileMeta;
