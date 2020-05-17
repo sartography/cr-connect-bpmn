@@ -20,6 +20,11 @@ do
 done
 
 echo 'Finished substituting environment variables.'
+echo "PRODUCTION = $PRODUCTION"
+echo "API_URL = $API_URL"
+echo "IRB_URL = $IRB_URL"
+echo "HOME_ROUTE = $HOME_ROUTE"
+echo "PORT0 = $PORT0"
 
 # Execute all other commands with parameters
 exec "${@:2}"
