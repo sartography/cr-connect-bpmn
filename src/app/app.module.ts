@@ -49,6 +49,8 @@ import {SignInComponent} from './sign-in/sign-in.component';
 import {SignOutComponent} from './sign-out/sign-out.component';
 import {WorkflowSpecCardComponent} from './workflow-spec-card/workflow-spec-card.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
+import { ProtocolBuilderComponent } from './protocol-builder/protocol-builder.component';
+import { ReferenceFilesComponent } from './reference-files/reference-files.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -81,6 +83,8 @@ export class ThisEnvironment implements AppEnvironment {
     HomeComponent,
     WorkflowSpecCardComponent,
     ApiErrorsComponent,
+    ProtocolBuilderComponent,
+    ReferenceFilesComponent,
   ],
   imports: [
     BrowserAnimationsModule,

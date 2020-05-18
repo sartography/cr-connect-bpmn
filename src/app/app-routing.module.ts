@@ -4,6 +4,8 @@ import {SessionRedirectComponent} from 'sartography-workflow-lib';
 import {environment} from '../environments/environment.runtime';
 import {HomeComponent} from './home/home.component';
 import {ModelerComponent} from './modeler/modeler.component';
+import {ProtocolBuilderComponent} from './protocol-builder/protocol-builder.component';
+import {ReferenceFilesComponent} from './reference-files/reference-files.component';
 import {SignInComponent} from './sign-in/sign-in.component';
 import {SignOutComponent} from './sign-out/sign-out.component';
 
@@ -17,6 +19,14 @@ const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent
+  },
+  {
+    path: 'pb',
+    component: ProtocolBuilderComponent
+  },
+  {
+    path: 'reffiles',
+    component: ReferenceFilesComponent
   },
   {
     path: 'modeler/:workflowSpecId',
