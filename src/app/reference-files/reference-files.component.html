@@ -1,0 +1,12 @@
+<div class="container" fxLayout="column" fxLayoutGap="40px">
+  <h1>Reference Files</h1>
+
+  <div *ngFor="let refFile of referenceFiles" fxLayout="row" fxLayoutGap="40px">
+    <h3>{{refFile.name}}</h3>
+    <div class="file-buttons" fxLayout="row" fxLayoutGap="10px">
+      <button mat-icon-button (click)="downloadFile(refFile)" color="primary"><mat-icon>save_alt</mat-icon></button>
+      <button mat-icon-button (click)="openFileDialog(refFile)" color="primary"><mat-icon>edit</mat-icon></button>
+    </div>
+  </div>
+</div>
+
