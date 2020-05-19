@@ -14,7 +14,7 @@ RUN npm install && \
     npm run build:$build_config
 
 ### STAGE 2: Run ###
-FROM nginx
+FROM nginx:alpine
 COPY --from=builder /crc-bpmn/dist/* /usr/share/nginx/html/
 COPY --from=builder /crc-bpmn/nginx.conf /etc/nginx/conf.d/default.conf
 
