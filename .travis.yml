@@ -14,6 +14,15 @@ services:
   - docker
   - xvfb
 
+before_install:
+  - |
+    if [[ $TRAVIS_BRANCH =~ ^(dev|testing|demo|training|staging|rrt\/.*)$ ]]; then
+      export E2E_TAG="${TRAVIS_BRANCH//\//_}"
+    else
+      export E2E_TAG="latest"
+    fi
+    echo "E2E_TAG = $E2E_TAG"
+
 install:
   - npm install
 
@@ -29,7 +38,7 @@ deploy:
   skip_cleanup: true
   on:
     all_branches: true
-    condition: $TRAVIS_BRANCH =~ ^(testing|staging|master)$
+    condition: $TRAVIS_BRANCH =~ ^(dev|testing|demo|training|staging|master|rrt\/.*)$
 
 notifications:
   email:

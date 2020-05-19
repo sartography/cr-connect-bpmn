@@ -1,6 +1,8 @@
-import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {Component} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {MockEnvironment} from 'sartography-workflow-lib';
+import {ApiService, MockEnvironment} from 'sartography-workflow-lib';
 
 import {HomeComponent} from './home.component';
 
@@ -9,13 +11,15 @@ import {HomeComponent} from './home.component';
   selector: 'app-sign-in',
   template: ''
 })
-class MockSignInComponent {}
+class MockSignInComponent {
+}
 
 @Component({
   selector: 'app-workflow-spec-list',
   template: ''
 })
-class MockWorkflowSpecListComponent {}
+class MockWorkflowSpecListComponent {
+}
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -28,8 +32,16 @@ describe('HomeComponent', () => {
         MockSignInComponent,
         MockWorkflowSpecListComponent,
       ],
+      imports: [
+        HttpClientTestingModule
+      ],
+      providers: [
+        HttpClient,
+        ApiService,
+        {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -43,7 +55,7 @@ describe('HomeComponent', () => {
   });
 
   it('should check signed-in state', () => {
-    const result = component.isSignedIn();
+    const result = component.isSignedIn;
     expect(result).toBeDefined();
     expect(typeof result).toEqual('boolean');
   });

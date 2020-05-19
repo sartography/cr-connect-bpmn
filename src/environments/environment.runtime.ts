@@ -2,8 +2,11 @@ import {AppEnvironment} from 'sartography-workflow-lib';
 
 declare var ENV;
 
+export const _has = (env, key, temp): boolean => env && ![null, undefined, temp, ''].includes(env[key]);
+
 export const environment: AppEnvironment = {
-  production: ENV && ENV.production === '$PRODUCTION' ? false : (ENV.production === 'true'),
-  api: ENV && ENV.api === '$API_URL' ? 'http://localhost:5000/v1.0' : ENV.api,
-  irbUrl: ENV && ENV.irbUrl === '$IRB_URL' ? 'http://localhost:5001' : ENV.irbUrl,
+  homeRoute: _has(ENV, 'homeRoute', '$HOME_ROUTE') ? ENV.homeRoute : 'home',
+  production: _has(ENV, 'production', '$PRODUCTION') ? (ENV.production === 'true') : false,
+  api: _has(ENV, 'api', '$API_URL') ? ENV.api : 'http://localhost:5000/v1.0',
+  irbUrl: _has(ENV, 'irbUrl', '$IRB_URL') ? ENV.irbUrl : 'http://localhost:5001',
 };

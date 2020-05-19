@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {isSignedIn} from 'sartography-workflow-lib';
+import {ApiService, isSignedIn} from 'sartography-workflow-lib';
 
 @Component({
   selector: 'app-home',
@@ -7,9 +7,11 @@ import {isSignedIn} from 'sartography-workflow-lib';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
-  isSignedIn = isSignedIn;
 
-  constructor() {
+  constructor(private apiService: ApiService) {
   }
 
+  get isSignedIn(): boolean {
+    return this.apiService.isSignedIn();
+  }
 }

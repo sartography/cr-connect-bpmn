@@ -16,7 +16,7 @@ interface NavItem {
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
   navLinks: NavItem[];
   user: User;
   isSignedIn = isSignedIn;
@@ -26,9 +26,6 @@ export class NavbarComponent implements OnInit {
     private api: ApiService,
   ) {
     this._loadUser();
-  }
-
-  ngOnInit() {
   }
 
   isLinkActive(path: string) {
@@ -50,8 +47,9 @@ export class NavbarComponent implements OnInit {
   private _loadNavLinks() {
     const displayName = this.user.display_name || this.user.first_name || this.user.last_name;
     this.navLinks = [
-      {path: '/', id: 'nav_home', label: 'Home'},
-      {path: '/inbox', id: 'nav_inbox', label: 'Inbox'},
+      {path: '/home', id: 'nav_home', label: 'Configurator'},
+      {path: '/pb', id: 'nav_pb', label: 'Protocol Builder Tester'},
+      {path: '/reffiles', id: 'nav_reffiles', label: 'Reference Files'},
       {path: '/help', id: 'nav_help', label: 'Help'},
       {
         id: 'nav_account', label: `${displayName} (${this.user.email_address})`,
