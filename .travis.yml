@@ -16,12 +16,12 @@ services:
 
 before_install:
   - |
-    branches=('dev' 'testing' 'demo' 'training' 'staging')
-    if [[ " ${arr[@]} " =~ " ${TRAVIS_BRANCH} " ]]; then
-      export E2E_TAG="$TRAVIS_BRANCH"
+    if [[ $TRAVIS_BRANCH =~ ^(dev|testing|demo|training|staging|rrt\/.*)$ ]]; then
+      export E2E_TAG="${TRAVIS_BRANCH//\//_}"
     else
       export E2E_TAG="latest"
     fi
+    echo "E2E_TAG = $E2E_TAG"
 
 install:
   - npm install

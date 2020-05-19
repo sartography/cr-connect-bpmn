@@ -96,7 +96,7 @@ export class FileListComponent implements OnInit {
       fileMetaId: fm ? fm.id : undefined,
       file: file,
       mode: 'local',
-      fileTypes: [FileType.DOCX],
+      fileTypes: [FileType.DOC, FileType.DOCX, FileType.XLSX, FileType.XLS],
     };
     const dialogRef = this.dialog.open(OpenFileDialogComponent, {data: dialogData});
 
