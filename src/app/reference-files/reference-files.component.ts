@@ -44,13 +44,12 @@ export class ReferenceFilesComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe((data: OpenFileDialogData) => {
         if (data && data.file) {
-          console.log('data', data);
           this.apiService.updateReferenceFile(fm.name, data.file).subscribe(() => {
+          this.snackBar.open(`Updated file ${fm.name}.`, 'Ok', {duration: 3000});
             this._loadReferenceFiles();
           });
         }
       });
-
     });
   }
 
