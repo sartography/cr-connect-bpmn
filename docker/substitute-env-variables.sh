@@ -8,8 +8,15 @@ if [[ -z $1 ]]; then
   exit 1
 fi
 
-env_list='\$PRODUCTION \$API_URL \$IRB_URL \$HOME_ROUTE \$PORT0'
-for file_path in $(echo $1 | sed "s/,/ /g")
+# The second parameter is a comma-delimited list of environment variable names
+if [[ -z $2 ]]; then
+  echo 'ERROR: No environment variables given.'
+  exit 1
+fi
+
+# Convert "VAR1,VAR2,VAR3,..." to "\$VAR1 \$VAR2 \$VAR3 ..."
+env_list="\\\$${2//,/ \\\$}"  # "\" and "$" are escaped as "\\" and "\$"
+for file_path in ${1//,/ }
 do
   echo "replacing $env_list in $file_path"
 
@@ -20,11 +27,10 @@ do
 done
 
 echo 'Finished substituting environment variables.'
-echo "PRODUCTION = $PRODUCTION"
-echo "API_URL = $API_URL"
-echo "IRB_URL = $IRB_URL"
-echo "HOME_ROUTE = $HOME_ROUTE"
-echo "PORT0 = $PORT0"
+for env_var in ${2//,/ }
+do
+  echo "$env_var = ${!env_var}"
+done
 
 # Execute all other commands with parameters
-exec "${@:2}"
+exec "${@:3}"
