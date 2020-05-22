@@ -24,6 +24,10 @@ services:
       - RESET_DB=true
       - LDAP_URL=ldap
       - DB_HOST=db
+      - DB_PORT=5432
+      - DB_PASSWORD=crc_pass
+      - DB_USER=crc_user
+      - DB_NAME=crc_test
     ports:
       - "5000:5000"
     command: ./wait-for-it.sh db:5432 -t 0 -- ./docker_run.sh
@@ -33,6 +37,11 @@ services:
     image: sartography/protocol-builder-mock:$E2E_TAG
     environment:
       - FLASK_APP=/protocol-builder-mock/app.py
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_PASSWORD=crc_pass
+      - DB_USER=crc_user
+      - DB_NAME=pb_test
     ports:
       - "5001:5001"
     command: ./wait-for-it.sh db:5432 -t 0 -- ./docker_run.sh
