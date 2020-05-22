@@ -21,7 +21,9 @@
     "e2e-wf:db-setup": "docker exec -it backend pipenv run flask load-example-data",
     "e2e-wf:pb-setup": "docker exec -it pb pipenv run flask db upgrade",
     "e2e-wf": "npm run e2e-wf:stop && npm run e2e-wf:clean && npm run e2e-wf:build && npm run e2e-wf:start && npm run e2e-wf:db-upgrade && npm run e2e-wf:db-setup && npm run e2e-wf:pb-setup",
-    "ci": "npm run lint && npm run test:coverage && npm run e2e:with-wf && sonar-scanner"
+    "e2e:env": "cp src/index.html src/index.html.tmp && chmod +x ./docker/substitute-env-variables.sh && ./docker/substitute-env-variables.sh src/index.html",
+    "e2e:env-restore": "rm src/index.html && mv src/index.html.tmp src/index.html",
+    "ci": "npm run lint && npm run test:coverage && npm run e2e:env && npm run e2e:with-wf && npm run e2e:env-restore && sonar-scanner"
   },
   "private": true,
   "dependencies": {
