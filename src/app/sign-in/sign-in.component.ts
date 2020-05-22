@@ -72,7 +72,7 @@ export class SignInComponent implements OnInit {
     // For testing purposes, create a user to simulate login.
     if (!this.environment.production) {
       this.model.redirect_url = location.origin + '/session';
-      this.api.openSession(this.model);
+      this.api.redirectToLogin(location.href, this.model);
     } else {
       this.error = new Error('This feature does not work in production.');
     }

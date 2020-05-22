@@ -6,6 +6,8 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {Router} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
 import {ApiService, FileMeta, FileType, MockEnvironment, mockFileMetaReference0} from 'sartography-workflow-lib';
 import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
@@ -17,6 +19,7 @@ describe('ReferenceFilesComponent', () => {
   let httpMock: HttpTestingController;
   let component: ReferenceFilesComponent;
   let fixture: ComponentFixture<ReferenceFilesComponent>;
+  const mockRouter = {navigate: jasmine.createSpy('navigate')};
 
   // Mock file and response headers
   const mockDocMeta: FileMeta = createClone()(mockFileMetaReference0);
@@ -41,6 +44,7 @@ describe('ReferenceFilesComponent', () => {
         MatDialogModule,
         MatIconModule,
         MatSnackBarModule,
+        RouterTestingModule,
       ],
       declarations: [
         OpenFileDialogComponent,
@@ -57,6 +61,7 @@ describe('ReferenceFilesComponent', () => {
           }
         },
         {provide: MAT_DIALOG_DATA, useValue: []},
+        {provide: Router, useValue: mockRouter},
       ]
     }).overrideModule(BrowserDynamicTestingModule, {
       set: {
