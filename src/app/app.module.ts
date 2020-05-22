@@ -1,3 +1,4 @@
+import {APP_BASE_HREF} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {Injectable, NgModule} from '@angular/core';
 import {FlexLayoutModule} from '@angular/flex-layout';
@@ -58,6 +59,7 @@ export class ThisEnvironment implements AppEnvironment {
   production = environment.production;
   api = environment.api;
   irbUrl = environment.irbUrl;
+  baseHref = environment.baseHref;
 }
 
 @NgModule({
@@ -127,11 +129,8 @@ export class ThisEnvironment implements AppEnvironment {
   providers: [
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
     {provide: 'APP_ENVIRONMENT', useClass: ThisEnvironment},
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    },
+    {provide: APP_BASE_HREF, useValue: environment.baseHref},
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
   ]
 })
 export class AppModule {

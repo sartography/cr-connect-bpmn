@@ -30,6 +30,7 @@ addons:
   chrome: stable
 
 script:
+  - export BASE_HREF="/"
   - npm run ci
 
 deploy:
