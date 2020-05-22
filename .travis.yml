@@ -29,8 +29,12 @@ install:
 addons:
   chrome: stable
 
+env:
+  - BASE_HREF="/"
+  - API_URL="http://db:5000/v1.0"
+  - IRB_URL="http://pb:5001"
+
 script:
-  - export BASE_HREF="/"
   - npm run ci
 
 deploy:
