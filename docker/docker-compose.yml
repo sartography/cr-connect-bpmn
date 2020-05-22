@@ -2,11 +2,9 @@ version: "3.3"
 services:
   db:
     container_name: db
-    image: postgres
-    volumes:
-      - ./pg-init-scripts/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
+    image: sartography/cr-connect-db:$E2E_TAG
     ports:
-      - "5432"
+      - "5432:5432"
     environment:
       - POSTGRES_USER=crc_user
       - POSTGRES_PASSWORD=crc_pass
@@ -21,12 +19,11 @@ services:
     depends_on:
        - db
     image: sartography/cr-connect-workflow:$E2E_TAG
-    volumes:
-      - ./flask-config/config.py:/crc-workflow/instance/config.py
     environment:
       - FLASK_APP=./crc/__init__.py
       - RESET_DB=true
       - LDAP_URL=ldap
+      - DB_HOST=db
     ports:
       - "5000:5000"
     command: ./wait-for-it.sh db:5432 -t 0 -- ./docker_run.sh
@@ -34,8 +31,6 @@ services:
   pb:
     container_name: pb
     image: sartography/protocol-builder-mock:$E2E_TAG
-    volumes:
-      - ./flask-config/config_pb.py:/protocol-builder-mock/instance/config.py
     environment:
       - FLASK_APP=/protocol-builder-mock/app.py
     ports:
