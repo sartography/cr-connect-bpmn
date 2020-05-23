@@ -21,6 +21,7 @@ services:
     image: sartography/cr-connect-workflow:$E2E_TAG
     environment:
       - FLASK_APP=./crc/__init__.py
+      - UPGRADE_DB=true
       - RESET_DB=true
       - LDAP_URL=ldap
       - DB_HOST=db
@@ -37,6 +38,7 @@ services:
     image: sartography/protocol-builder-mock:$E2E_TAG
     environment:
       - FLASK_APP=/protocol-builder-mock/app.py
+      - UPGRADE_DB=true
       - DB_HOST=db
       - DB_PORT=5432
       - DB_PASSWORD=crc_pass
