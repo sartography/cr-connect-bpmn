@@ -47,6 +47,8 @@ if [[ -z $3 ]]; then
   # Execute all other commands with parameters
   exit 0
 else
+  #  Wait a second in case envsubst needs more time
+  sleep 1
   sed -i -e 's@<base href\=\"\/\">@<base href\=\"'"$BASE_HREF"'\">@' "$3"
 
   # Execute all other commands with parameters
