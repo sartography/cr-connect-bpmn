@@ -32,5 +32,8 @@ do
   echo "$env_var = ${!env_var}"
 done
 
+# Rewrite base href in index.html. Use @ as a sed delimiter because $BASE_HREF will contain a / character
+sed -i -e 's@<base href\=\"\/\">@<base href\=\"'"$BASE_HREF"'\">@' "/usr/share/nginx/html/index.html"
+
 # Execute all other commands with parameters
 exec "${@:3}"
