@@ -29,13 +29,20 @@ install:
 addons:
   chrome: stable
 
+env:
+  global:
+    - API_URL=http://localhost:5000/v1.0
+    - BASE_HREF=/
+    - HOME_ROUTE=home
+    - IRB_URL=http://localhost:5001
+    - PORT0=4200
+    - PRODUCTION=false
 script:
   - npm run ci
 
 deploy:
   provider: script
   script: bash ./deploy.sh
-  skip_cleanup: true
   on:
     all_branches: true
     condition: $TRAVIS_BRANCH =~ ^(dev|testing|demo|training|staging|master|rrt\/.*)$

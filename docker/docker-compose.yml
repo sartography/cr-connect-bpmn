@@ -2,11 +2,9 @@ version: "3.3"
 services:
   db:
     container_name: db
-    image: postgres
-    volumes:
-      - ./pg-init-scripts/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
+    image: sartography/cr-connect-db:$E2E_TAG
     ports:
-      - "5432"
+      - "5432:5432"
     environment:
       - POSTGRES_USER=crc_user
       - POSTGRES_PASSWORD=crc_pass
@@ -15,29 +13,19 @@ services:
       test: ["CMD", "pg_isready"]
       timeout: 20s
       retries: 10
-
-  backend:
-    container_name: backend
-    depends_on:
-       - db
-    image: sartography/cr-connect-workflow:$E2E_TAG
-    volumes:
-      - ./flask-config/config.py:/crc-workflow/instance/config.py
-    environment:
-      - FLASK_APP=./crc/__init__.py
-      - RESET_DB=true
-      - LDAP_URL=ldap
-    ports:
-      - "5000:5000"
-    command: ./wait-for-it.sh db:5432 -t 0 -- ./docker_run.sh
-
   pb:
     container_name: pb
+    depends_on:
+       - db
     image: sartography/protocol-builder-mock:$E2E_TAG
-    volumes:
-      - ./flask-config/config_pb.py:/protocol-builder-mock/instance/config.py
     environment:
       - FLASK_APP=/protocol-builder-mock/app.py
+      - UPGRADE_DB=true
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_PASSWORD=crc_pass
+      - DB_USER=crc_user
+      - DB_NAME=pb_test
     ports:
       - "5001:5001"
     command: ./wait-for-it.sh db:5432 -t 0 -- ./docker_run.sh
@@ -47,3 +35,25 @@ services:
     image: tuxmonteiro/ldap-mock
     ports:
       - "3890"
+
+  backend:
+    container_name: backend
+    depends_on:
+       - db
+       - pb
+       - ldap
+    image: sartography/cr-connect-workflow:$E2E_TAG
+    environment:
+      - FLASK_APP=./crc/__init__.py
+      - UPGRADE_DB=true
+      - RESET_DB=true
+      - LDAP_URL=ldap
+      - PB_BASE_URL=http://pb:5001/pb/
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_PASSWORD=crc_pass
+      - DB_USER=crc_user
+      - DB_NAME=crc_test
+    ports:
+      - "5000:5000"
+    command: ./wait-for-it.sh pb:5001 -t 0 -- ./docker_run.sh

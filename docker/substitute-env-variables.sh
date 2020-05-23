@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#####################################################################
+# Substitutes the given environment variables in the given files.
+# Parameters:
+# $1: Comma-delimited list of file paths
+# $2: Comma-delimited list of environment variables
+# $3: File path to index.html (optional)
+#####################################################################
+
 echo 'Substituting environment variables...'
 
 # The first parameter is a comma-delimited list of paths to files which should be substituted
@@ -32,5 +40,17 @@ do
   echo "$env_var = ${!env_var}"
 done
 
-# Execute all other commands with parameters
-exec "${@:3}"
+# The third parameter is the path to the index.html file
+# Rewrite base href in index.html.
+# Use @ as a sed delimiter because $BASE_HREF will contain a / character
+if [[ -z $3 ]]; then
+  # Execute all other commands with parameters
+  exit 0
+else
+  sed -i -e 's@<base href\=\"\/\">@<base href\=\"'"$BASE_HREF"'\">@' "$3"
+
+  # Execute all other commands with parameters
+  exec "${@:4}"
+fi
+
+
