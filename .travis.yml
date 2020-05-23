@@ -38,15 +38,11 @@ env:
     - PORT0=4200
     - PRODUCTION=false
 script:
-  - cp src/index.html src/index.html.tmp
   - npm run ci
-  - rm src/index.html
-  - mv src/index.html.tmp src/index.html
 
 deploy:
   provider: script
   script: bash ./deploy.sh
-  skip_cleanup: true
   on:
     all_branches: true
     condition: $TRAVIS_BRANCH =~ ^(dev|testing|demo|training|staging|master|rrt\/.*)$
