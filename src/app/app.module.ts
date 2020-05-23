@@ -23,6 +23,7 @@ import {FormlyModule} from '@ngx-formly/core';
 import {
   AppEnvironment,
   AuthInterceptor,
+  ErrorInterceptor,
   SartographyFormsModule,
   SartographyPipesModule,
   SartographyWorkflowLibModule
@@ -46,12 +47,12 @@ import {FooterComponent} from './footer/footer.component';
 import {HomeComponent} from './home/home.component';
 import {ModelerComponent} from './modeler/modeler.component';
 import {NavbarComponent} from './navbar/navbar.component';
+import {ProtocolBuilderComponent} from './protocol-builder/protocol-builder.component';
+import {ReferenceFilesComponent} from './reference-files/reference-files.component';
 import {SignInComponent} from './sign-in/sign-in.component';
 import {SignOutComponent} from './sign-out/sign-out.component';
 import {WorkflowSpecCardComponent} from './workflow-spec-card/workflow-spec-card.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
-import { ProtocolBuilderComponent } from './protocol-builder/protocol-builder.component';
-import { ReferenceFilesComponent } from './reference-files/reference-files.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -131,6 +132,7 @@ export class ThisEnvironment implements AppEnvironment {
     {provide: 'APP_ENVIRONMENT', useClass: ThisEnvironment},
     {provide: APP_BASE_HREF, useValue: environment.baseHref},
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
   ]
 })
 export class AppModule {

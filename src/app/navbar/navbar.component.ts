@@ -39,14 +39,6 @@ export class NavbarComponent {
         this._loadNavLinks();
       }, error => {
         localStorage.removeItem('token');
-
-        if (this.environment.production) {
-          localStorage.setItem('prev_url', location.href);
-          const emptyUserParams: UserParams = { uid: null };
-          this.api.redirectToLogin(location.origin + '/session', emptyUserParams);
-        } else {
-          this.api.openUrl('/');
-        }
       });
     }
   }
