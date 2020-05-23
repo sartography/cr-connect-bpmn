@@ -74,19 +74,19 @@ describe('SignInComponent', () => {
   });
 
   it('should fake sign in during testing', () => {
-    const openSessionSpy = spyOn((component as any).api, 'openSession').and.stub();
+    const redirectToLoginSpy = spyOn((component as any).api, 'redirectToLogin').and.stub();
     (component as any).environment.production = false;
     component.model = mockUser;
     component.signIn();
-    expect(openSessionSpy).toHaveBeenCalledWith(mockUser);
+    expect(redirectToLoginSpy).toHaveBeenCalledWith(jasmine.any(String), mockUser);
     expect(component.error).toBeUndefined();
   });
 
   it('should display an error if sign in is called on production', () => {
-    const openSessionSpy = spyOn((component as any).api, 'openSession').and.stub();
+    const redirectToLoginSpy = spyOn((component as any).api, 'redirectToLogin').and.stub();
     (component as any).environment.production = true;
     component.signIn();
-    expect(openSessionSpy).not.toHaveBeenCalled();
+    expect(redirectToLoginSpy).not.toHaveBeenCalled();
     expect(component.error).toBeTruthy();
   });
 

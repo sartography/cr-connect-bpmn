@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {ApiService, isSignedIn, User} from 'sartography-workflow-lib';
+import {ApiService, AppEnvironment, isSignedIn, User, UserParams} from 'sartography-workflow-lib';
 
 interface NavItem {
   path?: string;
@@ -19,11 +19,11 @@ interface NavItem {
 export class NavbarComponent {
   navLinks: NavItem[];
   user: User;
-  isSignedIn = isSignedIn;
 
   constructor(
     private router: Router,
     private api: ApiService,
+    @Inject('APP_ENVIRONMENT') private environment: AppEnvironment,
   ) {
     this._loadUser();
   }
@@ -39,7 +39,6 @@ export class NavbarComponent {
         this._loadNavLinks();
       }, error => {
         localStorage.removeItem('token');
-        this.api.openUrl('/');
       });
     }
   }

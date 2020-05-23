@@ -6,6 +6,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {Router} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
 import {FormlyModule} from '@ngx-formly/core';
 import {FormlyMaterialModule} from '@ngx-formly/material';
 import {ApiService, MockEnvironment, mockWorkflowSpec0, mockWorkflowSpecCategories} from 'sartography-workflow-lib';
@@ -17,6 +19,7 @@ describe('WorkflowSpecDialogComponent', () => {
   let httpMock: HttpTestingController;
   let component: WorkflowSpecDialogComponent;
   let fixture: ComponentFixture<WorkflowSpecDialogComponent>;
+  const mockRouter = {navigate: jasmine.createSpy('navigate')};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -32,6 +35,7 @@ describe('WorkflowSpecDialogComponent', () => {
         MatInputModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
+        RouterTestingModule,
       ],
       declarations: [ WorkflowSpecDialogComponent ],
       providers: [
@@ -52,6 +56,7 @@ describe('WorkflowSpecDialogComponent', () => {
           }
         },
         {provide: MAT_DIALOG_DATA, useValue: []},
+        {provide: Router, useValue: mockRouter},
       ]
     })
     .compileComponents();
