@@ -57,6 +57,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   }
 
   onChange(newValue: string, svgValue: string) {
+    console.log('DiagramComponent default onChange');
   }
 
   onTouched() {
@@ -123,13 +124,20 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   }
 
   saveDiagram() {
-    this.modeler.saveSVG((svgErr, svg) => {
-      this.svg = svg;
+    if (this.modeler && this.modeler.saveSVG) {
+      this.modeler.saveSVG((svgErr, svg) => {
+        this.svg = svg;
+        this.modeler.saveXML({format: true}, (xmlErr, xml) => {
+          this.xml = xml;
+          this.writeValue(xml);
+        });
+      });
+    } else {
       this.modeler.saveXML({format: true}, (xmlErr, xml) => {
         this.xml = xml;
         this.writeValue(xml);
       });
-    });
+    }
   }
 
   saveXML() {
@@ -208,14 +216,17 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
       moddleExtensions: dmnModelerConfig.moddleExtensions,
     });
 
-    this.modeler.on('commandStack.changed', () => this.saveDiagram());
+    this.modeler.on('commandStack.changed', () => {
+      this.saveDiagram();
+    });
 
     this.modeler.on('views.changed', () => {
+      this.saveDiagram();
+
       const viewer = this.modeler.getActiveViewer();
       if (viewer) {
         viewer.get('eventBus').on('commandStack.changed', () => this.saveDiagram());
       }
-      this.saveDiagram();
     });
 
     this.modeler.on('import.done', ({error}) => {
