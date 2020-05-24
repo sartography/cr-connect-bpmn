@@ -5,7 +5,6 @@
 # Parameters:
 # $1: Comma-delimited list of file paths
 # $2: Comma-delimited list of environment variables
-# $3: File path to index.html (optional)
 #####################################################################
 
 echo 'Substituting environment variables...'
@@ -26,7 +25,7 @@ fi
 if [[ "$2" == *"BASE_HREF"* ]]; then
   length=${#BASE_HREF}
   last_char=${BASE_HREF:length-1:1}
-  [[ $last_char != "/" ]] && BASE_HREF="$BASE_HREF/"; :
+  [[ $last_char == "/" ]] && BASE_HREF="$BASE_HREF"; :
 fi
 
 # Convert "VAR1,VAR2,VAR3,..." to "\$VAR1 \$VAR2 \$VAR3 ..."
@@ -39,6 +38,19 @@ do
   envsubst "$env_list" < "$file_path" > "$file_path".tmp && mv "$file_path".tmp "$file_path"
 
   echo '...'
+  #  Wait a second in case envsubst needs more time
+  sleep 1
+
+  # If this is the index.html file, rewrite base href.
+  # Use @ as a sed delimiter because $BASE_HREF will contain a / character
+  if [[ $file_path == *"/index.html"* ]]; then
+    sed -i -e 's@<base href\=\"\/\">@<base href\=\"'"$BASE_HREF"'\">@' "$3"
+  fi
+
+  # If this is the nginx default.conf file, replace double slashes with single slashes
+  if [[ $file_path == *"/default.conf"* ]]; then
+    sed -i -e 's@//@/@g' "$file_path"
+  fi
 done
 
 echo 'Finished substituting environment variables.'
@@ -47,19 +59,5 @@ do
   echo "$env_var = ${!env_var}"
 done
 
-# The third parameter is the path to the index.html file
-# Rewrite base href in index.html.
-# Use @ as a sed delimiter because $BASE_HREF will contain a / character
-if [[ -z $3 ]]; then
-  # Execute all other commands with parameters
-  exit 0
-else
-  #  Wait a second in case envsubst needs more time
-  sleep 1
-  sed -i -e 's@<base href\=\"\/\">@<base href\=\"'"$BASE_HREF"'\">@' "$3"
-
-  # Execute all other commands with parameters
-  exec "${@:4}"
-fi
-
-
+# Execute all other commands with parameters
+exec "${@:3}"
