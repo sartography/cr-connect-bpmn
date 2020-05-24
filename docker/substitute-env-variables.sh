@@ -35,7 +35,7 @@ if [[ "$2" == *"BASE_HREF"* ]]; then
   [[ $last_char == "/" ]] && BASE_HREF="$BASE_HREF"; :
 
   # The third parameter is the absolute path to the nginx html directory
-  if [[ $# -eq 3 ]]; then
+  if [[ $# -ge 3 ]]; then
     # Replace all instances of __REPLACE_ME_WITH_BASE_HREF__ with $BASE_HREF
     find "$3" \( -type d -name .git -prune \) -o -type f -print0 | \
       xargs -0 sed -i 's@__REPLACE_ME_WITH_BASE_HREF__@'"$BASE_HREF"'@g'
@@ -70,3 +70,12 @@ for env_var in ${2//,/ }
 do
   echo "$env_var = ${!env_var}"
 done
+
+# Execute all other commands with parameters
+if [[ $# -gt 3 ]]; then
+  exec "${@:4}"
+else
+  if [[ $# -gt 2 ]]; then
+    exec "${@:3}"
+  fi
+fi
