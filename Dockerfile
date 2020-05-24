@@ -9,7 +9,7 @@ ADD package-lock.json /crc-bpmn/
 
 COPY . /crc-bpmn/
 
-ARG build_config=staging
+ARG build_config=production
 RUN npm install && \
     npm run build:$build_config
 
@@ -27,7 +27,8 @@ RUN chmod +x ./entrypoint.sh
 # Substitute environment variables in nginx configuration and index.html
 ENTRYPOINT ["./entrypoint.sh", \
             "/usr/share/nginx/html/index.html,/etc/nginx/conf.d/default.conf", \
-            "PRODUCTION,API_URL,IRB_URL,HOME_ROUTE,BASE_HREF,PORT0"]
+            "PRODUCTION,API_URL,IRB_URL,HOME_ROUTE,BASE_HREF,PORT0", \
+            "/usr/share/nginx/html"]
 
 ### STAGE 3: Profit! ###
 CMD ["nginx", "-g", "daemon off;"]
