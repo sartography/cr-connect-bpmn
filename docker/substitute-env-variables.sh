@@ -70,6 +70,3 @@ for env_var in ${2//,/ }
 do
   echo "$env_var = ${!env_var}"
 done
-
-# Execute all other commands with parameters
-exec "${@:3}"
