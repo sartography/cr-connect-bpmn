@@ -9,7 +9,7 @@ ADD package-lock.json /crc-bpmn/
 
 COPY . /crc-bpmn/
 
-ARG build_config=production
+ARG build_config=prod
 RUN npm install && \
     npm run build:$build_config
 
