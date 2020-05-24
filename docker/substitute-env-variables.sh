@@ -22,6 +22,13 @@ if [[ -z $2 ]]; then
   exit 1
 fi
 
+# Add trailing slash to $BASE_HREF if needed
+if [[ "$2" == *"BASE_HREF"* ]]; then
+  length=${#BASE_HREF}
+  last_char=${BASE_HREF:length-1:1}
+  [[ $last_char != "/" ]] && BASE_HREF="$BASE_HREF/"; :
+fi
+
 # Convert "VAR1,VAR2,VAR3,..." to "\$VAR1 \$VAR2 \$VAR3 ..."
 env_list="\\\$${2//,/ \\\$}"  # "\" and "$" are escaped as "\\" and "\$"
 for file_path in ${1//,/ }

@@ -57,3 +57,22 @@ services:
     ports:
       - "5000:5000"
     command: ./wait-for-it.sh pb:5001 -t 0 -- ./docker_run.sh
+
+#  # Uncomment for debugging
+#  bpmn:
+#    container_name: bpmn
+#    depends_on:
+#       - db
+#       - pb
+#       - ldap
+#       - backend
+#    image: sartography/cr-connect-bpmn:$E2E_TAG
+#    environment:
+#      - API_URL=http://localhost:5000/v1.0
+#      - BASE_HREF=/
+#      - HOME_ROUTE=home
+#      - IRB_URL=http://localhost:5001
+#      - PORT0=5002
+#      - PRODUCTION=false
+#    ports:
+#      - "5002:5002"
