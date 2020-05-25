@@ -48,7 +48,7 @@ services:
       - UPGRADE_DB=true
       - RESET_DB=true
       - LDAP_URL=ldap
-      - PB_BASE_URL=http://pb:5001/pb/
+      - PB_BASE_URL=http://pb:5001/v2.0/
       - DB_HOST=db
       - DB_PORT=5432
       - DB_PASSWORD=crc_pass
