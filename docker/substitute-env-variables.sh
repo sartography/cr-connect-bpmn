@@ -32,7 +32,7 @@ fi
 if [[ "$2" == *"BASE_HREF"* ]]; then
   length=${#BASE_HREF}
   last_char=${BASE_HREF:length-1:1}
-  [[ $last_char == "/" ]] && BASE_HREF="$BASE_HREF"; :
+  [[ $last_char != "/" ]] && BASE_HREF="$BASE_HREF/"; :
 
   # The third parameter is the absolute path to the nginx html directory
   if [[ $# -ge 3 ]]; then
@@ -50,7 +50,7 @@ fi
 env_list="\\\$${2//,/ \\\$}"  # "\" and "$" are escaped as "\\" and "\$"
 for file_path in ${1//,/ }
 do
-  echo "replacing $env_list in $file_path"
+  echo "replacing environment variables in $file_path"
 
   # Replace strings in the given file(s) in env_list
   envsubst "$env_list" < "$file_path" > "$file_path".tmp && mv "$file_path".tmp "$file_path"

@@ -71,7 +71,7 @@ services:
 #    image: sartography/cr-connect-bpmn:$E2E_TAG
 #    environment:
 #      - API_URL=http://localhost:5000/v1.0
-#      - BASE_HREF=/
+#      - BASE_HREF=/bpmn
 #      - HOME_ROUTE=home
 #      - IRB_URL=http://localhost:5001
 #      - PORT0=5002
