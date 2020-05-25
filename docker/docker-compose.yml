@@ -26,6 +26,8 @@ services:
       - DB_PASSWORD=crc_pass
       - DB_USER=crc_user
       - DB_NAME=pb_test
+      - PORT0=5001
+      - APPLICATION_ROOT=/
     ports:
       - "5001:5001"
     command: ./wait-for-it.sh db:5432 -t 0 -- ./docker_run.sh
@@ -54,6 +56,8 @@ services:
       - DB_PASSWORD=crc_pass
       - DB_USER=crc_user
       - DB_NAME=crc_test
+      - PORT0=5000
+      - APPLICATION_ROOT=/
     ports:
       - "5000:5000"
     command: ./wait-for-it.sh pb:5001 -t 0 -- ./docker_run.sh
