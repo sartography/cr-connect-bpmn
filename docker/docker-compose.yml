@@ -27,6 +27,7 @@ services:
       - DB_NAME=pb_test
       - PORT0=5001
       - APPLICATION_ROOT=/
+      - CORS_ALLOW_ORIGINS=localhost:5000,backend:5000
     ports:
       - "5001:5001"
     command: ./wait-for-it.sh db:5432 -t 0 -- ./docker_run.sh
@@ -48,7 +49,7 @@ services:
       - UPGRADE_DB=true
       - RESET_DB=true
       - LDAP_URL=ldap
-      - PB_BASE_URL=http://pb:5001/v2.0/
+      - PB_BASE_URL=http://localhost:5001/v2.0/
       - DB_HOST=db
       - DB_PORT=5432
       - DB_PASSWORD=crc_pass
@@ -56,6 +57,7 @@ services:
       - DB_NAME=crc_test
       - PORT0=5000
       - APPLICATION_ROOT=/
+      - CORS_ALLOW_ORIGINS=localhost:5002,bpmn:5002,localhost:4200,frontend:4200
     ports:
       - "5000:5000"
     command: ./wait-for-it.sh pb:5001 -t 0 -- ./docker_run.sh
@@ -73,7 +75,7 @@ services:
 #      - API_URL=http://localhost:5000/v1.0
 #      - BASE_HREF=/bpmn
 #      - HOME_ROUTE=home
-#      - IRB_URL=http://localhost:5001
+#      - IRB_URL=http://localhost:5001/
 #      - PORT0=5002
 #      - PRODUCTION=false
 #    ports:

@@ -34,7 +34,7 @@ env:
     - API_URL=http://localhost:5000/v1.0
     - BASE_HREF=/
     - HOME_ROUTE=home
-    - IRB_URL=http://localhost:5001
+    - IRB_URL=http://localhost:5001/
     - PORT0=4200
     - PRODUCTION=false
 script:
