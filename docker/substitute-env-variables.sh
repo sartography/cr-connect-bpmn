@@ -42,17 +42,12 @@ else
   num_args=4
 fi
 
-# Find & replace BASE_HREF and DEPLOY_URL in all files in the nginx html directory
-if [[ "$2" == *"BASE_HREF"* ]] && [[ "$2" == *"DEPLOY_URL"* ]]; then
+# Find & replace BASE_HREF in all files in the nginx html directory
+if [[ "$2" == *"BASE_HREF"* ]]; then
   # Add trailing slash to $BASE_HREF if needed
   length=${#BASE_HREF}
   last_char=${BASE_HREF:length-1:1}
   [[ $last_char != "/" ]] && BASE_HREF="$BASE_HREF/"; :
-
-  # Add trailing slash to $DEPLOY_URL if needed
-  length=${#DEPLOY_URL}
-  last_char=${DEPLOY_URL:length-1:1}
-  [[ $last_char != "/" ]] && DEPLOY_URL="$DEPLOY_URL/"; :
 
   # The third parameter is the absolute path to the nginx html directory
   if [[ $num_args -ge 3 ]]; then
@@ -61,14 +56,6 @@ if [[ "$2" == *"BASE_HREF"* ]] && [[ "$2" == *"DEPLOY_URL"* ]]; then
       xargs -0 sed -i 's@__REPLACE_ME_WITH_BASE_HREF__@'"$BASE_HREF"'@g'
 
     echo 'Replacing base href...'
-    #  Wait a few seconds in case find | sed needs more time
-    sleep 3
-
-    # Replace all instances of __REPLACE_ME_WITH_DEPLOY_URL__ with $DEPLOY_URL
-    find "$3" \( -type d -name .git -prune \) -o -type f -print0 | \
-      xargs -0 sed -i 's@__REPLACE_ME_WITH_DEPLOY_URL__@'"$DEPLOY_URL"'@g'
-
-    echo 'Replacing deploy URL...'
     #  Wait a few seconds in case find | sed needs more time
     sleep 3
   fi
