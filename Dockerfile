@@ -31,5 +31,4 @@ ENTRYPOINT ["./entrypoint.sh", \
             "/etc/nginx/html"]
 
 ### STAGE 3: Profit! ###
-CMD ["nginx", "-g", "'daemon off;'"]
-# CMD ["nginx", "-s", "reload"]
+CMD ["nginx", "-g", "\"daemon off;\""]
