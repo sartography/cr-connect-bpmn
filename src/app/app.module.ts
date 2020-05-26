@@ -1,4 +1,4 @@
-import {APP_BASE_HREF} from '@angular/common';
+import {APP_BASE_HREF, PlatformLocation} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {Injectable, NgModule} from '@angular/core';
 import {FlexLayoutModule} from '@angular/flex-layout';
@@ -61,6 +61,21 @@ export class ThisEnvironment implements AppEnvironment {
   api = environment.api;
   irbUrl = environment.irbUrl;
   baseHref = environment.baseHref;
+}
+
+/**
+ * This function is used internal to get a string instance of the `<base href="" />` value from `index.html`.
+ * This is an exported function, instead of a private function or inline lambda, to prevent this error:
+ *
+ * `Error encountered resolving symbol values statically.`
+ * `Function calls are not supported.`
+ * `Consider replacing the function or lambda with a reference to an exported function.`
+ *
+ * @param platformLocation an Angular service used to interact with a browser's URL
+ * @return a string instance of the `<base href="" />` value from `index.html`
+ */
+export function getBaseHref(platformLocation: PlatformLocation): string {
+  return platformLocation.getBaseHrefFromDOM();
 }
 
 @NgModule({
@@ -133,6 +148,8 @@ export class ThisEnvironment implements AppEnvironment {
     // {provide: APP_BASE_HREF, useValue: environment.baseHref},
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: APP_BASE_HREF, useFactory: getBaseHref, deps: [PlatformLocation]
+  }
   ]
 })
 export class AppModule {
