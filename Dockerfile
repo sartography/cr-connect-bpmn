@@ -25,10 +25,10 @@ COPY ./docker/substitute-env-variables.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
 # Substitute environment variables in nginx configuration and index.html
-RUN ["./entrypoint.sh", \
+ENTRYPOINT ["./entrypoint.sh", \
             "/etc/nginx/html/index.html,/etc/nginx/conf.d/default.conf", \
             "PRODUCTION,API_URL,IRB_URL,HOME_ROUTE,BASE_HREF,PORT0", \
             "/etc/nginx/html"]
 
 ### STAGE 3: Profit! ###
-CMD /usr/sbin/nginx -g "daemon off;"
+CMD ["nginx", "-g", "daemon off;"]
