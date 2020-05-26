@@ -70,13 +70,7 @@ export class SignInComponent implements OnInit {
     localStorage.removeItem('token');
 
     // For testing purposes, create a user to simulate login.
-    if (!this.environment.production) {
-      localStorage.setItem('prev_url', location.origin);
-      this.model.redirect_url = location.origin + '/session';
-      this.api.redirectToLogin(this.model.redirect_url, this.model);
-    } else {
-      this.error = new Error('This feature does not work in production.');
-    }
+    this.api.redirectToLogin();
   }
 
   // If this is production, verify the user and redirect to home page.

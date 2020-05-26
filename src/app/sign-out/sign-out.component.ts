@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from 'sartography-workflow-lib';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-sign-out',
@@ -8,7 +9,7 @@ import {ApiService} from 'sartography-workflow-lib';
 })
 export class SignOutComponent implements OnInit {
 
-  constructor(private api: ApiService) {
+  constructor(private api: ApiService, private router: Router) {
     localStorage.removeItem('token');
   }
 
@@ -16,6 +17,6 @@ export class SignOutComponent implements OnInit {
   }
 
   goHome() {
-    this.api.openUrl('/');
+    this.router.navigate(['/']);
   }
 }
