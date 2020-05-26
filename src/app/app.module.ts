@@ -49,8 +49,6 @@ import {ModelerComponent} from './modeler/modeler.component';
 import {NavbarComponent} from './navbar/navbar.component';
 import {ProtocolBuilderComponent} from './protocol-builder/protocol-builder.component';
 import {ReferenceFilesComponent} from './reference-files/reference-files.component';
-import {SignInComponent} from './sign-in/sign-in.component';
-import {SignOutComponent} from './sign-out/sign-out.component';
 import {WorkflowSpecCardComponent} from './workflow-spec-card/workflow-spec-card.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
 
@@ -60,7 +58,6 @@ export class ThisEnvironment implements AppEnvironment {
   production = environment.production;
   api = environment.api;
   irbUrl = environment.irbUrl;
-  baseHref = environment.baseHref;
 }
 
 /**
@@ -93,8 +90,6 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
     NavbarComponent,
     NewFileDialogComponent,
     OpenFileDialogComponent,
-    SignInComponent,
-    SignOutComponent,
     WorkflowSpecCategoryDialogComponent,
     WorkflowSpecDialogComponent,
     WorkflowSpecListComponent,
@@ -145,11 +140,9 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
   providers: [
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
     {provide: 'APP_ENVIRONMENT', useClass: ThisEnvironment},
-    // {provide: APP_BASE_HREF, useValue: environment.baseHref},
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
-    {provide: APP_BASE_HREF, useFactory: getBaseHref, deps: [PlatformLocation]
-  }
+    {provide: APP_BASE_HREF, useFactory: getBaseHref, deps: [PlatformLocation]}
   ]
 })
 export class AppModule {

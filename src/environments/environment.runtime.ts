@@ -9,5 +9,4 @@ export const environment: AppEnvironment = {
   production: _has(ENV, 'production', '$PRODUCTION') ? (ENV.production === 'true') : false,
   api: _has(ENV, 'api', '$API_URL') ? ENV.api : 'http://localhost:5000/v1.0',
   irbUrl: _has(ENV, 'irbUrl', '$IRB_URL') ? ENV.irbUrl : 'http://localhost:5001',
-  baseHref: _has(ENV, 'baseHref', '$BASE_HREF') ? ENV.baseHref : '/',
 };

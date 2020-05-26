@@ -1,3 +1,4 @@
+import {APP_BASE_HREF} from '@angular/common';
 import {HttpClient} from '@angular/common/http';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {Component} from '@angular/core';
@@ -43,6 +44,7 @@ describe('HomeComponent', () => {
         HttpClient,
         ApiService,
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+        {provide: APP_BASE_HREF, useValue: ''},
         {provide: Router, useValue: mockRouter},
       ]
     })

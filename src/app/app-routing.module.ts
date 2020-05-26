@@ -7,8 +7,6 @@ import {HomeComponent} from './home/home.component';
 import {ModelerComponent} from './modeler/modeler.component';
 import {ProtocolBuilderComponent} from './protocol-builder/protocol-builder.component';
 import {ReferenceFilesComponent} from './reference-files/reference-files.component';
-import {SignInComponent} from './sign-in/sign-in.component';
-import {SignOutComponent} from './sign-out/sign-out.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -16,7 +14,6 @@ export class ThisEnvironment implements AppEnvironment {
   production = environment.production;
   api = environment.api;
   irbUrl = environment.irbUrl;
-  baseHref = environment.baseHref;
 }
 
 const routes: Routes = [
@@ -44,14 +41,6 @@ const routes: Routes = [
   {
     path: 'modeler/:workflowSpecId/:fileMetaId',
     component: ModelerComponent
-  },
-  {
-    path: 'sign-in',
-    component: SignInComponent
-  },
-  {
-    path: 'sign-out',
-    component: SignOutComponent
   },
   {
     path: 'session/:token',
