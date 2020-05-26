@@ -14,7 +14,7 @@ RUN npm install && \
     npm run build:$build_config
 
 ### STAGE 2: Run ###
-FROM nginx:alpine
+FROM nginx:alpine as runtime
 RUN set -x && apk add --update --no-cache bash libintl gettext curl
 
 COPY --from=builder /crc-bpmn/dist/* /etc/nginx/html/
@@ -31,4 +31,4 @@ ENTRYPOINT ["./entrypoint.sh", \
             "/etc/nginx/html"]
 
 ### STAGE 3: Profit! ###
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-s", "reload"]
