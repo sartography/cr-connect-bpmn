@@ -89,9 +89,16 @@ done
 if [ $num_args -ge 4 ] && [ "$4" == "true" ]; then
   # Check to see if nginx command is available
   if hash nginx 2> /dev/null; then
-    echo "Reloading nginx..."
-    exec nginx -s reload
-    echo "nginx reloaded."
+    # Check to see if nginx is already running
+    if [ -e /var/run/nginx.pid ]; then
+      echo "nginx is currently running. Reloading nginx..."
+      exec nginx -s reload
+      echo "nginx reloaded."
+    else
+      echo "nginx is not yet running. Starting nginx..."
+      exec nginx -g 'daemon off;'
+      echo "nginx started."
+    fi
   else
     echo "nginx command not found on this system."
   fi
