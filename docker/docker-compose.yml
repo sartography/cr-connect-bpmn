@@ -41,8 +41,7 @@ services:
     depends_on:
        - db
        - backend
-    image: bpmn:local
-#    image: sartography/cr-connect-bpmn:dev
+    image: sartography/cr-connect-bpmn:dev
     environment:
       - API_URL=http://localhost:5000/api/v1.0
       - BASE_HREF=/bpmn/
@@ -58,8 +57,7 @@ services:
     depends_on:
        - db
        - backend
-    image: frontend:local
-#    image: sartography/cr-connect-frontend:dev
+    image: sartography/cr-connect-frontend:dev
     environment:
       - API_URL=http://localhost:5000/api/v1.0
       - BASE_HREF=/app/
