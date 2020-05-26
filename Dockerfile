@@ -31,4 +31,4 @@ RUN ["./entrypoint.sh", \
             "/etc/nginx/html"]
 
 ### STAGE 3: Profit! ###
-CMD nginx -g daemon off
+CMD /usr/sbin/nginx -g "daemon off;"
