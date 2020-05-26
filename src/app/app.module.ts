@@ -130,7 +130,7 @@ export class ThisEnvironment implements AppEnvironment {
   providers: [
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
     {provide: 'APP_ENVIRONMENT', useClass: ThisEnvironment},
-    {provide: APP_BASE_HREF, useValue: environment.baseHref},
+    // {provide: APP_BASE_HREF, useValue: environment.baseHref},
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
   ]

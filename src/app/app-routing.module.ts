@@ -71,7 +71,7 @@ const routes: Routes = [
   exports: [RouterModule],
   providers: [
     {provide: 'APP_ENVIRONMENT', useClass: ThisEnvironment},
-    {provide: APP_BASE_HREF, useValue: environment.baseHref},
+    // {provide: APP_BASE_HREF, useValue: environment.baseHref},
   ]
 })
 export class AppRoutingModule {
