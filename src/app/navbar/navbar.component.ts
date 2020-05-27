@@ -19,6 +19,7 @@ interface NavItem {
 export class NavbarComponent {
   navLinks: NavItem[];
   user: User;
+  title: string;
 
   constructor(
     private router: Router,
@@ -26,6 +27,7 @@ export class NavbarComponent {
     @Inject('APP_ENVIRONMENT') private environment: AppEnvironment,
   ) {
     this._loadUser();
+    this.title = environment.title;
   }
 
   isLinkActive(path: string) {
