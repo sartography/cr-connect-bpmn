@@ -44,7 +44,7 @@ const routes: Routes = [
     component: ModelerComponent
   },
   {
-    path: 'session/:token',
+    path: 'session',
     component: SessionRedirectComponent
   }
 ];
