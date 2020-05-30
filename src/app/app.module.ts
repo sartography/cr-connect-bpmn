@@ -1,4 +1,4 @@
-import {APP_BASE_HREF} from '@angular/common';
+import {APP_BASE_HREF, PlatformLocation} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {Injectable, NgModule} from '@angular/core';
 import {FlexLayoutModule} from '@angular/flex-layout';
@@ -49,8 +49,6 @@ import {ModelerComponent} from './modeler/modeler.component';
 import {NavbarComponent} from './navbar/navbar.component';
 import {ProtocolBuilderComponent} from './protocol-builder/protocol-builder.component';
 import {ReferenceFilesComponent} from './reference-files/reference-files.component';
-import {SignInComponent} from './sign-in/sign-in.component';
-import {SignOutComponent} from './sign-out/sign-out.component';
 import {WorkflowSpecCardComponent} from './workflow-spec-card/workflow-spec-card.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
 
@@ -60,7 +58,22 @@ export class ThisEnvironment implements AppEnvironment {
   production = environment.production;
   api = environment.api;
   irbUrl = environment.irbUrl;
-  baseHref = environment.baseHref;
+  title = environment.title;
+}
+
+/**
+ * This function is used internal to get a string instance of the `<base href="" />` value from `index.html`.
+ * This is an exported function, instead of a private function or inline lambda, to prevent this error:
+ *
+ * `Error encountered resolving symbol values statically.`
+ * `Function calls are not supported.`
+ * `Consider replacing the function or lambda with a reference to an exported function.`
+ *
+ * @param platformLocation an Angular service used to interact with a browser's URL
+ * @return a string instance of the `<base href="" />` value from `index.html`
+ */
+export function getBaseHref(platformLocation: PlatformLocation): string {
+  return platformLocation.getBaseHrefFromDOM();
 }
 
 @NgModule({
@@ -78,8 +91,6 @@ export class ThisEnvironment implements AppEnvironment {
     NavbarComponent,
     NewFileDialogComponent,
     OpenFileDialogComponent,
-    SignInComponent,
-    SignOutComponent,
     WorkflowSpecCategoryDialogComponent,
     WorkflowSpecDialogComponent,
     WorkflowSpecListComponent,
@@ -130,9 +141,9 @@ export class ThisEnvironment implements AppEnvironment {
   providers: [
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
     {provide: 'APP_ENVIRONMENT', useClass: ThisEnvironment},
-    {provide: APP_BASE_HREF, useValue: environment.baseHref},
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: APP_BASE_HREF, useFactory: getBaseHref, deps: [PlatformLocation]}
   ]
 })
 export class AppModule {

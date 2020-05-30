@@ -1,3 +1,4 @@
+import {APP_BASE_HREF} from '@angular/common';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {DebugNode} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
@@ -31,6 +32,7 @@ describe('DiagramComponent', () => {
       providers: [
         ApiService,
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+        {provide: APP_BASE_HREF, useValue: ''},
         {provide: Router, useValue: mockRouter},
       ]
     });

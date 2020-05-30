@@ -1,3 +1,4 @@
+import {APP_BASE_HREF} from '@angular/common';
 import {HttpHeaders} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
@@ -8,6 +9,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
+import createClone from 'rfdc';
 import {of} from 'rxjs';
 import {
   ApiService,
@@ -22,7 +24,6 @@ import {DeleteFileDialogComponent} from '../_dialogs/delete-file-dialog/delete-f
 import {DeleteFileDialogData} from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {FileListComponent} from './file-list.component';
-import createClone from 'rfdc';
 
 
 describe('FileListComponent', () => {
@@ -49,6 +50,7 @@ describe('FileListComponent', () => {
       providers: [
         ApiService,
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+        {provide: APP_BASE_HREF, useValue: ''},
         {
           provide: MatDialogRef,
           useValue: {
