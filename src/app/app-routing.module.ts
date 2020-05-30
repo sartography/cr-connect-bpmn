@@ -7,8 +7,6 @@ import {HomeComponent} from './home/home.component';
 import {ModelerComponent} from './modeler/modeler.component';
 import {ProtocolBuilderComponent} from './protocol-builder/protocol-builder.component';
 import {ReferenceFilesComponent} from './reference-files/reference-files.component';
-import {SignInComponent} from './sign-in/sign-in.component';
-import {SignOutComponent} from './sign-out/sign-out.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -16,7 +14,7 @@ export class ThisEnvironment implements AppEnvironment {
   production = environment.production;
   api = environment.api;
   irbUrl = environment.irbUrl;
-  baseHref = environment.baseHref;
+  title = environment.title;
 }
 
 const routes: Routes = [
@@ -46,15 +44,7 @@ const routes: Routes = [
     component: ModelerComponent
   },
   {
-    path: 'sign-in',
-    component: SignInComponent
-  },
-  {
-    path: 'sign-out',
-    component: SignOutComponent
-  },
-  {
-    path: 'session/:token',
+    path: 'session',
     component: SessionRedirectComponent
   }
 ];
@@ -71,7 +61,7 @@ const routes: Routes = [
   exports: [RouterModule],
   providers: [
     {provide: 'APP_ENVIRONMENT', useClass: ThisEnvironment},
-    {provide: APP_BASE_HREF, useValue: environment.baseHref},
+    // {provide: APP_BASE_HREF, useValue: environment.baseHref},
   ]
 })
 export class AppRoutingModule {

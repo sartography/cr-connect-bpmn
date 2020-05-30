@@ -1,6 +1,7 @@
+import {APP_BASE_HREF} from '@angular/common';
 import {HttpHeaders} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
@@ -8,12 +9,12 @@ import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/tes
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
+import * as FileSaver from 'file-saver';
+import createClone from 'rfdc';
 import {of} from 'rxjs';
 import {ApiService, FileMeta, FileType, MockEnvironment, mockFileMetaReference0} from 'sartography-workflow-lib';
 import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
-import * as FileSaver from 'file-saver';
-import { ReferenceFilesComponent } from './reference-files.component';
-import createClone from 'rfdc';
+import {ReferenceFilesComponent} from './reference-files.component';
 
 describe('ReferenceFilesComponent', () => {
   let httpMock: HttpTestingController;
@@ -53,6 +54,7 @@ describe('ReferenceFilesComponent', () => {
       providers: [
         ApiService,
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+        {provide: APP_BASE_HREF, useValue: ''},
         {
           provide: MatDialogRef,
           useValue: {
@@ -70,7 +72,7 @@ describe('ReferenceFilesComponent', () => {
         ]
       }
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -96,7 +98,12 @@ describe('ReferenceFilesComponent', () => {
 
   it('should update existing file from file dialog', () => {
     const openDialogSpy = spyOn(component.dialog, 'open')
-      .and.returnValue({afterClosed: () => of({fileMetaId: mockFileMetaReference0.id, file: mockFileMetaReference0.file})} as any);
+      .and.returnValue({
+        afterClosed: () => of({
+          fileMetaId: mockFileMetaReference0.id,
+          file: mockFileMetaReference0.file
+        })
+      } as any);
     const _loadReferenceFilesSpy = spyOn((component as any), '_loadReferenceFiles').and.stub();
 
     component.openFileDialog(mockFileMetaReference0);

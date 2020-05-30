@@ -4,19 +4,19 @@
 // Define a custom typography config that overrides the font-family
 $custom-typography: mat-typography-config(
   $font-family:   $body-font-family,
-  $display-4:     mat-typography-level(2.500rem, 1.0, 700, $heading-font-family),
-  $display-3:     mat-typography-level(2.250rem, 1.0, 700, $heading-font-family),
-  $display-2:     mat-typography-level(2.000rem, 1.0, 700, $heading-font-family),
-  $display-1:     mat-typography-level(1.750rem, 1.0, 700, $heading-font-family),
-  $headline:      mat-typography-level(48px, 1.0, 700, $heading-font-family),
-  $title:         mat-typography-level(1.500rem, 1.0, 700, $body-font-family),
-  $subheading-2:  mat-typography-level(1.375rem, 1.0, 500, $body-font-family),
-  $subheading-1:  mat-typography-level(1.250rem, 1.0, 500, $body-font-family),
-  $body-2:        mat-typography-level(1.000rem, 1.5, 500, $body-font-family),
-  $body-1:        mat-typography-level(1.000rem, 1.5, 500, $body-font-family),
-  $caption:       mat-typography-level(1.000rem, 1.5, 500, $body-font-family),
-  $button:        mat-typography-level(1.000rem, 1.5, 500, $body-font-family),
-  $input:         mat-typography-level(1.000rem, 1.5, 500, $body-font-family)
+  $display-4:     mat-typography-level(3.75rem, 1.0925, 700, $body-font-family),
+  $display-3:     mat-typography-level(2.4917rem, 1.1037, 700, $body-font-family),
+  $display-2:     mat-typography-level(2.2148rem, 1.1287, 700, $body-font-family),
+  $display-1:     mat-typography-level(1.9688rem, 1.1429, 700, $body-font-family),
+  $headline:      mat-typography-level(1.7500rem, 1.1429, 700, $body-font-family),     // h1
+  $title:         mat-typography-level(1.5625rem, 1.1200, 500, $body-font-family),     // h2
+  $subheading-2:  mat-typography-level(1.3750rem, 1.0000, 700, $heading-font-family),  // h3
+  $subheading-1:  mat-typography-level(1.2500rem, 1.1000, 700, $body-font-family),     // h4
+  $body-2:        mat-typography-level(1.1250rem, 1.1111, 500, $body-font-family),     // h5
+  $body-1:        mat-typography-level(1.0000rem, 1.1250, 500, $body-font-family),     // p
+  $caption:       mat-typography-level(0.8750rem, 0.7143, 500, $body-font-family),     // small
+  $button:        mat-typography-level(1.0000rem, 1.1250, 500, $body-font-family),
+  $input:         mat-typography-level(1.0000rem, 1.1250, 500, $body-font-family)
 );
 
 $mat-blue: (

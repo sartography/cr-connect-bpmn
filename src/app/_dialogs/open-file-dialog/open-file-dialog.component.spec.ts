@@ -1,3 +1,4 @@
+import {APP_BASE_HREF} from '@angular/common';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -37,6 +38,7 @@ describe('OpenFileDialogComponent', () => {
       providers: [
         ApiService,
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+        {provide: APP_BASE_HREF, useValue: ''},
         {
           provide: MatDialogRef,
           useValue: {

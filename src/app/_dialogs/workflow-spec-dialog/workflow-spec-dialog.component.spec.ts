@@ -1,5 +1,6 @@
+import {APP_BASE_HREF} from '@angular/common';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -13,7 +14,7 @@ import {FormlyMaterialModule} from '@ngx-formly/material';
 import {ApiService, MockEnvironment, mockWorkflowSpec0, mockWorkflowSpecCategories} from 'sartography-workflow-lib';
 import {WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
 
-import { WorkflowSpecDialogComponent } from './workflow-spec-dialog.component';
+import {WorkflowSpecDialogComponent} from './workflow-spec-dialog.component';
 
 describe('WorkflowSpecDialogComponent', () => {
   let httpMock: HttpTestingController;
@@ -37,10 +38,11 @@ describe('WorkflowSpecDialogComponent', () => {
         ReactiveFormsModule,
         RouterTestingModule,
       ],
-      declarations: [ WorkflowSpecDialogComponent ],
+      declarations: [WorkflowSpecDialogComponent],
       providers: [
         ApiService,
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+        {provide: APP_BASE_HREF, useValue: ''},
         {
           provide: MatDialogRef,
           useValue: {
@@ -59,7 +61,7 @@ describe('WorkflowSpecDialogComponent', () => {
         {provide: Router, useValue: mockRouter},
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

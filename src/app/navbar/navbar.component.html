@@ -1,9 +1,12 @@
-<nav *ngIf="user">
+<nav class="mat-elevation-z6" id="globalHeader" *ngIf="user">
   <a
     [routerLink]="['/']"
     class="site-title mat-display-1"
     mat-button
-  >CR Connect</a>
+  >
+    <img class="logo" src="assets/logo/uva_rotunda.svg" alt="University of Virginia">
+    {{title}}
+  </a>
   <div class="flex-spacer"></div>
   <ng-container *ngFor="let link of navLinks">
     <a *ngIf="!link.links"

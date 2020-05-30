@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
+import {AppEnvironment} from 'sartography-workflow-lib';
 
 @Component({
   selector: 'app-footer',
@@ -7,7 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FooterComponent implements OnInit {
 
-  constructor() { }
+  title: string;
+
+  constructor(@Inject('APP_ENVIRONMENT') private environment: AppEnvironment) {
+    this.title = environment.title;
+  }
 
   ngOnInit() {
   }
