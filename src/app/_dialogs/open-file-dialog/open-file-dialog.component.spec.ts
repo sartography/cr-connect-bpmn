@@ -1,3 +1,4 @@
+import {APP_BASE_HREF} from '@angular/common';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -6,6 +7,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {Router} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
 import {ApiService, MockEnvironment, mockFileMeta0} from 'sartography-workflow-lib';
 import {OpenFileDialogData} from '../../_interfaces/dialog-data';
 
@@ -15,6 +18,7 @@ describe('OpenFileDialogComponent', () => {
   let httpMock: HttpTestingController;
   let component: OpenFileDialogComponent;
   let fixture: ComponentFixture<OpenFileDialogComponent>;
+  const mockRouter = {navigate: jasmine.createSpy('navigate')};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -28,11 +32,13 @@ describe('OpenFileDialogComponent', () => {
         MatInputModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
+        RouterTestingModule,
       ],
       declarations: [ OpenFileDialogComponent ],
       providers: [
         ApiService,
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+        {provide: APP_BASE_HREF, useValue: ''},
         {
           provide: MatDialogRef,
           useValue: {
@@ -48,6 +54,7 @@ describe('OpenFileDialogComponent', () => {
           }
         },
         {provide: MAT_DIALOG_DATA, useValue: []},
+        {provide: Router, useValue: mockRouter},
       ]
     })
     .compileComponents();

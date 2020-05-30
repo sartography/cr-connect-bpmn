@@ -69,6 +69,7 @@ export class ModelerComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.diagramComponent.registerOnChange((newXmlValue: string, newSvgValue: string) => {
+      console.log('ModelerComponent > DiagramComponent > onChange');
       this.draftXml = newXmlValue;
       this.svg = newSvgValue;
     });
