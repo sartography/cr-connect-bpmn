@@ -2,11 +2,27 @@
   <h1>Reference Files</h1>
 
   <div *ngFor="let refFile of referenceFiles" fxLayout="row" fxLayoutGap="40px">
-    <h3>{{refFile.name}}</h3>
-    <div class="file-buttons" fxLayout="row" fxLayoutGap="10px">
-      <button mat-icon-button (click)="downloadFile(refFile)" color="primary"><mat-icon>save_alt</mat-icon></button>
-      <button mat-icon-button (click)="openFileDialog(refFile)" color="primary"><mat-icon>edit</mat-icon></button>
-    </div>
+    <mat-card class="mat-elevation-z0">
+      <mat-card-header>
+        <mat-card-title>
+          <h2>
+            <mat-icon>{{refFile.type | getIconCode}}</mat-icon>
+            {{refFile.name}}
+          </h2>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <hr>
+      </mat-card-content>
+      <mat-card-footer>
+        <button mat-button (click)="downloadFile(refFile)" color="primary">
+          <mat-icon>save_alt</mat-icon> Download existing version
+        </button>
+        <button mat-button (click)="openFileDialog(refFile)" color="primary">
+          <mat-icon>edit</mat-icon> Upload a new version
+        </button>
+      </mat-card-footer>
+    </mat-card>
   </div>
 </div>
 

@@ -1,3 +1,4 @@
+import {AppEnvironment} from 'sartography-workflow-lib';
 import {_has, environment} from './environment.runtime';
 
 declare var ENV;
