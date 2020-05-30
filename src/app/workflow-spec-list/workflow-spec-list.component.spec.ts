@@ -1,3 +1,4 @@
+import {APP_BASE_HREF} from '@angular/common';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef} from '@angular/material/bottom-sheet';
@@ -15,11 +16,14 @@ import {
   ApiService,
   MockEnvironment,
   mockWorkflowSpec0,
-  mockWorkflowSpec1, mockWorkflowSpec2,
+  mockWorkflowSpec1,
+  mockWorkflowSpec2,
   mockWorkflowSpecCategories,
   mockWorkflowSpecCategory0,
-  mockWorkflowSpecCategory1, mockWorkflowSpecCategory2,
-  mockWorkflowSpecs, moveArrayElementUp, WorkflowSpec, WorkflowSpecCategory
+  mockWorkflowSpecCategory1,
+  mockWorkflowSpecCategory2,
+  mockWorkflowSpecs,
+  WorkflowSpec
 } from 'sartography-workflow-lib';
 import {ApiError} from 'sartography-workflow-lib/lib/types/api';
 import {DeleteWorkflowSpecDialogComponent} from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
@@ -32,7 +36,7 @@ import {
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {ApiErrorsComponent} from '../api-errors/api-errors.component';
 import {FileListComponent} from '../file-list/file-list.component';
-import {WorkflowSpecCategoryGroup, WorkflowSpecListComponent} from './workflow-spec-list.component';
+import {WorkflowSpecListComponent} from './workflow-spec-list.component';
 
 describe('WorkflowSpecListComponent', () => {
   let httpMock: HttpTestingController;
@@ -62,6 +66,7 @@ describe('WorkflowSpecListComponent', () => {
       providers: [
         ApiService,
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+        {provide: APP_BASE_HREF, useValue: ''},
         {
           provide: MatDialogRef,
           useValue: {
@@ -366,7 +371,7 @@ describe('WorkflowSpecListComponent', () => {
     const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
     const moveUpSpy = spyOn(component, 'moveUp').and.callThrough();
     const moveDownSpy = spyOn(component, 'moveDown').and.callThrough();
-    const expectedCatsAfter = [ mockWorkflowSpecCategory1, mockWorkflowSpecCategory0, mockWorkflowSpecCategory2 ];
+    const expectedCatsAfter = [mockWorkflowSpecCategory1, mockWorkflowSpecCategory0, mockWorkflowSpecCategory2];
 
     expect((component as any)._reorder(99, 1, mockWorkflowSpecCategories)).toEqual([]);
     expect(snackBarSpy).toHaveBeenCalled();

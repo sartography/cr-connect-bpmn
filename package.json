@@ -5,8 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:prod": "ng build --configuration=production",
-    "build:staging": "ng build --configuration=staging",
+    "build:prod": "ng build --configuration=production --prod --base-href=__REPLACE_ME_WITH_BASE_HREF__  --deploy-url=__REPLACE_ME_WITH_DEPLOY_URL__",
+    "build:staging": "ng build --configuration=staging --prod --base-href=__REPLACE_ME_WITH_BASE_HREF__  --deploy-url=__REPLACE_ME_WITH_DEPLOY_URL__",
     "build:test": "ng build --configuration=test",
     "test": "ng test",
     "test:coverage": "ng test --codeCoverage=true --watch=false --browsers=ChromeHeadless",
@@ -21,7 +21,8 @@
     "e2e-wf:db-setup": "docker exec -it backend pipenv run flask load-example-data",
     "e2e-wf:pb-setup": "docker exec -it pb pipenv run flask db upgrade",
     "e2e-wf": "npm run e2e-wf:stop && npm run e2e-wf:clean && npm run e2e-wf:build && npm run e2e-wf:start && npm run e2e-wf:db-upgrade && npm run e2e-wf:db-setup && npm run e2e-wf:pb-setup",
-    "ci": "npm run lint && npm run test:coverage && npm run e2e:with-wf && sonar-scanner"
+    "env": "chmod +x ./docker/substitute-env-variables.sh && ./docker/substitute-env-variables.sh src/index.html PRODUCTION,API_URL,IRB_URL,HOME_ROUTE,BASE_HREF,PORT0",
+    "ci": "npm run lint && npm run test:coverage && sonar-scanner"
   },
   "private": true,
   "dependencies": {
@@ -38,6 +39,7 @@
     "@angular/router": "^9.0.7",
     "@ngx-formly/core": "^5.5.15",
     "@ngx-formly/material": "^5.5.15",
+    "@yellowspot/ng-truncate": "^1.5.1",
     "bpmn-js": "^6.4.2",
     "bpmn-js-properties-panel": "^0.33.2",
     "camunda-bpmn-moddle": "^4.4.0",
@@ -52,7 +54,7 @@
     "ngx-file-drop": "^8.0.8",
     "ngx-markdown": "^9.0.0",
     "rxjs": "~6.5.4",
-    "sartography-workflow-lib": "^0.0.170",
+    "sartography-workflow-lib": "0.0.213",
     "tslib": "^1.11.1",
     "uuid": "^7.0.2",
     "zone.js": "^0.10.3"

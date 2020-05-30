@@ -1,22 +1,26 @@
+import {APP_BASE_HREF} from '@angular/common';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {Router} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
 import {FormlyModule} from '@ngx-formly/core';
 import {FormlyMaterialModule} from '@ngx-formly/material';
 import {ApiService, MockEnvironment, mockWorkflowSpec0, mockWorkflowSpecCategories} from 'sartography-workflow-lib';
 import {WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
 
-import { WorkflowSpecDialogComponent } from './workflow-spec-dialog.component';
+import {WorkflowSpecDialogComponent} from './workflow-spec-dialog.component';
 
 describe('WorkflowSpecDialogComponent', () => {
   let httpMock: HttpTestingController;
   let component: WorkflowSpecDialogComponent;
   let fixture: ComponentFixture<WorkflowSpecDialogComponent>;
+  const mockRouter = {navigate: jasmine.createSpy('navigate')};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -32,11 +36,13 @@ describe('WorkflowSpecDialogComponent', () => {
         MatInputModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
+        RouterTestingModule,
       ],
-      declarations: [ WorkflowSpecDialogComponent ],
+      declarations: [WorkflowSpecDialogComponent],
       providers: [
         ApiService,
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+        {provide: APP_BASE_HREF, useValue: ''},
         {
           provide: MatDialogRef,
           useValue: {
@@ -52,9 +58,10 @@ describe('WorkflowSpecDialogComponent', () => {
           }
         },
         {provide: MAT_DIALOG_DATA, useValue: []},
+        {provide: Router, useValue: mockRouter},
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
