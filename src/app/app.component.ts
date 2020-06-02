@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
-import {ApiService} from 'sartography-workflow-lib';
-import {GoogleAnalyticsService} from 'sartography-workflow-lib/lib/services/google-analytics.service';
+import {ApiService, GoogleAnalyticsService} from 'sartography-workflow-lib';
 
 @Component({
   selector: 'app-root',
