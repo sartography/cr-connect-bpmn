@@ -59,6 +59,7 @@ export class ThisEnvironment implements AppEnvironment {
   api = environment.api;
   irbUrl = environment.irbUrl;
   title = environment.title;
+  googleAnalyticsKey = environment.googleAnalyticsKey;
 }
 
 /**
