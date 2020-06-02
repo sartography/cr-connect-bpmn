@@ -1,6 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {ApiService, AppEnvironment, isSignedIn, User, UserParams} from 'sartography-workflow-lib';
+import {GoogleAnalyticsService} from 'sartography-workflow-lib/lib/services/google-analytics.service';
 
 interface NavItem {
   path?: string;
@@ -25,6 +26,7 @@ export class NavbarComponent {
     private router: Router,
     private api: ApiService,
     @Inject('APP_ENVIRONMENT') private environment: AppEnvironment,
+    private googleAnalyticsService: GoogleAnalyticsService
   ) {
     this._loadUser();
     this.title = environment.title;
@@ -37,6 +39,7 @@ export class NavbarComponent {
   private _loadUser() {
     if (isSignedIn()) {
       this.api.getUser().subscribe(u => {
+        this.googleAnalyticsService.setUser(u.uid);
         this.user = u;
         this._loadNavLinks();
       }, error => {
