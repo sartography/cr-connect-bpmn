@@ -21,7 +21,6 @@ import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormlyModule} from '@ngx-formly/core';
 import {
-  ApiErrorsComponent,
   AppEnvironment,
   AuthInterceptor,
   ErrorInterceptor,
@@ -97,7 +96,6 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
     WorkflowSpecListComponent,
     HomeComponent,
     WorkflowSpecCardComponent,
-    ApiErrorsComponent,
     ProtocolBuilderComponent,
     ReferenceFilesComponent,
   ],
@@ -129,7 +127,6 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
   ],
   bootstrap: [AppComponent],
   entryComponents: [
-    ApiErrorsComponent,
     DeleteFileDialogComponent,
     DeleteWorkflowSpecDialogComponent,
     DeleteWorkflowSpecCategoryDialogComponent,
