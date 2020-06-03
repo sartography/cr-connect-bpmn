@@ -21,6 +21,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormlyModule} from '@ngx-formly/core';
 import {
+  ApiErrorsComponent,
   AppEnvironment,
   AuthInterceptor,
   ErrorInterceptor,
@@ -38,7 +39,6 @@ import {OpenFileDialogComponent} from './_dialogs/open-file-dialog/open-file-dia
 import {WorkflowSpecCategoryDialogComponent} from './_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
 import {WorkflowSpecDialogComponent} from './_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
 import {GetIconCodePipe} from './_pipes/get-icon-code.pipe';
-import {ApiErrorsComponent} from './api-errors/api-errors.component';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {DiagramComponent} from './diagram/diagram.component';
