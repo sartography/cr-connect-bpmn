@@ -21,7 +21,7 @@ import {
   WorkflowSpecCategoryDialogData,
   WorkflowSpecDialogData
 } from '../_interfaces/dialog-data';
-import {ApiErrorsComponent} from '../api-errors/api-errors.component';
+import {ApiErrorsComponent} from 'sartography-workflow-lib';
 
 
 export interface WorkflowSpecCategoryGroup {

@@ -13,6 +13,7 @@ import {RouterTestingModule} from '@angular/router/testing';
 import createClone from 'rfdc';
 import {of} from 'rxjs';
 import {
+  ApiErrorsComponent,
   ApiService,
   MockEnvironment,
   mockWorkflowSpec0,
@@ -34,7 +35,6 @@ import {
   WorkflowSpecDialogData
 } from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
-import {ApiErrorsComponent} from '../api-errors/api-errors.component';
 import {FileListComponent} from '../file-list/file-list.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list.component';
 

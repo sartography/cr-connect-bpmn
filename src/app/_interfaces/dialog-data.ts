@@ -49,7 +49,3 @@ export interface DeleteWorkflowSpecCategoryDialogData {
   confirm: boolean;
   category: WorkflowSpecCategory;
 }
-
-export interface ApiErrorsBottomSheetData {
-  apiErrors: ApiError[];
-}

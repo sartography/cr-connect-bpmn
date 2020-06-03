@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {ApiService, GoogleAnalyticsService} from 'sartography-workflow-lib';
+import {Component, Inject} from '@angular/core';
+import {ApiService, AppEnvironment, GoogleAnalyticsService} from 'sartography-workflow-lib';
 
 @Component({
   selector: 'app-root',
@@ -10,10 +10,11 @@ export class AppComponent {
   title = 'CR Connect Configuration';
 
   constructor(
+    @Inject('APP_ENVIRONMENT') private environment: AppEnvironment,
     private apiService: ApiService,
-    private googleAnalyticsService: GoogleAnalyticsService
+    private googleAnalyticsService: GoogleAnalyticsService,
   ) {
-    this.googleAnalyticsService.init();
+    this.googleAnalyticsService.init(this.environment.googleAnalyticsKey);
   }
 
   get isSignedIn() {

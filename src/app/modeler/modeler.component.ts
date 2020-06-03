@@ -5,6 +5,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {
+  ApiErrorsComponent,
   ApiService,
   FileMeta,
   FileType,
@@ -19,7 +20,6 @@ import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-di
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
 import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData} from '../_interfaces/dialog-data';
 import {ImportEvent} from '../_interfaces/import-event';
-import {ApiErrorsComponent} from '../api-errors/api-errors.component';
 import {DiagramComponent} from '../diagram/diagram.component';
 
 @Component({
