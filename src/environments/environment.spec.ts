@@ -3,14 +3,15 @@ import {_has, environment} from './environment.runtime';
 declare var ENV;
 
 describe('Environments', () => {
-  it('should have settings for all the environments', () => {
+  it('should have default values for all the environments', () => {
     expect(environment).toBeDefined();
     expect(environment.production).toEqual(false);
     expect(environment.api).toEqual('apiRoot');
     expect(environment.irbUrl).toEqual('irbUrl');
     expect(environment.homeRoute).toEqual('home');
-    expect(environment.title).toEqual('Research Ramp-Up Toolkit Configurator');
+    expect(environment.title).toEqual('Research Ramp-Up Toolkit');
     expect(environment.googleAnalyticsKey).toEqual('UA-168203235-5');
+    expect(environment.sentryKey).toEqual(undefined);
   });
 
   it('should check if environment variables are defined', () => {
@@ -21,6 +22,7 @@ describe('Environments', () => {
       irbUrl: '$IRB_URL',
       title: '$TITLE',
       googleAnalyticsKey: '$GOOGLE_ANALYTICS_KEY',
+      sentryKey: '$SENTRY_KEY',
     };
 
     expect(_has(env, 'homeRoute', '$HOME_ROUTE')).toBeFalse();
