@@ -59,6 +59,7 @@ export class ThisEnvironment implements AppEnvironment {
   irbUrl = environment.irbUrl;
   title = environment.title;
   googleAnalyticsKey = environment.googleAnalyticsKey;
+  sentryKey = environment.sentryKey;
 }
 
 /**
