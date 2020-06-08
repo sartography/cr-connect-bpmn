@@ -9,7 +9,7 @@ describe('Environments', () => {
     expect(environment.api).toEqual('apiRoot');
     expect(environment.irbUrl).toEqual('irbUrl');
     expect(environment.homeRoute).toEqual('home');
-    expect(environment.title).toEqual('Research Ramp-Up Toolkit');
+    expect(environment.title).toEqual('Research Ramp-Up Toolkit Configurator');
     expect(environment.googleAnalyticsKey).toEqual('UA-168203235-5');
     expect(environment.sentryKey).toEqual(undefined);
   });
