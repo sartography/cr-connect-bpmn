@@ -39,6 +39,7 @@
     "@angular/router": "^9.0.7",
     "@ngx-formly/core": "^5.5.15",
     "@ngx-formly/material": "^5.5.15",
+    "@sentry/browser": "^5.16.1",
     "@yellowspot/ng-truncate": "^1.5.1",
     "bpmn-js": "^6.4.2",
     "bpmn-js-properties-panel": "^0.33.2",
@@ -54,7 +55,7 @@
     "ngx-file-drop": "^8.0.8",
     "ngx-markdown": "^9.0.0",
     "rxjs": "~6.5.4",
-    "sartography-workflow-lib": "0.0.249",
+    "sartography-workflow-lib": "0.0.261",
     "tslib": "^1.11.1",
     "uuid": "^7.0.2",
     "zone.js": "^0.10.3"
