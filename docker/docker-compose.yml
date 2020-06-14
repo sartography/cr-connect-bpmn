@@ -2,13 +2,13 @@ version: "3.3"
 services:
   db:
     container_name: db
-    image: sartography/cr-connect-db:dev
+    image: sartography/cr-connect-db:$E2E_TAG
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=rrt_user
-      - POSTGRES_PASSWORD=rrt_pass
-      - POSTGRES_MULTIPLE_DATABASES=rrt
+      - POSTGRES_USER=crc_user
+      - POSTGRES_PASSWORD=crc_pass
+      - POSTGRES_MULTIPLE_DATABASES=crc_test,pb_test
     healthcheck:
       test: ["CMD", "pg_isready"]
       timeout: 20s
@@ -18,12 +18,35 @@ services:
     container_name: backend
     depends_on:
        - db
-    image: sartography/cr-connect-workflow:dev
+    image: sartography/cr-connect-workflow:$E2E_TAG
     environment:
-      - APPLICATION_ROOT=/api
+      - APPLICATION_ROOT=/
       - CORS_ALLOW_ORIGINS=localhost:5002,bpmn:5002,localhost:4200,frontend:4200
       - DB_HOST=db
-      - DB_NAME=rrt
+      - DB_NAME=crc_test
+      - DB_PASSWORD=crc_pass
+      - DB_PORT=5432
+      - DB_USER=crc_user
+      - LDAP_URL=ldap:3004
+      - PB_ENABLED=false
+      - PORT0=5000
+      - RESET_DB=true
+      - UPGRADE_DB=true
+      - TESTING=true
+    ports:
+      - "5000:5000"
+    command: ./wait-for-it.sh db:5432 -t 0 -- ./docker_run.sh
+
+  pb:
+    container_name: pb
+    depends_on:
+       - db
+    image: sartography/cr-connect-workflow:$E2E_TAG
+    environment:
+      - APPLICATION_ROOT=/
+      - CORS_ALLOW_ORIGINS=localhost:5000,backend:5000,localhost:5002,bpmn:5002,localhost:4200,frontend:4200
+      - DB_HOST=db
+      - DB_NAME=pb_test
       - DB_PASSWORD=rrt_pass
       - DB_PORT=5432
       - DB_USER=rrt_user
@@ -33,37 +56,37 @@ services:
       - RESET_DB=true
       - UPGRADE_DB=true
     ports:
-      - "5000:5000"
+      - "5001:5001"
     command: ./wait-for-it.sh db:5432 -t 0 -- ./docker_run.sh
 
-  bpmn:
-    container_name: bpmn
-    depends_on:
-       - db
-       - backend
-    image: sartography/cr-connect-bpmn:dev
-    environment:
-      - API_URL=http://localhost:5000/api/v1.0
-      - BASE_HREF=/bpmn/
-      - DEPLOY_URL=/bpmn/
-      - HOME_ROUTE=home
-      - PORT0=5002
-      - PRODUCTION=false
-    ports:
-      - "5002:5002"
-
-  frontend:
-    container_name: frontend
-    depends_on:
-       - db
-       - backend
-    image: sartography/cr-connect-frontend:dev
-    environment:
-      - API_URL=http://localhost:5000/api/v1.0
-      - BASE_HREF=/app/
-      - DEPLOY_URL=/app/
-      - HOME_ROUTE=home
-      - PORT0=4200
-      - PRODUCTION=false
-    ports:
-      - "4200:4200"
+#  bpmn:
+#    container_name: bpmn
+#    depends_on:
+#       - db
+#       - backend
+#    image: sartography/cr-connect-bpmn:dev
+#    environment:
+#      - API_URL=http://localhost:5000/api/v1.0
+#      - BASE_HREF=/bpmn/
+#      - DEPLOY_URL=/bpmn/
+#      - HOME_ROUTE=home
+#      - PORT0=5002
+#      - PRODUCTION=false
+#    ports:
+#      - "5002:5002"
+#
+#  frontend:
+#    container_name: frontend
+#    depends_on:
+#       - db
+#       - backend
+#    image: sartography/cr-connect-frontend:dev
+#    environment:
+#      - API_URL=http://localhost:5000/api/v1.0
+#      - BASE_HREF=/app/
+#      - DEPLOY_URL=/app/
+#      - HOME_ROUTE=home
+#      - PORT0=4200
+#      - PRODUCTION=false
+#    ports:
+#      - "4200:4200"
