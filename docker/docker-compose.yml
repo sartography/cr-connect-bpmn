@@ -1,5 +1,11 @@
 version: "3.3"
 services:
+  ldap:
+    container_name: ldap
+    image: tuxmonteiro/ldap-mock
+    ports:
+      - "3890:3890"
+
   db:
     container_name: db
     image: sartography/cr-connect-db:$E2E_TAG
@@ -27,8 +33,9 @@ services:
       - DB_PASSWORD=crc_pass
       - DB_PORT=5432
       - DB_USER=crc_user
-      - LDAP_URL=ldap:3004
-      - PB_ENABLED=false
+      - LDAP_URL=ldap
+      - PB_ENABLED=true
+      - PB_BASE_URL=http://pb:5001/v2.0/
       - PORT0=5000
       - RESET_DB=true
       - UPGRADE_DB=true
@@ -41,18 +48,16 @@ services:
     container_name: pb
     depends_on:
        - db
-    image: sartography/cr-connect-workflow:$E2E_TAG
+    image: sartography/protocol-builder-mock:$E2E_TAG
     environment:
       - APPLICATION_ROOT=/
       - CORS_ALLOW_ORIGINS=localhost:5000,backend:5000,localhost:5002,bpmn:5002,localhost:4200,frontend:4200
       - DB_HOST=db
       - DB_NAME=pb_test
-      - DB_PASSWORD=rrt_pass
+      - DB_PASSWORD=crc_pass
       - DB_PORT=5432
-      - DB_USER=rrt_user
-      - LDAP_URL=ldap.virginia.edu
-      - PB_ENABLED=false
-      - PORT0=5000
+      - DB_USER=crc_user
+      - PORT0=5001
       - RESET_DB=true
       - UPGRADE_DB=true
     ports:
