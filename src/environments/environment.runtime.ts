@@ -10,4 +10,6 @@ export const environment: AppEnvironment = {
   api: _has(ENV, 'api', '$API_URL') ? ENV.api : 'http://localhost:5000/v1.0',
   irbUrl: _has(ENV, 'irbUrl', '$IRB_URL') ? ENV.irbUrl : 'http://localhost:5001',
   title: _has(ENV, 'title', '$TITLE') ? ENV.title : 'Research Ramp-Up Toolkit Configurator',
+  googleAnalyticsKey: _has(ENV, 'googleAnalyticsKey', '$GOOGLE_ANALYTICS_KEY') ? ENV.googleAnalyticsKey : 'UA-168203235-5',
+  sentryKey: _has(ENV, 'sentryKey', '$SENTRY_KEY') ? ENV.sentryKey : undefined,
 };
