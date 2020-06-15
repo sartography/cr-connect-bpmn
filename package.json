@@ -18,7 +18,7 @@
     "e2e-wf:start": "cd docker && docker-compose up -d --force-recreate && cd ..",
     "e2e-wf": "npm run e2e-wf:stop && npm run e2e-wf:build && npm run e2e-wf:start",
     "env": "chmod +x ./docker/substitute-env-variables.sh && ./docker/substitute-env-variables.sh src/index.html PRODUCTION,API_URL,IRB_URL,HOME_ROUTE,BASE_HREF,DEPLOY_URL,PORT0,GOOGLE_ANALYTICS_KEY,SENTRY_KEY,TITLE",
-    "ci": "npm run lint && npm run test:coverage && npm run env && npm run e2e:with-wf && sonar-scanner"
+    "ci": "npm run lint && npm run test:coverage && sonar-scanner"
   },
   "private": true,
   "dependencies": {
