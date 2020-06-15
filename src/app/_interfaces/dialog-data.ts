@@ -1,5 +1,4 @@
 import {FileMeta, FileType, WorkflowSpec, WorkflowSpecCategory} from 'sartography-workflow-lib';
-import {ApiError} from 'sartography-workflow-lib/lib/types/api';
 
 export interface FileMetaDialogData {
   id?: number;
@@ -48,8 +47,4 @@ export interface DeleteWorkflowSpecDialogData {
 export interface DeleteWorkflowSpecCategoryDialogData {
   confirm: boolean;
   category: WorkflowSpecCategory;
-}
-
-export interface ApiErrorsBottomSheetData {
-  apiErrors: ApiError[];
 }

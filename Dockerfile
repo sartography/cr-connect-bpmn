@@ -32,6 +32,6 @@ RUN echo "pushstate: enabled" > /etc/nginx/html/Staticfile
 # then starts/reloads nginx.
 ENTRYPOINT ["./entrypoint.sh", \
             "/etc/nginx/html/index.html,/etc/nginx/conf.d/default.conf", \
-            "PRODUCTION,API_URL,IRB_URL,HOME_ROUTE,BASE_HREF,DEPLOY_URL,PORT0", \
+            "PRODUCTION,API_URL,IRB_URL,HOME_ROUTE,BASE_HREF,DEPLOY_URL,PORT0,GOOGLE_ANALYTICS_KEY,SENTRY_KEY,TITLE", \
             "/etc/nginx/html", \
             "true"]
