@@ -7,9 +7,6 @@ language: node_js
 node_js:
   - 12
 
-python:
-  - "3.7"
-
 services:
   - docker
   - xvfb
@@ -33,6 +30,7 @@ env:
   global:
     - API_URL=http://localhost:5000/v1.0
     - BASE_HREF=/
+    - DEPLOY_URL=/
     - HOME_ROUTE=home
     - IRB_URL=http://localhost:5001/
     - PORT0=4200
@@ -42,7 +40,7 @@ script:
 
 deploy:
   provider: script
-  script: bash ./deploy.sh
+  script: bash ./deploy.sh sartography/cr-connect-bpmn
   on:
     all_branches: true
     condition: $TRAVIS_BRANCH =~ ^(dev|testing|demo|training|staging|master|rrt\/.*)$

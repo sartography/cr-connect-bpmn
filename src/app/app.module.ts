@@ -38,7 +38,6 @@ import {OpenFileDialogComponent} from './_dialogs/open-file-dialog/open-file-dia
 import {WorkflowSpecCategoryDialogComponent} from './_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
 import {WorkflowSpecDialogComponent} from './_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
 import {GetIconCodePipe} from './_pipes/get-icon-code.pipe';
-import {ApiErrorsComponent} from './api-errors/api-errors.component';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {DiagramComponent} from './diagram/diagram.component';
@@ -59,6 +58,8 @@ export class ThisEnvironment implements AppEnvironment {
   api = environment.api;
   irbUrl = environment.irbUrl;
   title = environment.title;
+  googleAnalyticsKey = environment.googleAnalyticsKey;
+  sentryKey = environment.sentryKey;
 }
 
 /**
@@ -96,7 +97,6 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
     WorkflowSpecListComponent,
     HomeComponent,
     WorkflowSpecCardComponent,
-    ApiErrorsComponent,
     ProtocolBuilderComponent,
     ReferenceFilesComponent,
   ],
@@ -128,7 +128,6 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
   ],
   bootstrap: [AppComponent],
   entryComponents: [
-    ApiErrorsComponent,
     DeleteFileDialogComponent,
     DeleteWorkflowSpecDialogComponent,
     DeleteWorkflowSpecCategoryDialogComponent,

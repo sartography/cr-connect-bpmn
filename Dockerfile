@@ -1,13 +1,7 @@
 ### STAGE 1: Build ###
-FROM node AS builder
+FROM sartography/cr-connect-angular-base AS builder
 
-RUN mkdir /crc-bpmn
-WORKDIR /crc-bpmn
-
-ADD package.json /crc-bpmn/
-ADD package-lock.json /crc-bpmn/
-
-COPY . /crc-bpmn/
+COPY . /app/
 
 ARG build_config=prod
 RUN npm install && \
@@ -17,8 +11,8 @@ RUN npm install && \
 FROM nginx:alpine
 RUN set -x && apk add --update --no-cache bash libintl gettext curl
 
-COPY --from=builder /crc-bpmn/dist/* /etc/nginx/html/
-COPY --from=builder /crc-bpmn/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist/* /etc/nginx/html/
+COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Script for substituting environment variables
 COPY ./docker/substitute-env-variables.sh ./entrypoint.sh
@@ -32,6 +26,6 @@ RUN echo "pushstate: enabled" > /etc/nginx/html/Staticfile
 # then starts/reloads nginx.
 ENTRYPOINT ["./entrypoint.sh", \
             "/etc/nginx/html/index.html,/etc/nginx/conf.d/default.conf", \
-            "PRODUCTION,API_URL,IRB_URL,HOME_ROUTE,BASE_HREF,DEPLOY_URL,PORT0", \
+            "PRODUCTION,API_URL,IRB_URL,HOME_ROUTE,BASE_HREF,DEPLOY_URL,PORT0,GOOGLE_ANALYTICS_KEY,SENTRY_KEY,TITLE", \
             "/etc/nginx/html", \
             "true"]
