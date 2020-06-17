@@ -12,13 +12,13 @@
     "test:coverage": "ng test --codeCoverage=true --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "e2e": "./node_modules/protractor/bin/webdriver-manager update && ng e2e",
-    "e2e:with-wf": "npm run e2e-wf && ng e2e && npm run e2e-wf:stop",
-    "e2e-wf:stop": "cd docker && docker-compose down && cd ..",
-    "e2e-wf:build": "cd docker && docker-compose pull && docker-compose build && cd ..",
-    "e2e-wf:start": "cd docker && docker-compose up -d --force-recreate && cd ..",
-    "e2e-wf": "npm run e2e-wf:stop && npm run e2e-wf:build && npm run e2e-wf:start",
+    "e2e:with-backend": "npm run backend && ng e2e && npm run backend:stop",
+    "backend:stop": "cd docker && docker-compose down && cd ..",
+    "backend:build": "cd docker && docker-compose pull && docker-compose build && cd ..",
+    "backend:start": "cd docker && docker-compose up -d --force-recreate && cd ..",
+    "backend": "npm run backend:stop && npm run backend:build && npm run backend:start",
     "env": "chmod +x ./docker/substitute-env-variables.sh && ./docker/substitute-env-variables.sh src/index.html PRODUCTION,API_URL,IRB_URL,HOME_ROUTE,BASE_HREF,DEPLOY_URL,PORT0,GOOGLE_ANALYTICS_KEY,SENTRY_KEY,TITLE",
-    "ci": "npm run lint && npm run test:coverage && sonar-scanner"
+    "ci": "npm run lint && npm run test:coverage && sonar-scanner && npm run env && npm run backend && npm run e2e"
   },
   "private": true,
   "dependencies": {
