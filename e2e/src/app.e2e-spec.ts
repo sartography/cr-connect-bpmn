@@ -7,13 +7,10 @@ describe('workspace-project App', () => {
     page = new AppPage();
   });
 
-  it('should display fake sign-in screen', () => {
+  it('should display home screen', () => {
     page.navigateTo();
-    expect(page.getText('h1')).toEqual('FAKE UVA NETBADGE SIGN IN (FOR TESTING ONLY)');
-  });
-
-  it('should click sign-in and navigate to home screen', () => {
-    page.clickAndExpectRoute('#sign_in', '/home');
+    expect(page.getText('h1')).toEqual('Workflow Specifications');
+    expect(page.getRoute()).toEqual('/home');
     expect(page.getElements('app-workflow-spec-list').count()).toBeGreaterThan(0);
     expect(page.getElements('app-file-list').count()).toBeGreaterThan(0);
   });
