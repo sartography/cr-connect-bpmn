@@ -147,3 +147,4 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
 })
 export class AppModule {
 }
+
