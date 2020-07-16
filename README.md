@@ -1,9 +1,9 @@
-# CR Connect BPMN Configurator
-
+# sartography/cr-connect-bpmn
 [![Build Status](https://travis-ci.com/sartography/cr-connect-bpmn.svg?branch=master)](https://travis-ci.com/sartography/cr-connect-bpmn)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=sartography_cr-connect-bpmn&metric=coverage)](https://sonarcloud.io/dashboard?id=sartography_cr-connect-bpmn)
 
 
+# CR Connect BPMN Configurator
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.1.
 
 ## Development server
