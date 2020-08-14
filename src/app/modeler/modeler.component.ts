@@ -92,7 +92,7 @@ export class ModelerComponent implements AfterViewInit {
 
     this.importError = error;
     this.importWarnings = warnings;
-    this.draftXml = this.xml;
+    this.draftXml = this.xml + ' ';
   }
 
   onSubmitFileToOpen() {

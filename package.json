@@ -52,7 +52,7 @@
     "ngx-file-drop": "^8.0.8",
     "ngx-markdown": "^9.1.1",
     "rxjs": "~6.5.4",
-    "sartography-workflow-lib": "0.0.342",
+    "sartography-workflow-lib": "0.0.376",
     "tslib": "^1.13.0",
     "uuid": "^7.0.2",
     "zone.js": "^0.10.3"

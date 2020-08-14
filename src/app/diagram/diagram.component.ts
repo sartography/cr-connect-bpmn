@@ -63,13 +63,13 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   onTouched() {
   }
 
-  initializeModeler(diagramType: FileType) {
+  initializeModeler(diagramType: FileType): DmnModeler | BpmnModeler {
     this.clearElements();
 
     if (diagramType === FileType.DMN) {
-      this.initializeDMNModeler();
+      return this.initializeDMNModeler() as DmnModeler;
     } else {
-      this.initializeBPMNModeler();
+      return this.initializeBPMNModeler() as BpmnModeler;
     }
   }
 
@@ -103,7 +103,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   openDiagram(xml?: string, diagramType?: FileType) {
     this.diagramType = diagramType || getDiagramTypeFromXml(xml);
     this.xml = xml;
-    this.initializeModeler(diagramType);
+    const modeler = this.initializeModeler(diagramType);
 
     return this.zone.run(() => {
       if (!xml) {
@@ -111,6 +111,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
         xml = defaultXml.replace(/REPLACE_ME/gi, () => this.getRandomString(7));
       }
 
+      // Add an arbitrary string to get the save button to enable
       this.modeler.importXML(xml, (e, w) => this.onImport(e, w));
     });
   }
@@ -180,7 +181,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
     });
   }
 
-  private initializeBPMNModeler() {
+  private initializeBPMNModeler(): BpmnModeler {
     this.modeler = new BpmnModeler({
       container: this.containerRef.nativeElement,
       propertiesPanel: {
@@ -202,9 +203,11 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
         });
       }
     });
+
+    return this.modeler as BpmnModeler;
   }
 
-  private initializeDMNModeler() {
+  private initializeDMNModeler(): DmnModeler {
     this.modeler = new DmnModeler({
       container: this.containerRef.nativeElement,
       drd: {
@@ -244,6 +247,8 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
         });
       }
     });
+
+    return this.modeler as DmnModeler;
   }
 
   private clearElements() {
