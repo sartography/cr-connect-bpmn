@@ -148,6 +148,16 @@ export class ModelerComponent implements AfterViewInit {
     }
   }
 
+  validate() {
+    this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id).subscribe(apiErrors => {
+      if (apiErrors && apiErrors.length > 0) {
+        this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors: apiErrors}});
+      } else {
+        this.snackBar.open('Workflow specification is valid!', 'Ok', {duration: 5000});
+      }
+    });
+  }
+
   hasChanged(): boolean {
     return this.xml !== this.draftXml;
   }

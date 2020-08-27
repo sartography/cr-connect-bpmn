@@ -57,6 +57,8 @@
 
     <button mat-button (click)="saveChanges()" [disabled]="!hasChanged()"><mat-icon>save</mat-icon></button>
 
+    <button mat-button (click)="validate()" [disabled]="hasChanged()"><mat-icon>verified_user</mat-icon></button>
+
     <button mat-button [matMenuTriggerFor]="downloadMenu" title="Download diagram">
       <mat-icon>save_alt</mat-icon>
       <mat-icon>arrow_drop_down</mat-icon>
