@@ -50,9 +50,10 @@
     "lodash.isequal": "^4.5.0",
     "ngx-device-detector": "^1.4.5",
     "ngx-file-drop": "^8.0.8",
+    "ngx-highlightjs": "^4.1.1",
     "ngx-markdown": "^9.1.1",
     "rxjs": "~6.5.4",
-    "sartography-workflow-lib": "0.0.376",
+    "sartography-workflow-lib": "0.0.386",
     "tslib": "^1.13.0",
     "uuid": "^7.0.2",
     "zone.js": "^0.10.3"
