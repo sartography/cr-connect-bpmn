@@ -342,6 +342,7 @@ describe('WorkflowSpecListComponent', () => {
       task_name: 'task_random_num',
       file_name: 'random.bpmn',
       tag: 'bpmn:definitions',
+      task_data: {}
     };
     invalidReq.flush([mockError]);
     expect(bottomSheetSpy).toHaveBeenCalled();
