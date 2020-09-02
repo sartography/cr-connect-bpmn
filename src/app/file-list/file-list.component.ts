@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -21,7 +21,7 @@ import * as fileSaver from 'file-saver';
   templateUrl: './file-list.component.html',
   styleUrls: ['./file-list.component.scss']
 })
-export class FileListComponent implements OnInit {
+export class FileListComponent implements OnInit, OnChanges {
   @Input() workflowSpec: WorkflowSpec;
   fileMetas: FileMeta[];
   fileType = FileType;
@@ -36,6 +36,10 @@ export class FileListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this._loadFileMetas();
+  }
+
+  ngOnChanges() {
     this._loadFileMetas();
   }
 

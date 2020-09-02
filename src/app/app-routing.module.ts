@@ -1,12 +1,13 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {Injectable, NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {ExtraOptions, RouterModule, Routes} from '@angular/router';
 import {AppEnvironment, SessionRedirectComponent} from 'sartography-workflow-lib';
 import {environment} from '../environments/environment.runtime';
 import {HomeComponent} from './home/home.component';
 import {ModelerComponent} from './modeler/modeler.component';
 import {ProtocolBuilderComponent} from './protocol-builder/protocol-builder.component';
 import {ReferenceFilesComponent} from './reference-files/reference-files.component';
+import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -28,6 +29,10 @@ const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent
+  },
+  {
+    path: 'home/:spec',
+    component: WorkflowSpecListComponent
   },
   {
     path: 'pb',

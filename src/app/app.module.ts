@@ -50,6 +50,7 @@ import {ProtocolBuilderComponent} from './protocol-builder/protocol-builder.comp
 import {ReferenceFilesComponent} from './reference-files/reference-files.component';
 import {WorkflowSpecCardComponent} from './workflow-spec-card/workflow-spec-card.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
+import {MatSidenavModule} from '@angular/material/sidenav';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -124,7 +125,9 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
     SartographyFormsModule,
     SartographyPipesModule,
     SartographyWorkflowLibModule,
-    AppRoutingModule, // <-- This line MUST be last (https://angular.io/guide/router#module-import-order-matters)
+    AppRoutingModule,
+    MatSidenavModule,
+    // <-- This line MUST be last (https://angular.io/guide/router#module-import-order-matters)
   ],
   bootstrap: [AppComponent],
   entryComponents: [

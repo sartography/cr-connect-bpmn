@@ -22,6 +22,10 @@ import {
   WorkflowSpecDialogData
 } from '../_interfaces/dialog-data';
 import {ApiErrorsComponent} from 'sartography-workflow-lib';
+import {ActivatedRoute} from '@angular/router';
+import {map} from 'rxjs/operators';
+import {Location} from '@angular/common';
+import {environment} from '../../environments/environment.runtime';
 
 
 export interface WorkflowSpecCategoryGroup {
@@ -51,12 +55,20 @@ export class WorkflowSpecListComponent implements OnInit {
     private api: ApiService,
     private snackBar: MatSnackBar,
     private bottomSheet: MatBottomSheet,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private route: ActivatedRoute,
+    private location: Location
   ) {
-    this._loadWorkflowSpecCategories();
   }
 
   ngOnInit() {
+    this.route.paramMap.subscribe(paramMap => {
+      if (paramMap.has('spec')) {
+        this._loadWorkflowSpecCategories(paramMap.get('spec'));
+      } else {
+        this._loadWorkflowSpecCategories();
+      }
+    });
   }
 
   validateWorkflowSpec(wfs: WorkflowSpec) {
@@ -67,6 +79,11 @@ export class WorkflowSpecListComponent implements OnInit {
         this.snackBar.open('Workflow specification is valid!', 'Ok', {duration: 5000});
       }
     });
+  }
+
+  selectSpec(selectedSpec?: WorkflowSpec) {
+    this.selectedSpec = selectedSpec;
+    this.location.replaceState(environment.homeRoute + '/' + selectedSpec.name);
   }
 
   editWorkflowSpec(selectedSpec?: WorkflowSpec) {
@@ -159,7 +176,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
   sortByDisplayOrder = (a, b) => (a.display_order < b.display_order) ? -1 : 1;
 
-  private _loadWorkflowSpecCategories() {
+  private _loadWorkflowSpecCategories(selectedSpecName: string = null) {
     this.api.getWorkflowSpecCategoryList().subscribe(cats => {
       this.categories = cats.sort(this.sortByDisplayOrder);
 
@@ -177,13 +194,15 @@ export class WorkflowSpecListComponent implements OnInit {
         this.workflowSpecsByCategory[i + 1].workflow_specs = [];
       });
 
-      this._loadWorkflowSpecs();
+      this._loadWorkflowSpecs(selectedSpecName);
     });
   }
 
-  private _loadWorkflowSpecs() {
+  private _loadWorkflowSpecs(selectedSpecName: String = null) {
+
     this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
+
       this.workflowSpecsByCategory.forEach(cat => {
         cat.workflow_specs = this.workflowSpecs
           .filter(wf => {
@@ -195,6 +214,20 @@ export class WorkflowSpecListComponent implements OnInit {
           })
           .sort(this.sortByDisplayOrder);
       });
+
+      // Set the selected workflow to something sensible.
+      if (!selectedSpecName && this.selectedSpec) {
+        selectedSpecName = this.selectedSpec.name;
+      }
+      if (selectedSpecName) {
+        this.workflowSpecs.forEach(ws => {
+          if (selectedSpecName && selectedSpecName === ws.name) {
+            this.selectedSpec = ws;
+          }
+        });
+      } else {
+        this.selectedSpec = this.masterStatusSpec;
+      }
     });
   }
 
@@ -251,7 +284,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _addWorkflowSpec(newSpec: WorkflowSpec) {
     this.api.addWorkflowSpecification(newSpec).subscribe(_ => {
-      this._loadWorkflowSpecs();
+      this._loadWorkflowSpecs(newSpec.name);
       this._displayMessage('Saved new workflow spec.');
     });
   }

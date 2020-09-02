@@ -1,4 +1,3 @@
-
 <div class="container mat-typography" fxLayout="column" fxLayoutGap="10px">
   <h1>Workflow Specifications</h1>
   <div fxLayout="row" fxLayoutGap="10px">
@@ -11,86 +10,114 @@
       Add category
     </button>
   </div>
-  <ng-container *ngFor="let cat of workflowSpecsByCategory">
-    <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
-      <div class="category" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
-        <h2>{{cat.display_name}} ({{cat.name}})</h2>
-        <div class="category-actions" fxLayout="row" fxLayoutGap="10px" *ngIf="cat.id !== null">
-          <button mat-mini-fab color="primary" (click)="editWorkflowSpecCategory(cat)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button
-            *ngIf="cat.display_order > 0"
-            mat-mini-fab
-            title="Move up"
-            color="primary"
-            (click)="editCategoryDisplayOrder(cat.id, -1, workflowSpecsByCategory)"
-          >
-            <mat-icon>arrow_upward</mat-icon>
-          </button>
-          <button
-            *ngIf="cat.display_order < workflowSpecsByCategory.length - 2"
-            mat-mini-fab
-            title="Move down"
-            color="primary"
-            (click)="editCategoryDisplayOrder(cat.id, 1, workflowSpecsByCategory)"
-          >
-            <mat-icon>arrow_downward</mat-icon>
-          </button>
-          <button mat-icon-button title="Delete this category" color="warn" (click)="confirmDeleteWorkflowSpecCategory(cat)">
-            <mat-icon>delete</mat-icon>
-          </button>
+  <mat-drawer-container class="example-container" autosize>
+    <mat-drawer #drawer class="example-sidenav" mode="side" opened="true">
+      <ng-container *ngIf="masterStatusSpec">
+        <div class="category">
+          <h4>Master Specification</h4>
+          <mat-list>
+            <mat-list-item  class="workflow-spec" fxLayout="row">
+              <a class="spec_menu_item" (click)="selectSpec(masterStatusSpec)">{{masterStatusSpec.display_name}}</a>
+            </mat-list-item>
+          </mat-list>
         </div>
-      </div>
-      <div *ngFor="let wfs of cat.workflow_specs" class="workflow-spec">
-        <ng-container *ngTemplateOutlet="workflowSpecCard; context: {wfs: wfs, cat: cat}"></ng-container>
-      </div>
-      <div *ngIf="cat.workflow_specs.length === 0">No workflow specs in this category</div>
-    </ng-container>
-  </ng-container>
-  <mat-divider></mat-divider>
-  <ng-container *ngIf="masterStatusSpec">
-    <h1>Master Status Specification</h1>
-    <ng-container *ngTemplateOutlet="workflowSpecCard; context: {wfs: masterStatusSpec, cat: null}"></ng-container>
-  </ng-container>
-</div>
+      </ng-container>
+      <mat-divider></mat-divider>
 
-<ng-template #workflowSpecCard let-wfs="wfs" let-cat="cat">
-  <app-workflow-spec-card
-    [workflowSpec]="wfs"
-    [actionButtons]="actionButtons"
-    (workflowUpdated)="onWorkflowUpdated($event)"
-  ></app-workflow-spec-card>
-  <ng-template #actionButtons>
-    <div class="workflow-spec-actions">
-      <button mat-mini-fab title="Check for errors in this workflow specification" color="accent" (click)="validateWorkflowSpec(wfs)">
-        <mat-icon>verified_user</mat-icon>
-      </button>
-      <button
-        *ngIf="cat && cat.workflow_specs.length > 0 && wfs.display_order !== 0"
-        mat-mini-fab
-        title="Move up"
-        color="primary"
-        (click)="editSpecDisplayOrder(wfs.id, -1, cat.workflow_specs)"
-      >
-        <mat-icon>arrow_upward</mat-icon>
-      </button>
-      <button
-        *ngIf="cat && cat.workflow_specs.length > 0 && (wfs.display_order < cat.workflow_specs.length - 1)"
-        mat-mini-fab
-        title="Move down"
-        color="primary"
-        (click)="editSpecDisplayOrder(wfs.id, 1, cat.workflow_specs)"
-      >
-        <mat-icon>arrow_downward</mat-icon>
-      </button>
-      <button mat-mini-fab title="Edit this workflow specification" color="primary" (click)="editWorkflowSpec(wfs)">
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button mat-icon-button title="Delete this workflow specification" color="warn" (click)="confirmDeleteWorkflowSpec(wfs)">
-        <mat-icon>delete</mat-icon>
-      </button>
+      <ng-container *ngFor="let cat of workflowSpecsByCategory">
+        <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
+          <div class="category" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
+            <h4>{{cat.display_name}} ({{cat.name}})</h4>
+            <div class="category-actions" fxLayout="row" fxLayoutGap="10px" *ngIf="cat.id !== null">
+              <button mat-mini-fab color="primary" (click)="editWorkflowSpecCategory(cat)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                *ngIf="cat.display_order > 0"
+                mat-mini-fab
+                title="Move up"
+                color="primary"
+                (click)="editCategoryDisplayOrder(cat.id, -1, workflowSpecsByCategory)"
+              >
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button
+                *ngIf="cat.display_order < workflowSpecsByCategory.length - 2"
+                mat-mini-fab
+                title="Move down"
+                color="primary"
+                (click)="editCategoryDisplayOrder(cat.id, 1, workflowSpecsByCategory)"
+              >
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+              <button mat-icon-button title="Delete this category" color="warn"
+                      (click)="confirmDeleteWorkflowSpecCategory(cat)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+          <mat-list>
+            <mat-list-item *ngFor="let wfs of cat.workflow_specs" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
+              <a class="spec_menu_item" (click)="selectSpec(wfs)">{{wfs.display_name}}</a>
+              <span class="spec-actions" fxLayout="row" fxLayoutGap="10px" *ngIf="cat.id !== null">
+                <button
+                  *ngIf="cat && cat.workflow_specs.length > 0 && wfs.display_order !== 0"
+                  mat-mini-fab
+                  title="Move up"
+                  color="primary"
+                  (click)="editSpecDisplayOrder(wfs.id, -1, cat.workflow_specs)"
+                >
+                  <mat-icon>arrow_upward</mat-icon>
+                </button>
+                <button
+                  *ngIf="cat && cat.workflow_specs.length > 0 && (wfs.display_order < cat.workflow_specs.length - 1)"
+                  mat-mini-fab
+                  title="Move down"
+                  color="primary"
+                  (click)="editSpecDisplayOrder(wfs.id, 1, cat.workflow_specs)"
+                >
+                  <mat-icon>arrow_downward</mat-icon>
+                </button>
+              </span>
+              <!--
+              <ng-container *ngTemplateOutlet="workflowSpecCard; context: {wfs: wfs, cat: cat}"></ng-container>
+              -->
+            </mat-list-item>
+          </mat-list>
+
+          <div *ngIf="cat.workflow_specs.length === 0">No workflow specs in this category</div>
+        </ng-container>
+      </ng-container>
+    </mat-drawer>
+
+    <div class="content">
+        <ng-container *ngIf="selectedSpec">
+          <ng-container *ngTemplateOutlet="workflowSpecCard; context: {wfs: selectedSpec, cat: null}"></ng-container>
+        </ng-container>
     </div>
-  </ng-template>
-</ng-template>
+  </mat-drawer-container>
 
+
+  <ng-template #workflowSpecCard let-wfs="wfs" let-cat="cat">
+    <app-workflow-spec-card
+      [workflowSpec]="wfs"
+      [actionButtons]="actionButtons"
+    ></app-workflow-spec-card>
+    <ng-template #actionButtons>
+      <div class="workflow-spec-actions">
+        <button mat-mini-fab title="Check for errors in this workflow specification" color="accent"
+                (click)="validateWorkflowSpec(wfs)">
+          <mat-icon>verified_user</mat-icon>
+        </button>
+        <button mat-mini-fab title="Edit this workflow specification" color="primary" (click)="editWorkflowSpec(wfs)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button title="Delete this workflow specification" color="warn"
+                (click)="confirmDeleteWorkflowSpec(wfs)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </ng-template>
+  </ng-template>
+
+</div>
