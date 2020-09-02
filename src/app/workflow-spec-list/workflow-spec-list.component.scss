@@ -1,12 +1,19 @@
+@import "../../config";
+
+
 .container {
   padding: 3rem;
 }
 
-.category {
-  padding: 1rem 1rem 1rem 0;
+.content {
+  min-height: 600px;
+}
 
-  h2 {
-    margin: 1rem 1rem 1rem 0;
+.category {
+  padding: 1rem 1rem 0 0;
+
+  h4 {
+    margin: 1rem 1rem 0 0;
   }
 
   .category-actions {
@@ -22,7 +29,36 @@
       opacity: 1;
     }
   }
+
 }
+
+
+.workflow-spec {
+  border-left: 4px solid $brand-gray-light;
+  &:hover {
+    border-left: 4px solid $brand-primary;
+    background-color: $brand-primary-tint-4;
+    cursor: pointer;
+  }
+
+  cursor: pointer;
+  .spec_menu_item {
+    flex-flow: row;
+    display: inline-block;
+    width: 300px;
+    margin-left: 20px;
+  }
+  .spec-actions {
+    width: 100px;
+    opacity: 0;
+  }
+  &:hover {
+    .spec-actions {
+      opacity: 1;
+    }
+  }
+}
+
 
 .workflow-spec-actions {
   button {

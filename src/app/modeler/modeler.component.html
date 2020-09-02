@@ -1,6 +1,6 @@
 <mat-toolbar [ngClass]="{'expanded': expandToolbar}">
   <mat-toolbar-row *ngIf="workflowSpec">
-    <a mat-button [routerLink]="['/']">
+    <a mat-button [routerLink]="['/home', workflowSpec.name]">
       <mat-icon>arrow_back</mat-icon>
       Back
     </a>
