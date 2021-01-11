@@ -5,7 +5,10 @@ WORKDIR /app
 ADD package.json /app/
 ADD package-lock.json /app/
 COPY . /app/
-RUN npm install
+ARG build_config=prod
+RUN npm install && \
+    npm run build:$build_config
+
 
 ### STAGE 2: Run ###
 FROM nginx:alpine
