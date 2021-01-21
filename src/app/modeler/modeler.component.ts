@@ -168,7 +168,7 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   hasChanged(): boolean {
-    return this.xml !== this.draftXml;
+    return (this.xml !== this.draftXml) || this.isNew;
   }
 
   loadDbFile(bf: FileMeta) {
@@ -314,6 +314,11 @@ export class ModelerComponent implements AfterViewInit {
         this.api.addFileMeta({workflow_spec_id: this.workflowSpec.id}, this.diagramFileMeta).subscribe(fileMeta => {
           this.router.navigate(['/modeler', this.workflowSpec.id, fileMeta.id]);
           this.snackBar.open(`Saved new file ${fileMeta.name} to workflow spec ${this.workflowSpec.name}.`, 'Ok', {duration: 5000});
+        }, x => {
+          // if this fails, we make sure that the file is treated as still new,
+          // and we make the user re-enter the file details as they weren't actually saved.
+          this.isNew = true;
+          this.diagramFileMeta = undefined;
         });
       }
     }
