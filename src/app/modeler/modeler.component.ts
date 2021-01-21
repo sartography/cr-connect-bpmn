@@ -94,8 +94,7 @@ export class ModelerComponent implements AfterViewInit {
     this.importError = error;
     this.importWarnings = warnings;
 
-    // if this is a new file then we want to enable the save button
-    // otherwise not
+    // if this is a new file then we force a change to the file
     if (this.isNew ) {
       this.draftXml = this.xml + ' ';
       this.isNew = false;
