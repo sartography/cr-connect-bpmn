@@ -47,6 +47,7 @@ export class ModelerComponent implements AfterViewInit {
   private diagramType: FileType;
   private workflowSpecId: string;
   private fileMetaId: number;
+  private isNew = false;
 
   constructor(
     private api: ApiService,
@@ -92,7 +93,15 @@ export class ModelerComponent implements AfterViewInit {
 
     this.importError = error;
     this.importWarnings = warnings;
-    this.draftXml = this.xml + ' ';
+
+    // if this is a new file then we want to enable the save button
+    // otherwise not
+    if (this.isNew ) {
+      this.draftXml = this.xml + ' ';
+      this.isNew = false;
+    } else {
+      this.draftXml = this.xml;
+    }
   }
 
   onSubmitFileToOpen() {
@@ -175,6 +184,7 @@ export class ModelerComponent implements AfterViewInit {
     this.fileName = '';
     this.diagramFileMeta = undefined;
     this.diagramFile = undefined;
+    this.isNew = true;
     this.diagramType = diagramType;
     this.diagramComponent.openDiagram(undefined, diagramType);
   }
@@ -188,6 +198,7 @@ export class ModelerComponent implements AfterViewInit {
 
     dialogRef.afterClosed().subscribe((data: OpenFileDialogData) => {
       if (data && data.file) {
+        this.isNew = true;
         this.diagramFile = data.file;
         this.onSubmitFileToOpen();
       }
