@@ -1,6 +1,6 @@
 <mat-toolbar [ngClass]="{'expanded': expandToolbar}">
   <mat-toolbar-row *ngIf="workflowSpec">
-    <a mat-button [routerLink]="['/home', workflowSpec.name]">
+    <a mat-button (click)="checkSaved()">
       <mat-icon>arrow_back</mat-icon>
       Back
     </a>

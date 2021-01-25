@@ -125,10 +125,19 @@ export class ModelerComponent implements AfterViewInit {
   getFileName() {
     return this.diagramFile ? this.diagramFile.name : this.fileName || 'No file selected';
   }
-
+  checkSaved(){
+    if (this.hasChanged()) {
+      const approve = window.confirm('Unsaved Changes - Are you sure?');
+      if (approve) {
+        this.router.navigate(['/home', this.workflowSpec.name]);
+      }
+    } else {
+      this.router.navigate(['/home', this.workflowSpec.name]);
+    }
+  }
   onFileSelected($event: Event) {
     this.diagramFile = ($event.target as HTMLFormElement).files[0];
-    this.onSubmitFileToOpen()
+    this.onSubmitFileToOpen();
     this.isNew = true;
   }
 
