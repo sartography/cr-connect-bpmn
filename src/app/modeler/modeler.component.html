@@ -49,10 +49,6 @@
         <mat-icon>code</mat-icon>
         Open from XML File
       </button>
-      <button mat-menu-item (click)="openMethod = 'url'; expandToolbar = true">
-        <mat-icon>link</mat-icon>
-        Open from URL
-      </button>
     </mat-menu>
 
     <button mat-button (click)="saveChanges()" [disabled]="!hasChanged()"><mat-icon>save</mat-icon></button>
@@ -80,26 +76,17 @@
       </mat-form-field>
     </ng-container>
 
-    <ng-container *ngIf="openMethod === 'file'">
-      <mat-form-field (click)="fileInput.click()">
-        <span matPrefix><mat-icon>folder_open</mat-icon> &nbsp;</span>
-        <input matInput disabled [value]="getFileName()" type="text">
-      </mat-form-field>
-      <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.dmn,.xml,application/xml,text/xml">
-    </ng-container>
-    <ng-container *ngIf="openMethod === 'url'">
-      <mat-form-field>
-        <span matPrefix><mat-icon>link</mat-icon> &nbsp;</span>
-        <input name="diagramUrl" [(ngModel)]="diagramUrl" matInput placeholder="Open diagram from URL" type="text">
-      </mat-form-field>
-    </ng-container>
+
+
     <button
       mat-flat-button
-      (click)="onSubmitFileToOpen()"
+      (click)="fileInput.click()"
       [disabled]="!diagramFile"
       color="primary"
       id="open_file_button"
-    >Open file <mat-icon>arrow_forward</mat-icon></button>
+    >Open file <mat-icon>arrow_forward</mat-icon>
+      <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.dmn,.xml,application/xml,text/xml">
+    </button>
     <span fxFlex></span>
     <button mat-icon-button (click)="expandToolbar = false"><mat-icon>close</mat-icon></button>
   </mat-toolbar-row>

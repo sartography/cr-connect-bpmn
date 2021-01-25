@@ -128,6 +128,8 @@ export class ModelerComponent implements AfterViewInit {
 
   onFileSelected($event: Event) {
     this.diagramFile = ($event.target as HTMLFormElement).files[0];
+    this.onSubmitFileToOpen()
+    this.isNew = true;
   }
 
   // Arrow function here preserves this context
