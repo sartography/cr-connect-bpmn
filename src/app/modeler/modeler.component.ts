@@ -4,6 +4,7 @@ import {MatBottomSheet} from '@angular/material/bottom-sheet';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ActivatedRoute, Params, Router} from '@angular/router';
+
 import {
   ApiErrorsComponent,
   ApiService,
@@ -17,8 +18,9 @@ import {
 import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
 import {NewFileDialogComponent} from '../_dialogs/new-file-dialog/new-file-dialog.component';
 import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
+import {ConfirmDialogComponent} from '../_dialogs/confirm-dialog/confirm-dialog.component';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
-import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData} from '../_interfaces/dialog-data';
+import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData, ConfirmDialogData} from '../_interfaces/dialog-data';
 import {ImportEvent} from '../_interfaces/import-event';
 import {DiagramComponent} from '../diagram/diagram.component';
 
@@ -125,16 +127,25 @@ export class ModelerComponent implements AfterViewInit {
   getFileName() {
     return this.diagramFile ? this.diagramFile.name : this.fileName || 'No file selected';
   }
-  checkSaved(){
+
+  checkSaved() {
     if (this.hasChanged()) {
-      const approve = window.confirm('Unsaved Changes - Are you sure?');
-      if (approve) {
-        this.router.navigate(['/home', this.workflowSpec.name]);
-      }
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        maxWidth: '300px',
+        data: {
+          title: 'Unsaved Changes!',
+          message : 'Are you sure you want to abandon changes?',
+        }
+      });
+      dialogRef.afterClosed().subscribe(dialogResult => {
+        if (dialogResult) {
+          this.router.navigate(['/home', this.workflowSpec.name]);
+        }});
     } else {
       this.router.navigate(['/home', this.workflowSpec.name]);
     }
   }
+
   onFileSelected($event: Event) {
     this.diagramFile = ($event.target as HTMLFormElement).files[0];
     this.onSubmitFileToOpen();
