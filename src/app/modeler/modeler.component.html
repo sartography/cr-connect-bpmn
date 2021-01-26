@@ -45,9 +45,10 @@
         </a>
       </mat-menu>
 
-      <button mat-menu-item (click)="openMethod = 'file'; expandToolbar = true">
+      <button mat-menu-item (click)="fileInput.click()">
         <mat-icon>code</mat-icon>
         Open from XML File
+        <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.dmn,.xml,application/xml,text/xml">
       </button>
     </mat-menu>
 
@@ -68,27 +69,6 @@
       <mat-icon>edit</mat-icon>
       {{getFileName()}}
     </button>
-  </mat-toolbar-row>
-  <mat-toolbar-row *ngIf="expandToolbar">
-    <ng-container *ngIf="!openMethod">
-      <mat-form-field>
-        <input matInput [(ngModel)]="fileName" placeholder="File name" type="text">
-      </mat-form-field>
-    </ng-container>
-
-
-
-    <button
-      mat-flat-button
-      (click)="fileInput.click()"
-      [disabled]="!diagramFile"
-      color="primary"
-      id="open_file_button"
-    >Open file <mat-icon>arrow_forward</mat-icon>
-      <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.dmn,.xml,application/xml,text/xml">
-    </button>
-    <span fxFlex></span>
-    <button mat-icon-button (click)="expandToolbar = false"><mat-icon>close</mat-icon></button>
   </mat-toolbar-row>
 </mat-toolbar>
 <div fxLayout="column">
