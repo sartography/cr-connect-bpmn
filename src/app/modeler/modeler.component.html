@@ -48,7 +48,6 @@
       <button mat-menu-item (click)="fileInput.click()">
         <mat-icon>code</mat-icon>
         Open from XML File
-        <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.dmn,.xml,application/xml,text/xml">
       </button>
     </mat-menu>
 
@@ -71,6 +70,7 @@
     </button>
   </mat-toolbar-row>
 </mat-toolbar>
+
 <div fxLayout="column">
   <div class="diagram-parent">
     <app-diagram #diagram (importDone)="handleImported($event)" [fileName]="getFileName()"></app-diagram>
@@ -82,3 +82,4 @@
   </div>
 </div>
 
+<input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.dmn,.xml,application/xml,text/xml">

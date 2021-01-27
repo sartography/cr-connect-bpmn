@@ -1,5 +1,5 @@
 import {DatePipe} from '@angular/common';
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -17,10 +17,9 @@ import {
 } from 'sartography-workflow-lib';
 import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
 import {NewFileDialogComponent} from '../_dialogs/new-file-dialog/new-file-dialog.component';
-import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
 import {ConfirmDialogComponent} from '../_dialogs/confirm-dialog/confirm-dialog.component';
 import {BpmnWarning} from '../_interfaces/bpmn-warning';
-import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData, ConfirmDialogData} from '../_interfaces/dialog-data';
+import {FileMetaDialogData, NewFileDialogData} from '../_interfaces/dialog-data';
 import {ImportEvent} from '../_interfaces/import-event';
 import {DiagramComponent} from '../diagram/diagram.component';
 
@@ -30,26 +29,6 @@ import {DiagramComponent} from '../diagram/diagram.component';
   styleUrls: ['./modeler.component.scss']
 })
 export class ModelerComponent implements AfterViewInit {
-  title = 'bpmn-js-angular';
-  diagramUrl = 'https://cdn.staticaly.com/gh/bpmn-io/bpmn-js-examples/dfceecba/starter/diagram.bpmn';
-  importError?: Error;
-  importWarnings?: BpmnWarning[];
-  expandToolbar = false;
-  openMethod: string;
-  diagramFile: File;
-  workflowSpec: WorkflowSpec;
-  bpmnFiles: FileMeta[] = [];
-  diagramFileMeta: FileMeta;
-  fileName: string;
-  fileTypes = FileType;
-  private xml = '';
-  private draftXml = '';
-  private svg = '';
-  @ViewChild(DiagramComponent) private diagramComponent: DiagramComponent;
-  private diagramType: FileType;
-  private workflowSpecId: string;
-  private fileMetaId: number;
-  private isNew = false;
 
   constructor(
     private api: ApiService,
@@ -69,13 +48,51 @@ export class ModelerComponent implements AfterViewInit {
       this.loadFilesFromDb();
     });
   }
+  title = 'bpmn-js-angular';
+  diagramUrl = 'https://cdn.staticaly.com/gh/bpmn-io/bpmn-js-examples/dfceecba/starter/diagram.bpmn';
+  importError?: Error;
+  importWarnings?: BpmnWarning[];
+  expandToolbar = false;
+  openMethod: string;
+  diagramFile: File;
+  workflowSpec: WorkflowSpec;
+  bpmnFiles: FileMeta[] = [];
+  diagramFileMeta: FileMeta;
+  fileName: string;
+  fileTypes = FileType;
+  private xml = '';
+  private draftXml = '';
+  private svg = '';
+  @ViewChild(DiagramComponent) private diagramComponent: DiagramComponent;
+  @ViewChild('fileInput', {static: true}) fileInput: ElementRef;
+  private diagramType: FileType;
+  private workflowSpecId: string;
+  private fileMetaId: number;
+  private isNew = false;
+  private requestFileClick = false;
+
+  static isXmlFile(file: File) {
+    return file.type.toLowerCase() === 'text/xml' ||
+      file.type.toLowerCase() === 'application/xml' ||
+      file.name.slice(-5).toLowerCase() === '.bpmn' ||
+      file.name.slice(-4).toLowerCase() === '.dmn' ||
+      file.name.slice(-4).toLowerCase() === '.xml';
+  }
 
   ngAfterViewInit(): void {
     this.diagramComponent.registerOnChange((newXmlValue: string, newSvgValue: string) => {
       console.log('ModelerComponent > DiagramComponent > onChange');
-      this.draftXml = newXmlValue;
+      if  (this.draftXml !== newXmlValue + ' ') {
+        // When we initialize a new dmn, the component registers a change even if nothing
+        // changes. So . . . we check to make sure it *really* changed before updating the draftXml.
+        this.draftXml = newXmlValue;
+      }
       this.svg = newSvgValue;
     });
+    if (this.requestFileClick) {
+      this.fileInput.nativeElement.click();
+      this.requestFileClick = false;
+    }
   }
 
   handleImported(event: ImportEvent) {
@@ -108,17 +125,14 @@ export class ModelerComponent implements AfterViewInit {
   onSubmitFileToOpen() {
     this.expandToolbar = false;
 
-    if (this.openMethod === 'url') {
-      this.diagramComponent.loadUrl(this.diagramUrl);
+
+    if (this.diagramFile && ModelerComponent.isXmlFile(this.diagramFile)) {
+      this.readFile(this.diagramFile);
     } else {
-      if (this.diagramFile && this.isXmlFile(this.diagramFile)) {
-        this.readFile(this.diagramFile);
-      } else {
-        this.handleImported({
-          type: 'error',
-          error: new Error('Wrong file type. Please choose a BPMN XML file.')
-        });
-      }
+      this.handleImported({
+        type: 'error',
+        error: new Error('Wrong file type. Please choose a BPMN XML file.')
+      });
     }
 
     this.openMethod = undefined;
@@ -205,25 +219,19 @@ export class ModelerComponent implements AfterViewInit {
     this.fileName = '';
     this.diagramFileMeta = undefined;
     this.diagramFile = undefined;
-    this.isNew = true;
     this.diagramType = diagramType;
     this.diagramComponent.openDiagram(undefined, diagramType);
   }
 
   openFileDialog() {
-    const dialogData: OpenFileDialogData = {
-      file: undefined,
-      fileTypes: [FileType.DMN, FileType.BPMN],
-    };
-    const dialogRef = this.dialog.open(OpenFileDialogComponent, {data: dialogData});
+    // NB - Aaron said that doing this may be problematic.
+    // When we are handling the action in the constructor, the component hasn't been
+    // Rendered yet. I needed to call fileInput.click() after the component has rendered.
 
-    dialogRef.afterClosed().subscribe((data: OpenFileDialogData) => {
-      if (data && data.file) {
-        this.isNew = true;
-        this.diagramFile = data.file;
-        this.onSubmitFileToOpen();
-      }
-    });
+    // In order to make this work, I check for the  requestFileClick variable in ngAfterViewInit
+    // and then click it. I couldn't see any other way to make this do what I wanted to do
+    // it *appears* to work fine.
+    this.requestFileClick = true;
   }
 
   newFileDialog() {
@@ -335,7 +343,7 @@ export class ModelerComponent implements AfterViewInit {
         this.api.addFileMeta({workflow_spec_id: this.workflowSpec.id}, this.diagramFileMeta).subscribe(fileMeta => {
           this.router.navigate(['/modeler', this.workflowSpec.id, fileMeta.id]);
           this.snackBar.open(`Saved new file ${fileMeta.name} to workflow spec ${this.workflowSpec.name}.`, 'Ok', {duration: 5000});
-        }, x => {
+        }, () => {
           // if this fails, we make sure that the file is treated as still new,
           // and we make the user re-enter the file details as they weren't actually saved.
           this.isNew = true;
@@ -345,22 +353,15 @@ export class ModelerComponent implements AfterViewInit {
     }
   }
 
-  private isXmlFile(file: File) {
-    return file.type.toLowerCase() === 'text/xml' ||
-      file.type.toLowerCase() === 'application/xml' ||
-      file.name.slice(-5).toLowerCase() === '.bpmn' ||
-      file.name.slice(-4).toLowerCase() === '.dmn' ||
-      file.name.slice(-4).toLowerCase() === '.xml';
-  }
-
   private saveFileChanges() {
     this.xml = this.draftXml;
     this.diagramFileMeta.file = new File([this.xml], this.diagramFileMeta.name, {type: 'text/xml'});
 
-    if (this.svg && this.svg !== '') {
-      const svgFile = new File([this.svg], this.diagramFileMeta.name, {type: 'text/xml'});
-      // this.api.updateFileData();
-    }
+    // Propose removal
+    // if (this.svg && this.svg !== '') {
+    //   const svgFile = new File([this.svg], this.diagramFileMeta.name, {type: 'text/xml'});
+    //   // this.api.updateFileData();
+    // }
 
     this.api.updateFileData(this.diagramFileMeta).subscribe(newFileMeta => {
       this.diagramFileMeta = newFileMeta;
@@ -377,4 +378,5 @@ export class ModelerComponent implements AfterViewInit {
       }
     }
   }
+
 }
