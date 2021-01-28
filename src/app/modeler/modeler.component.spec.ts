@@ -182,25 +182,6 @@ describe('ModelerComponent', () => {
     expect(component.importWarnings).toEqual(warnings);
   });
 
-  it('loads a diagram from URL', () => {
-    component.diagramUrl = 'some-url';
-    component.openMethod = 'url';
-    component.onSubmitFileToOpen();
-
-    const sReq = httpMock.expectOne(component.diagramUrl);
-    expect(sReq.request.method).toEqual('GET');
-    sReq.flush(BPMN_DIAGRAM);
-  });
-
-  it('loads a diagram from URL with warnings', () => {
-    component.diagramUrl = 'some-url';
-    component.openMethod = 'url';
-    component.onSubmitFileToOpen();
-
-    const sReq = httpMock.expectOne(component.diagramUrl);
-    expect(sReq.request.method).toEqual('GET');
-    sReq.flush(BPMN_DIAGRAM_WITH_WARNINGS);
-  });
 
   it('loads a diagram from File', () => {
     const readFileSpy = spyOn(component, 'readFile').and.stub();
@@ -499,12 +480,13 @@ describe('ModelerComponent', () => {
     const data: OpenFileDialogData = {
       file: mockFileMeta0.file
     };
+    const expectedFile = new File([], mockFileMeta0.name, {type: mockFileMeta0.content_type});
+    const event = {target: {files: [expectedFile]}};
 
     const onSubmitFileToOpenSpy = spyOn(component, 'onSubmitFileToOpen').and.stub();
-    const openDialogSpy = spyOn(component.dialog, 'open')
-      .and.returnValue({afterClosed: () => of(data)});
     component.openFileDialog();
-    expect(openDialogSpy).toHaveBeenCalled();
+    expect(component.requestFileClick).toBeTrue();
+    component.onFileSelected(event);
     expect(component.diagramFile).toEqual(data.file);
     expect(onSubmitFileToOpenSpy).toHaveBeenCalled();
   });
