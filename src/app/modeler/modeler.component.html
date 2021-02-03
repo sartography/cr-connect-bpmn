@@ -1,6 +1,6 @@
 <mat-toolbar [ngClass]="{'expanded': expandToolbar}">
   <mat-toolbar-row *ngIf="workflowSpec">
-    <a mat-button [routerLink]="['/home', workflowSpec.name]">
+    <a mat-button (click)="checkSaved()">
       <mat-icon>arrow_back</mat-icon>
       Back
     </a>
@@ -45,13 +45,9 @@
         </a>
       </mat-menu>
 
-      <button mat-menu-item (click)="openMethod = 'file'; expandToolbar = true">
+      <button mat-menu-item (click)="fileInput.click()">
         <mat-icon>code</mat-icon>
         Open from XML File
-      </button>
-      <button mat-menu-item (click)="openMethod = 'url'; expandToolbar = true">
-        <mat-icon>link</mat-icon>
-        Open from URL
       </button>
     </mat-menu>
 
@@ -73,37 +69,8 @@
       {{getFileName()}}
     </button>
   </mat-toolbar-row>
-  <mat-toolbar-row *ngIf="expandToolbar">
-    <ng-container *ngIf="!openMethod">
-      <mat-form-field>
-        <input matInput [(ngModel)]="fileName" placeholder="File name" type="text">
-      </mat-form-field>
-    </ng-container>
-
-    <ng-container *ngIf="openMethod === 'file'">
-      <mat-form-field (click)="fileInput.click()">
-        <span matPrefix><mat-icon>folder_open</mat-icon> &nbsp;</span>
-        <input matInput disabled [value]="getFileName()" type="text">
-      </mat-form-field>
-      <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.dmn,.xml,application/xml,text/xml">
-    </ng-container>
-    <ng-container *ngIf="openMethod === 'url'">
-      <mat-form-field>
-        <span matPrefix><mat-icon>link</mat-icon> &nbsp;</span>
-        <input name="diagramUrl" [(ngModel)]="diagramUrl" matInput placeholder="Open diagram from URL" type="text">
-      </mat-form-field>
-    </ng-container>
-    <button
-      mat-flat-button
-      (click)="onSubmitFileToOpen()"
-      [disabled]="!diagramFile"
-      color="primary"
-      id="open_file_button"
-    >Open file <mat-icon>arrow_forward</mat-icon></button>
-    <span fxFlex></span>
-    <button mat-icon-button (click)="expandToolbar = false"><mat-icon>close</mat-icon></button>
-  </mat-toolbar-row>
 </mat-toolbar>
+
 <div fxLayout="column">
   <div class="diagram-parent">
     <app-diagram #diagram (importDone)="handleImported($event)" [fileName]="getFileName()"></app-diagram>
@@ -115,3 +82,4 @@
   </div>
 </div>
 
+<input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.dmn,.xml,application/xml,text/xml">
