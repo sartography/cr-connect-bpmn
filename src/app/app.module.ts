@@ -51,6 +51,7 @@ import {ReferenceFilesComponent} from './reference-files/reference-files.compone
 import {WorkflowSpecCardComponent} from './workflow-spec-card/workflow-spec-card.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import { ConfirmDialogComponent } from './_dialogs/confirm-dialog/confirm-dialog.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -100,6 +101,7 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
     WorkflowSpecCardComponent,
     ProtocolBuilderComponent,
     ReferenceFilesComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserAnimationsModule,

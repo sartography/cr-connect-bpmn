@@ -39,6 +39,13 @@ export interface DeleteFileDialogData {
   fileMeta: FileMeta;
 }
 
+export interface ConfirmDialogData {
+    title: string;
+    message: string;
+}
+
+
+
 export interface DeleteWorkflowSpecDialogData {
   confirm: boolean;
   workflowSpec: WorkflowSpec;
