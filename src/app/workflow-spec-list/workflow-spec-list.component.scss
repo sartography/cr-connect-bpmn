@@ -32,9 +32,13 @@
 
 }
 
+.mat-list-base .mat-list-item, .mat-list-base .mat-list-option {
+  height: auto;
+}
 
 .workflow-spec {
   border-left: 4px solid $brand-gray-light;
+  font-size: 1em;
   &:hover {
     border-left: 4px solid $brand-primary;
     background-color: $brand-primary-tint-4;
@@ -47,6 +51,9 @@
     display: inline-block;
     width: 300px;
     margin-left: 20px;
+  }
+  .spec-selected {
+    font-weight: bold;
   }
   .spec-actions {
     width: 100px;
