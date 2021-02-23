@@ -24,11 +24,50 @@
       </ng-container>
       <mat-divider></mat-divider>
 
+
+      <mat-accordion class="example-headers-align" multi="false">
       <ng-container *ngFor="let cat of workflowSpecsByCategory">
         <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
-          <div class="category" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
-            <h4>{{cat.display_name}} ({{cat.name}})</h4>
-            <div class="category-actions" fxLayout="row" fxLayoutGap="10px" *ngIf="cat.id !== null">
+          <mat-expansion-panel hideToggle [expanded]="selectedSpec.category_id == cat.id">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{cat.display_name}}
+              </mat-panel-title>
+              <mat-panel-description>
+                ({{cat.name}})
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <mat-list>
+              <mat-list-item *ngFor="let wfs of cat.workflow_specs" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
+                <a [ngClass]="{'spec_menu_item':true, 'spec-selected': wfs.id == selectedSpec.id}" (click)="selectSpec(wfs)">{{wfs.display_name}}</a>
+                <span class="spec-actions" fxLayout="row" fxLayoutGap="10px" *ngIf="cat.id !== null">
+                <button
+                  *ngIf="cat && cat.workflow_specs.length > 0 && wfs.display_order !== 0"
+                  mat-icon-button
+                  title="Move up"
+                  color="primary"
+                  (click)="editSpecDisplayOrder(wfs.id, -1, cat.workflow_specs)"
+                >
+                  <mat-icon>arrow_upward</mat-icon>
+                </button>
+                <button
+                  *ngIf="cat && cat.workflow_specs.length > 0 && (wfs.display_order < cat.workflow_specs.length - 1)"
+                  mat-icon-button
+                  title="Move down"
+                  color="primary"
+                  (click)="editSpecDisplayOrder(wfs.id, 1, cat.workflow_specs)"
+                >
+                  <mat-icon>arrow_downward</mat-icon>
+                </button>
+              </span>
+                <!--
+                <ng-container *ngTemplateOutlet="workflowSpecCard; context: {wfs: wfs, cat: cat}"></ng-container>
+                -->
+              </mat-list-item>
+            </mat-list>
+
+            <div *ngIf="cat.workflow_specs.length === 0">No workflow specs in this category</div>
+            <mat-action-row>
               <button mat-mini-fab color="primary" (click)="editWorkflowSpecCategory(cat)">
                 <mat-icon>edit</mat-icon>
               </button>
@@ -54,40 +93,12 @@
                       (click)="confirmDeleteWorkflowSpecCategory(cat)">
                 <mat-icon>delete</mat-icon>
               </button>
-            </div>
-          </div>
-          <mat-list>
-            <mat-list-item *ngFor="let wfs of cat.workflow_specs" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
-              <a class="spec_menu_item" (click)="selectSpec(wfs)">{{wfs.display_name}}</a>
-              <span class="spec-actions" fxLayout="row" fxLayoutGap="10px" *ngIf="cat.id !== null">
-                <button
-                  *ngIf="cat && cat.workflow_specs.length > 0 && wfs.display_order !== 0"
-                  mat-mini-fab
-                  title="Move up"
-                  color="primary"
-                  (click)="editSpecDisplayOrder(wfs.id, -1, cat.workflow_specs)"
-                >
-                  <mat-icon>arrow_upward</mat-icon>
-                </button>
-                <button
-                  *ngIf="cat && cat.workflow_specs.length > 0 && (wfs.display_order < cat.workflow_specs.length - 1)"
-                  mat-mini-fab
-                  title="Move down"
-                  color="primary"
-                  (click)="editSpecDisplayOrder(wfs.id, 1, cat.workflow_specs)"
-                >
-                  <mat-icon>arrow_downward</mat-icon>
-                </button>
-              </span>
-              <!--
-              <ng-container *ngTemplateOutlet="workflowSpecCard; context: {wfs: wfs, cat: cat}"></ng-container>
-              -->
-            </mat-list-item>
-          </mat-list>
+            </mat-action-row>
+          </mat-expansion-panel>
 
-          <div *ngIf="cat.workflow_specs.length === 0">No workflow specs in this category</div>
         </ng-container>
       </ng-container>
+      </mat-accordion>
     </mat-drawer>
 
     <div class="content">
