@@ -41,6 +41,9 @@
               <mat-panel-description>
                 ({{cat.name}})
               </mat-panel-description>
+              <button mat-mini-fab color="primary" style="box-shadow: none">
+                {{cat.workflow_specs.length}}
+              </button>
             </mat-expansion-panel-header>
             <mat-list>
               <mat-list-item *ngFor="let wfs of cat.workflow_specs" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
