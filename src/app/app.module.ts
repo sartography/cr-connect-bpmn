@@ -52,6 +52,7 @@ import {WorkflowSpecCardComponent} from './workflow-spec-card/workflow-spec-card
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { ConfirmDialogComponent } from './_dialogs/confirm-dialog/confirm-dialog.component';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -103,34 +104,35 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
     ReferenceFilesComponent,
     ConfirmDialogComponent,
   ],
-  imports: [
-    BrowserAnimationsModule,
-    BrowserModule,
-    FlexLayoutModule,
-    FormlyModule,
-    FormsModule,
-    HttpClientModule,
-    MatBottomSheetModule,
-    MatButtonModule,
-    MatCardModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatIconModule,
-    MatInputModule,
-    MatListModule,
-    MatMenuModule,
-    MatSnackBarModule,
-    MatTabsModule,
-    MatToolbarModule,
-    MatTooltipModule,
-    ReactiveFormsModule,
-    SartographyFormsModule,
-    SartographyPipesModule,
-    SartographyWorkflowLibModule,
-    AppRoutingModule,
-    MatSidenavModule,
-    // <-- This line MUST be last (https://angular.io/guide/router#module-import-order-matters)
-  ],
+    imports: [
+        BrowserAnimationsModule,
+        BrowserModule,
+        FlexLayoutModule,
+        FormlyModule,
+        FormsModule,
+        HttpClientModule,
+        MatBottomSheetModule,
+        MatButtonModule,
+        MatCardModule,
+        MatDialogModule,
+        MatDividerModule,
+        MatIconModule,
+        MatInputModule,
+        MatListModule,
+        MatMenuModule,
+        MatSnackBarModule,
+        MatTabsModule,
+        MatToolbarModule,
+        MatTooltipModule,
+        ReactiveFormsModule,
+        SartographyFormsModule,
+        SartographyPipesModule,
+        SartographyWorkflowLibModule,
+        AppRoutingModule,
+        MatSidenavModule,
+        MatExpansionModule,
+        // <-- This line MUST be last (https://angular.io/guide/router#module-import-order-matters)
+    ],
   bootstrap: [AppComponent],
   entryComponents: [
     DeleteFileDialogComponent,
