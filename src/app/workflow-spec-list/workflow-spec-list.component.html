@@ -9,6 +9,14 @@
       <mat-icon>post_add</mat-icon>
       Add category
     </button>
+    <form class="form-inline">
+      <div class="form-group">
+        <input type="search"
+               class="form-control"
+               placeholder="Enter search string"
+               [formControl]="searchField">
+      </div>
+    </form>
   </div>
   <mat-drawer-container class="example-container" autosize>
     <mat-drawer #drawer class="example-sidenav" mode="side" opened="true">
@@ -25,6 +33,8 @@
       <mat-divider></mat-divider>
 
       <ng-container *ngFor="let cat of workflowSpecsByCategory">
+
+        <div *ngIf="!(searchField.value && cat.workflow_specs.length === 0)">
         <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
           <div class="category" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
             <h4>{{cat.display_name}} ({{cat.name}})</h4>
@@ -87,6 +97,7 @@
 
           <div *ngIf="cat.workflow_specs.length === 0">No workflow specs in this category</div>
         </ng-container>
+        </div>
       </ng-container>
     </mat-drawer>
 

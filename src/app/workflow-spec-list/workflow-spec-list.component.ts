@@ -23,9 +23,10 @@ import {
 } from '../_interfaces/dialog-data';
 import {ApiErrorsComponent} from 'sartography-workflow-lib';
 import {ActivatedRoute} from '@angular/router';
-import {map} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Location} from '@angular/common';
 import {environment} from '../../environments/environment.runtime';
+import { FormControl } from '@angular/forms';
 
 
 export interface WorkflowSpecCategoryGroup {
@@ -50,6 +51,7 @@ export class WorkflowSpecListComponent implements OnInit {
   categories: WorkflowSpecCategory[];
   moveUp = moveArrayElementUp;
   moveDown = moveArrayElementDown;
+  private searchField: FormControl;
 
   constructor(
     private api: ApiService,
@@ -68,6 +70,11 @@ export class WorkflowSpecListComponent implements OnInit {
       } else {
         this._loadWorkflowSpecCategories();
       }
+    });
+    this.searchField = new FormControl();
+    this.searchField.valueChanges.subscribe(value => {
+      this._loadWorkflowSpecs(null,value);
+      console.log(value);
     });
   }
 
@@ -196,9 +203,9 @@ export class WorkflowSpecListComponent implements OnInit {
 
       this._loadWorkflowSpecs(selectedSpecName);
     });
-  }
+  } 
 
-  private _loadWorkflowSpecs(selectedSpecName: String = null) {
+  private _loadWorkflowSpecs(selectedSpecName: String = null, searchSpecName: String = null) {
 
     this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
@@ -209,7 +216,12 @@ export class WorkflowSpecListComponent implements OnInit {
             if (wf.is_master_spec) {
               this.masterStatusSpec = wf;
             } else {
-              return wf.category_id === cat.id;
+              if (searchSpecName){
+                return (wf.category_id === cat.id) && wf.display_name.toLowerCase().includes(searchSpecName.toLowerCase());
+              }
+              else {
+                return wf.category_id === cat.id;
+              } 
             }
           })
           .sort(this.sortByDisplayOrder);
