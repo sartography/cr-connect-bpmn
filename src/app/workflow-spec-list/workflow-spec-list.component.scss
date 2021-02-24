@@ -1,6 +1,9 @@
 @import "../../config";
 
-
+::ng-deep mat-form-field.mat-form-field-appearance-outline .mat-form-field-wrapper {
+  margin: 0;
+  max-height: 40px;
+}
 .container {
   padding: 3rem;
 }
@@ -31,7 +34,6 @@
   }
 
 }
-
 
 .workflow-spec {
   border-left: 4px solid $brand-gray-light;

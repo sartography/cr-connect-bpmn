@@ -9,14 +9,9 @@
       <mat-icon>post_add</mat-icon>
       Add category
     </button>
-    <form class="form-inline">
-      <div class="form-group">
-        <input type="search"
-               class="form-control"
-               placeholder="Enter search string"
-               [formControl]="searchField">
-      </div>
-    </form>
+      <mat-form-field class="search-field">
+        <input matInput type="search" placeholder="Search Workflows" class="form-control" [formControl]="searchField">
+      </mat-form-field>
   </div>
   <mat-drawer-container class="example-container" autosize>
     <mat-drawer #drawer class="example-sidenav" mode="side" opened="true">
@@ -24,7 +19,7 @@
         <div class="category">
           <h4>Master Specification</h4>
           <mat-list>
-            <mat-list-item  class="workflow-spec" fxLayout="row">
+            <mat-list-item class="workflow-spec" fxLayout="row">
               <a class="spec_menu_item" (click)="selectSpec(masterStatusSpec)">{{masterStatusSpec.display_name}}</a>
             </mat-list-item>
           </mat-list>

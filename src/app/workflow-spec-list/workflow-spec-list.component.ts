@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {MatBottomSheet} from '@angular/material/bottom-sheet';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { Component, OnInit } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import createClone from 'rfdc';
 import {
   ApiService,
@@ -11,21 +11,21 @@ import {
   WorkflowSpec,
   WorkflowSpecCategory
 } from 'sartography-workflow-lib';
-import {DeleteWorkflowSpecCategoryDialogComponent} from '../_dialogs/delete-workflow-spec-category-dialog/delete-workflow-spec-category-dialog.component';
-import {DeleteWorkflowSpecDialogComponent} from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
-import {WorkflowSpecCategoryDialogComponent} from '../_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
-import {WorkflowSpecDialogComponent} from '../_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
+import { DeleteWorkflowSpecCategoryDialogComponent } from '../_dialogs/delete-workflow-spec-category-dialog/delete-workflow-spec-category-dialog.component';
+import { DeleteWorkflowSpecDialogComponent } from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
+import { WorkflowSpecCategoryDialogComponent } from '../_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
+import { WorkflowSpecDialogComponent } from '../_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
 import {
   DeleteWorkflowSpecCategoryDialogData,
   DeleteWorkflowSpecDialogData,
   WorkflowSpecCategoryDialogData,
   WorkflowSpecDialogData
 } from '../_interfaces/dialog-data';
-import {ApiErrorsComponent} from 'sartography-workflow-lib';
-import {ActivatedRoute} from '@angular/router';
-import {debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
-import {Location} from '@angular/common';
-import {environment} from '../../environments/environment.runtime';
+import { ApiErrorsComponent } from 'sartography-workflow-lib';
+import { ActivatedRoute } from '@angular/router';
+import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
+import { Location } from '@angular/common';
+import { environment } from '../../environments/environment.runtime';
 import { FormControl } from '@angular/forms';
 
 
@@ -73,7 +73,7 @@ export class WorkflowSpecListComponent implements OnInit {
     });
     this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe(value => {
-      this._loadWorkflowSpecs(null,value);
+      this._loadWorkflowSpecs(null, value);
       console.log(value);
     });
   }
@@ -81,9 +81,9 @@ export class WorkflowSpecListComponent implements OnInit {
   validateWorkflowSpec(wfs: WorkflowSpec) {
     this.api.validateWorkflowSpecification(wfs.id).subscribe(apiErrors => {
       if (apiErrors && apiErrors.length > 0) {
-        this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors: apiErrors}});
+        this.bottomSheet.open(ApiErrorsComponent, { data: { apiErrors: apiErrors } });
       } else {
-        this.snackBar.open('Workflow specification is valid!', 'Ok', {duration: 5000});
+        this.snackBar.open('Workflow specification is valid!', 'Ok', { duration: 5000 });
       }
     });
   }
@@ -203,8 +203,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
       this._loadWorkflowSpecs(selectedSpecName);
     });
-  } 
-
+  }
   private _loadWorkflowSpecs(selectedSpecName: String = null, searchSpecName: String = null) {
 
     this.api.getWorkflowSpecList().subscribe(wfs => {
@@ -216,12 +215,11 @@ export class WorkflowSpecListComponent implements OnInit {
             if (wf.is_master_spec) {
               this.masterStatusSpec = wf;
             } else {
-              if (searchSpecName){
+              if (searchSpecName) {
                 return (wf.category_id === cat.id) && wf.display_name.toLowerCase().includes(searchSpecName.toLowerCase());
-              }
-              else {
+              } else {
                 return wf.category_id === cat.id;
-              } 
+              }
             }
           })
           .sort(this.sortByDisplayOrder);
@@ -330,14 +328,14 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   private _displayMessage(message: string) {
-    this.snackBar.open(message, 'Ok', {duration: 3000});
+    this.snackBar.open(message, 'Ok', { duration: 3000 });
   }
 
   private _reorder(
-    id: number|string, direction: number,
-    list: Array<WorkflowSpecCategoryGroup|WorkflowSpec>
-  ): Array<WorkflowSpecCategoryGroup|WorkflowSpec> {
-    const listClone = createClone({circles: true})(list);
+    id: number | string, direction: number,
+    list: Array<WorkflowSpecCategoryGroup | WorkflowSpec>
+  ): Array<WorkflowSpecCategoryGroup | WorkflowSpec> {
+    const listClone = createClone({ circles: true })(list);
     const reorderedList = listClone.filter(item => item.id !== null && item.id !== undefined);
     const i = reorderedList.findIndex(spec => spec.id === id);
     if (i !== -1) {
@@ -358,7 +356,7 @@ export class WorkflowSpecListComponent implements OnInit {
     let numUpdated = 0;
     cats.forEach((cat, j) => {
       if (isNumberDefined(cat.id)) {
-        const newCat: WorkflowSpecCategoryGroup = createClone({circles: true})(cat);
+        const newCat: WorkflowSpecCategoryGroup = createClone({ circles: true })(cat);
         delete newCat.workflow_specs;
 
         newCat.display_order = j;
@@ -375,7 +373,7 @@ export class WorkflowSpecListComponent implements OnInit {
   private _updateSpecDisplayOrders(specs: WorkflowSpec[]) {
     let numUpdated = 0;
     specs.forEach((spec, j) => {
-      const newSpec = createClone({circles: true})(spec);
+      const newSpec = createClone({ circles: true })(spec);
       newSpec.display_order = j;
       this.api.updateWorkflowSpecification(newSpec.id, newSpec).subscribe(() => {
         numUpdated++;
