@@ -9,6 +9,9 @@
       <mat-icon>post_add</mat-icon>
       Add category
     </button>
+      <mat-form-field class="search-field">
+        <input matInput type="search" placeholder="Search Workflows" class="form-control" [formControl]="searchField">
+      </mat-form-field>
   </div>
   <mat-drawer-container class="example-container" autosize>
     <mat-drawer #drawer class="example-sidenav" mode="side" opened="true">
@@ -16,7 +19,7 @@
         <div class="category">
           <h4>Master Specification</h4>
           <mat-list>
-            <mat-list-item  class="workflow-spec" fxLayout="row">
+            <mat-list-item class="workflow-spec" fxLayout="row">
               <a class="spec_menu_item" (click)="selectSpec(masterStatusSpec)">{{masterStatusSpec.display_name}}</a>
             </mat-list-item>
           </mat-list>
@@ -27,6 +30,8 @@
 
       <mat-accordion class="example-headers-align" multi="false">
       <ng-container *ngFor="let cat of workflowSpecsByCategory">
+
+        <div *ngIf="!(searchField.value && cat.workflow_specs.length === 0)">
         <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
           <mat-expansion-panel hideToggle [expanded]="selectedSpec.category_id == cat.id">
             <mat-expansion-panel-header>
@@ -36,6 +41,9 @@
               <mat-panel-description>
                 ({{cat.name}})
               </mat-panel-description>
+              <button mat-mini-fab color="primary" style="box-shadow: none">
+                {{cat.workflow_specs.length}}
+              </button>
             </mat-expansion-panel-header>
             <mat-list>
               <mat-list-item *ngFor="let wfs of cat.workflow_specs" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
@@ -97,6 +105,7 @@
           </mat-expansion-panel>
 
         </ng-container>
+        </div>
       </ng-container>
       </mat-accordion>
     </mat-drawer>
