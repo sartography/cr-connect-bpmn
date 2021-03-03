@@ -51,7 +51,7 @@ export class WorkflowSpecListComponent implements OnInit {
   categories: WorkflowSpecCategory[];
   moveUp = moveArrayElementUp;
   moveDown = moveArrayElementDown;
-  private searchField: FormControl;
+  searchField: FormControl;
 
   constructor(
     private api: ApiService,
