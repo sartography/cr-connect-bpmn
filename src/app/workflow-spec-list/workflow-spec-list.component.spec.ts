@@ -163,7 +163,7 @@ describe('WorkflowSpecListComponent', () => {
     const _updateWorkflowSpecSpy = spyOn((component as any), '_updateWorkflowSpec').and.stub();
 
     component.selectedSpec = undefined;
-    (component as any)._upsertWorkflowSpecification(mockWorkflowSpec1 as WorkflowSpecDialogData);
+    (component as any)._upsertWorkflowSpecification(true, mockWorkflowSpec1 as WorkflowSpecDialogData);
     expect(_addWorkflowSpecSpy).toHaveBeenCalled();
     expect(_updateWorkflowSpecSpy).not.toHaveBeenCalled();
 
@@ -173,7 +173,7 @@ describe('WorkflowSpecListComponent', () => {
     component.selectedSpec = mockWorkflowSpec0;
     const modifiedData: WorkflowSpecDialogData = createClone({circles: true})(mockWorkflowSpec0);
     modifiedData.display_name = 'Modified';
-    (component as any)._upsertWorkflowSpecification(modifiedData);
+    (component as any)._upsertWorkflowSpecification(false, modifiedData);
     expect(_addWorkflowSpecSpy).not.toHaveBeenCalled();
     expect(_updateWorkflowSpecSpy).toHaveBeenCalled();
   });
