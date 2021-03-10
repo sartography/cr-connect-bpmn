@@ -118,7 +118,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
       if (data && data.id && data.name && data.display_name && data.description) {
-        this._upsertWorkflowSpecification(data);
+        this._upsertWorkflowSpecification(selectedSpec == null,  data);
       }
     });
   }
@@ -245,11 +245,8 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  private _upsertWorkflowSpecification(data: WorkflowSpecDialogData) {
+  private _upsertWorkflowSpecification(isNew: boolean, data: WorkflowSpecDialogData) {
     if (data.id && data.name && data.display_name && data.description) {
-
-      // Save old workflow spec id, in case it's changed
-      const specId = this.selectedSpec ? this.selectedSpec.id : undefined;
 
       const newSpec: WorkflowSpec = {
         id: data.id,
@@ -260,10 +257,10 @@ export class WorkflowSpecListComponent implements OnInit {
         display_order: data.display_order,
       };
 
-      if (specId) {
-        this._updateWorkflowSpec(specId, newSpec);
-      } else {
+      if (isNew) {
         this._addWorkflowSpec(newSpec);
+      } else {
+        this._updateWorkflowSpec(data.id, newSpec);
       }
     }
   }
