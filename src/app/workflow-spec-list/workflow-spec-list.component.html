@@ -1,11 +1,11 @@
 <div class="container mat-typography" fxLayout="column" fxLayoutGap="10px">
   <h1>Workflow Specifications</h1>
   <div fxLayout="row" fxLayoutGap="10px">
-    <button mat-flat-button color="primary" (click)="editWorkflowSpec()">
+    <button id="add_spec" mat-flat-button color="primary" (click)="editWorkflowSpec()">
       <mat-icon>library_add</mat-icon>
       Add new workflow specification
     </button>
-    <button mat-flat-button color="accent" (click)="editWorkflowSpecCategory()">
+    <button id="add_category" mat-flat-button color="accent" (click)="editWorkflowSpecCategory()">
       <mat-icon>post_add</mat-icon>
       Add category
     </button>
@@ -33,7 +33,7 @@
 
         <div *ngIf="!(searchField.value && cat.workflow_specs.length === 0)">
         <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
-          <mat-expansion-panel hideToggle [expanded]="selectedSpec.category_id == cat.id">
+          <mat-expansion-panel hideToggle [expanded]="categoryExpanded(cat)">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 {{cat.display_name}}
