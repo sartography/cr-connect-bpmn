@@ -9,7 +9,7 @@ ARG build_config=prod
 RUN npm install && \
     npm run build:$build_config
 
-`
+
 ### STAGE 2: Run ###
 FROM quay.io/sartography/nginx:alpine
 RUN set -x && apk add --update --no-cache bash libintl gettext curl
