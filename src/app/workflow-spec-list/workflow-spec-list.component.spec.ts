@@ -1,9 +1,9 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef} from '@angular/material/bottom-sheet';
 import {MatCardModule} from '@angular/material/card';
-import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
@@ -11,7 +11,7 @@ import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/tes
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
 import createClone from 'rfdc';
-import {of} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {
   ApiErrorsComponent,
   ApiService,
@@ -37,11 +37,26 @@ import {
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {FileListComponent} from '../file-list/file-list.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list.component';
+import {WorkflowSpecDialogComponent} from '../_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
+
+export class MdDialogMock {
+  // When the component calls this.dialog.open(...) we'll return an object
+  // with an afterClosed method that allows to subscribe to the dialog result observable.
+  open() {
+    return {
+      afterClosed: () => of([
+        {}
+      ])
+    };
+  }
+}
+
 
 describe('WorkflowSpecListComponent', () => {
   let httpMock: HttpTestingController;
   let component: WorkflowSpecListComponent;
   let fixture: ComponentFixture<WorkflowSpecListComponent>;
+  let dialog: MatDialog;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -68,11 +83,7 @@ describe('WorkflowSpecListComponent', () => {
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
         {provide: APP_BASE_HREF, useValue: ''},
         {
-          provide: MatDialogRef,
-          useValue: {
-            close: (dialogResult: any) => {
-            },
-          }
+          provide: MatDialogRef, useClass: MdDialogMock,
         },
         {provide: MAT_DIALOG_DATA, useValue: []},
         {
@@ -100,6 +111,7 @@ describe('WorkflowSpecListComponent', () => {
     fixture = TestBed.createComponent(WorkflowSpecListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    dialog = TestBed.inject(MatDialog);
 
     const catReq = httpMock.expectOne('apiRoot/workflow-specification-category');
     expect(catReq.request.method).toEqual('GET');
@@ -151,7 +163,7 @@ describe('WorkflowSpecListComponent', () => {
     const _updateWorkflowSpecSpy = spyOn((component as any), '_updateWorkflowSpec').and.stub();
 
     component.selectedSpec = undefined;
-    (component as any)._upsertWorkflowSpecification(mockWorkflowSpec1 as WorkflowSpecDialogData);
+    (component as any)._upsertWorkflowSpecification(true, mockWorkflowSpec1 as WorkflowSpecDialogData);
     expect(_addWorkflowSpecSpy).toHaveBeenCalled();
     expect(_updateWorkflowSpecSpy).not.toHaveBeenCalled();
 
@@ -161,7 +173,7 @@ describe('WorkflowSpecListComponent', () => {
     component.selectedSpec = mockWorkflowSpec0;
     const modifiedData: WorkflowSpecDialogData = createClone({circles: true})(mockWorkflowSpec0);
     modifiedData.display_name = 'Modified';
-    (component as any)._upsertWorkflowSpecification(modifiedData);
+    (component as any)._upsertWorkflowSpecification(false, modifiedData);
     expect(_addWorkflowSpecSpy).not.toHaveBeenCalled();
     expect(_updateWorkflowSpecSpy).toHaveBeenCalled();
   });
@@ -454,6 +466,8 @@ describe('WorkflowSpecListComponent', () => {
     expect(_loadWorkflowSpecCategoriesSpy).toHaveBeenCalled();
   });
 
+
+
   it('should load master workflow spec', () => {
     const mockMasterSpec: WorkflowSpec = {
       id: 'master_status_spec',
@@ -480,4 +494,14 @@ describe('WorkflowSpecListComponent', () => {
     expect(component.masterStatusSpec).toEqual(mockMasterSpec);
   });
 
+
+  it('should call editWorkflowSpec, open Dialog & call _upsertWorkflowSpecification when Edit button is clicked', fakeAsync(() => {
+      spyOn(dialog, 'open').and.callThrough();
+      const _upsertWorkflowSpecification = spyOn((component as any), '_upsertWorkflowSpecification').and.stub();
+      const button = fixture.debugElement.nativeElement.querySelector('#add_spec');
+      button.click();
+      const req = httpMock.expectOne(`apiRoot/workflow-specification-category`);
+      expect(dialog.open).toHaveBeenCalled();
+    }
+  ));
 });

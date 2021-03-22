@@ -97,16 +97,20 @@ export class WorkflowSpecListComponent implements OnInit {
     this.location.replaceState(environment.homeRoute + '/' + selectedSpec.name);
   }
 
+  categoryExpanded(cat: WorkflowSpecCategory) {
+    return this.selectedSpec != null && this.selectedSpec.category_id === cat.id;
+  }
+
   editWorkflowSpec(selectedSpec?: WorkflowSpec) {
-    this.selectedSpec = selectedSpec;
-    const hasDisplayOrder = this.selectedSpec && isNumberDefined(this.selectedSpec.display_order);
+
+    const hasDisplayOrder = selectedSpec && isNumberDefined(selectedSpec.display_order);
     const dialogData: WorkflowSpecDialogData = {
-      id: this.selectedSpec ? this.selectedSpec.id : '',
-      name: this.selectedSpec ? this.selectedSpec.name || this.selectedSpec.id : '',
-      display_name: this.selectedSpec ? this.selectedSpec.display_name : '',
-      description: this.selectedSpec ? this.selectedSpec.description : '',
-      category_id: this.selectedSpec ? this.selectedSpec.category_id : null,
-      display_order: hasDisplayOrder ? this.selectedSpec.display_order : 0,
+      id: selectedSpec ? selectedSpec.id : '',
+      name: selectedSpec ? selectedSpec.name || selectedSpec.id : '',
+      display_name: selectedSpec ? selectedSpec.display_name : '',
+      description: selectedSpec ? selectedSpec.description : '',
+      category_id: selectedSpec ? selectedSpec.category_id : null,
+      display_order: hasDisplayOrder ? selectedSpec.display_order : 0,
     };
 
     // Open new filename/workflow spec dialog
@@ -118,7 +122,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
       if (data && data.id && data.name && data.display_name && data.description) {
-        this._upsertWorkflowSpecification(data);
+        this._upsertWorkflowSpecification(selectedSpec == null,  data);
       }
     });
   }
@@ -171,6 +175,7 @@ export class WorkflowSpecListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((data: DeleteWorkflowSpecDialogData) => {
       if (data && data.confirm && data.workflowSpec) {
         this._deleteWorkflowSpec(data.workflowSpec);
+        this.selectedSpec = this.masterStatusSpec;
       }
     });
   }
@@ -211,7 +216,6 @@ export class WorkflowSpecListComponent implements OnInit {
 
     this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
-
       this.workflowSpecsByCategory.forEach(cat => {
         cat.workflow_specs = this.workflowSpecs
           .filter(wf => {
@@ -244,11 +248,8 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  private _upsertWorkflowSpecification(data: WorkflowSpecDialogData) {
+  private _upsertWorkflowSpecification(isNew: boolean, data: WorkflowSpecDialogData) {
     if (data.id && data.name && data.display_name && data.description) {
-
-      // Save old workflow spec id, in case it's changed
-      const specId = this.selectedSpec ? this.selectedSpec.id : undefined;
 
       const newSpec: WorkflowSpec = {
         id: data.id,
@@ -259,10 +260,10 @@ export class WorkflowSpecListComponent implements OnInit {
         display_order: data.display_order,
       };
 
-      if (specId) {
-        this._updateWorkflowSpec(specId, newSpec);
-      } else {
+      if (isNew) {
         this._addWorkflowSpec(newSpec);
+      } else {
+        this._updateWorkflowSpec(data.id, newSpec);
       }
     }
   }
@@ -389,5 +390,7 @@ export class WorkflowSpecListComponent implements OnInit {
       });
     });
   }
+
+
 }
 

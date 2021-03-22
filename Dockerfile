@@ -1,5 +1,5 @@
 ### STAGE 1: Build ###
-FROM node AS builder
+FROM quay.io/sartography/node:latest AS builder
 RUN mkdir /app
 WORKDIR /app
 ADD package.json /app/
@@ -11,7 +11,7 @@ RUN npm install && \
 
 
 ### STAGE 2: Run ###
-FROM nginx:alpine
+FROM quay.io/sartography/nginx:alpine
 RUN set -x && apk add --update --no-cache bash libintl gettext curl
 
 COPY --from=builder /app/dist/* /etc/nginx/html/
