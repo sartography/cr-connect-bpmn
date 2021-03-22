@@ -122,7 +122,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
       if (data && data.id && data.name && data.display_name && data.description) {
-        this._upsertWorkflowSpecification(selectedSpec == null,  data);
+        this._upsertWorkflowSpecification(selectedSpec == null, data);
       }
     });
   }
@@ -375,8 +375,10 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   private _updateSpecDisplayOrders(specs: WorkflowSpec[]) {
-    if (this.selectedCat.id !== this.selectedSpec.category.id) {
-      this.selectedSpec = specs[0];
+    if (this.selectedCat && this.selectedSpec.category) {
+      if (this.selectedCat.id !== this.selectedSpec.category.id) {
+        this.selectedSpec = specs[0];
+      }
     }
     let numUpdated = 0;
     specs.forEach((spec, j) => {
