@@ -88,6 +88,10 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
+  selectCat(selectedCat?: WorkflowSpecCategory) {
+    this.selectedCat = selectedCat;
+  }
+
   selectSpec(selectedSpec?: WorkflowSpec) {
     this.selectedSpec = selectedSpec;
     this.location.replaceState(environment.homeRoute + '/' + selectedSpec.name);
@@ -200,7 +204,6 @@ export class WorkflowSpecListComponent implements OnInit {
         this.workflowSpecsByCategory.push(cat);
         this.workflowSpecsByCategory[i + 1].workflow_specs = [];
       });
-
       this._loadWorkflowSpecs(selectedSpecName);
     });
   }
@@ -371,6 +374,9 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   private _updateSpecDisplayOrders(specs: WorkflowSpec[]) {
+    if (this.selectedCat.id !== this.selectedSpec.category.id) {
+      this.selectedSpec = specs[0];
+    }
     let numUpdated = 0;
     specs.forEach((spec, j) => {
       const newSpec = createClone({ circles: true })(spec);
