@@ -53,6 +53,9 @@ import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { ConfirmDialogComponent } from './_dialogs/confirm-dialog/confirm-dialog.component';
 import {MatExpansionModule} from '@angular/material/expansion';
+import { TestEmailDialogComponent } from './_dialogs/test-email-dialog/test-email-dialog.component';
+import { TestMarkdownDialogComponent } from './_dialogs/test-markdown-dialog/test-markdown-dialog.component';
+import { ScriptDocDialogComponent } from './_dialogs/script-doc-dialog/script-doc-dialog.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -103,6 +106,9 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
     ProtocolBuilderComponent,
     ReferenceFilesComponent,
     ConfirmDialogComponent,
+    TestEmailDialogComponent,
+    TestMarkdownDialogComponent,
+    ScriptDocDialogComponent,
   ],
     imports: [
         BrowserAnimationsModule,
