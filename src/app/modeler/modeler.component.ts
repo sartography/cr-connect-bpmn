@@ -24,6 +24,7 @@ import { FileMetaDialogData, NewFileDialogData } from '../_interfaces/dialog-dat
 import { ImportEvent } from '../_interfaces/import-event';
 import { DiagramComponent } from '../diagram/diagram.component';
 import { ScriptDocDialogComponent } from '../_dialogs/script-doc-dialog/script-doc-dialog.component';
+import { TestEmailDialogComponent } from '../_dialogs/test-email-dialog/test-email-dialog.component';
 
 @Component({
   selector: 'app-modeler',
@@ -276,7 +277,13 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   testEmailTemplate(documentation: string) {
-    //this.displayScriptDocumentation(documentation);
+    const dialogRef = this.dialog.open(TestEmailDialogComponent);
+    
+    dialogRef.afterClosed().subscribe((data: FileMetaDialogData) => {
+      if (data && data.fileName) {
+        this._upsertFileMeta(data);
+      }
+    });
   }
 
   testMarkdown(documentation: string) {

@@ -1,25 +1,25 @@
-<mat-card fxLayoutGap>
-    <p>
-        <mat-form-field appearance="fill">
-            <mat-label>Send To:</mat-label>
-            <input matInput>
-        </mat-form-field>
-    </p>
+<p mat-dialog-title>Send Email Sample</p>
 
-    <p>
-        <mat-form-field appearance="fill">
-            <mat-label>Subject</mat-label>
-            <input matInput>
-        </mat-form-field>
-    </p>
-    <p>
-        <mat-form-field appearance="fill">
-            <mat-label>Textarea</mat-label>
-            <textarea matInput></textarea>
-        </mat-form-field>
-    </p>
-    <div mat-dialog-actions>
-        <button mat-button [mat-dialog-close]="">Exit</button>
-        <button mat-raised-button color=" primary" (click)="onConfirm()">Send</button>
-    </div>
-</mat-card>
+<div display-2>
+<p>
+    <mat-form-field appearance="fill">
+        <mat-label>Send To:</mat-label>
+        <input matInput>
+    </mat-form-field>
+</p><p>
+    <mat-form-field appearance="fill">
+        <mat-label>Subject</mat-label>
+        <input matInput>
+    </mat-form-field>
+</p><p>
+    <mat-form-field appearance="fill">
+        <mat-label>Textarea</mat-label>
+        <textarea matInput rows="1xw0"></textarea>
+    </mat-form-field>
+</p>
+
+</div>
+<div mat-dialog-actions>
+    <button mat-button [mat-dialog-close]="">Exit</button>
+    <button mat-raised-button color="primary">Send</button>
+</div>
