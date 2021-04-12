@@ -81,21 +81,20 @@
     </button>
 
     <mat-menu #toolsMenu="matMenu">
-      <button mat-menu-item (click)="diagram.saveSVG()">
+      <button mat-menu-item (click)="testEmailTemplate('df')">
         <mat-icon>email</mat-icon> Test Email Template
       </button>
-      <button mat-menu-item (click)="diagram.saveSVG()">
+      <button mat-menu-item (click)="testMarkdown('sd')">
         <mat-icon>search</mat-icon> Renderer Markdown
       </button>
       <button mat-menu-item [matMenuTriggerFor]="scripts">
         <mat-icon>description</mat-icon> Script Documentation
       </button>
     </mat-menu>
-
       <mat-menu #scripts="matMenu">
-      <div *ngFor="let script of ['# 1','# 2','# 3']">
+      <div *ngFor="let script of scriptsInfo">
         <button mat-menu-item (click)="displayScriptDocumentation(script)">
-          <mat-icon>description</mat-icon>{{script}}
+          <mat-icon>description</mat-icon>{{script.name}}
         </button>
       </div>
     </mat-menu>

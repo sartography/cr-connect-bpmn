@@ -13,7 +13,8 @@ import {
   getDiagramTypeFromXml,
   isNumberDefined,
   newFileFromResponse,
-  WorkflowSpec
+  WorkflowSpec,
+  ScriptInfo
 } from 'sartography-workflow-lib';
 import { FileMetaDialogComponent } from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
 import { NewFileDialogComponent } from '../_dialogs/new-file-dialog/new-file-dialog.component';
@@ -22,6 +23,7 @@ import { BpmnWarning } from '../_interfaces/bpmn-warning';
 import { FileMetaDialogData, NewFileDialogData } from '../_interfaces/dialog-data';
 import { ImportEvent } from '../_interfaces/import-event';
 import { DiagramComponent } from '../diagram/diagram.component';
+import { ScriptDocDialogComponent } from '../_dialogs/script-doc-dialog/script-doc-dialog.component';
 
 @Component({
   selector: 'app-modeler',
@@ -38,6 +40,7 @@ export class ModelerComponent implements AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
   ) {
+    this.api.listScripts().subscribe((data) => {this.scriptsInfo = data;})
     this.route.queryParams.subscribe(q => {
       this._handleAction(q);
     });
@@ -48,7 +51,7 @@ export class ModelerComponent implements AfterViewInit {
       this.loadFilesFromDb();
     });
   }
-  scripts = [1,2,3];
+  scriptsInfo: ScriptInfo[] = [];
   title = 'bpmn-js-angular';
   diagramUrl = 'https://cdn.staticaly.com/gh/bpmn-io/bpmn-js-examples/dfceecba/starter/diagram.bpmn';
   importError?: Error;
@@ -262,22 +265,24 @@ export class ModelerComponent implements AfterViewInit {
     });
   }
 
-  displayScriptDocumentation(documentation: string) {
+  displayScriptDocumentation(info: ScriptInfo) {
 
-    const dialogRef = this.dialog.open(FileMetaDialogComponent, {
+    const dialogRef = this.dialog.open(ScriptDocDialogComponent, {
       data: {
-        fileName: this.diagramFile ? this.diagramFile.name : this.fileName || '',
-        fileType: this.diagramType || getDiagramTypeFromXml(this.xml),
-        file: this.diagramFile || undefined,
+        name: info.name,
+        description: info.description,
       },
     });
-
-    dialogRef.afterClosed().subscribe((data: FileMetaDialogData) => {
-      if (data && data.fileName) {
-        this._upsertFileMeta(data);
-      }
-    });
   }
+
+  testEmailTemplate(documentation: string) {
+    //this.displayScriptDocumentation(documentation);
+  }
+
+  testMarkdown(documentation: string) {
+    //this.displayScriptDocumentation(documentation);
+  }
+
 
   getFileMetaDisplayString(fileMeta: FileMeta) {
     if (fileMeta) {
