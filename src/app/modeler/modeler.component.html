@@ -26,21 +26,17 @@
     <button #importMenuTrigger="matMenuTrigger" mat-button [matMenuTriggerFor]="importMenu" title="Open diagram">
       <mat-icon>folder</mat-icon>
       <mat-icon>arrow_drop_down</mat-icon>
+
     </button>
+
     <mat-menu #importMenu="matMenu">
       <button mat-menu-item (click)="openMethod = 'db'" [matMenuTriggerFor]="dbMenu" title="Open diagram from database">
         <mat-icon>cloud</mat-icon>
         Open previously saved...
       </button>
       <mat-menu #dbMenu="matMenu">
-        <a
-          mat-menu-item
-          *ngFor="let bf of bpmnFiles"
-          [routerLink]="['/modeler', workflowSpec.id, bf.id]"
-          [matTooltip]="getFileMetaTooltipText(bf)"
-          matTooltipClass="tooltip-text"
-          matTooltipPosition="right"
-        >
+        <a mat-menu-item *ngFor="let bf of bpmnFiles" [routerLink]="['/modeler', workflowSpec.id, bf.id]"
+          [matTooltip]="getFileMetaTooltipText(bf)" matTooltipClass="tooltip-text" matTooltipPosition="right">
           {{getFileMetaDisplayString(bf)}}
         </a>
       </mat-menu>
@@ -51,23 +47,58 @@
       </button>
     </mat-menu>
 
-    <button mat-button (click)="saveChanges()" [disabled]="!hasChanged()"><mat-icon>save</mat-icon></button>
+    <button mat-button (click)="saveChanges()" [disabled]="!hasChanged()">
+      <mat-icon>save</mat-icon>
+    </button>
 
-    <button mat-button (click)="validate()" [disabled]="hasChanged()"><mat-icon>verified_user</mat-icon></button>
+    <button mat-button (click)="validate()" [disabled]="hasChanged()">
+      <mat-icon>verified_user</mat-icon>
+    </button>
 
     <button mat-button [matMenuTriggerFor]="downloadMenu" title="Download diagram">
       <mat-icon>save_alt</mat-icon>
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
     <mat-menu #downloadMenu="matMenu">
-      <button mat-menu-item (click)="diagram.saveSVG()"><mat-icon>{{fileTypes.SVG | getIconCode}}</mat-icon> Download SVG Image</button>
-      <button mat-menu-item (click)="diagram.saveXML()"><mat-icon>code</mat-icon> Download XML File</button>
+      <button mat-menu-item (click)="diagram.saveSVG()">
+        <mat-icon>{{fileTypes.SVG | getIconCode}}</mat-icon> Download SVG Image
+      </button>
+      <button mat-menu-item (click)="diagram.saveXML()">
+        <mat-icon>code</mat-icon> Download XML File
+      </button>
     </mat-menu>
 
     <button mat-button *ngIf="diagramFile" (click)="editFileMeta()">
       <mat-icon>edit</mat-icon>
       {{getFileName()}}
     </button>
+    <!-- dfgdfhdgjkfdhsgfhjfkghlhjfdgsfgdhfjgkh, -->
+
+    <button mat-button [matMenuTriggerFor]="toolsMenu" title="Development Tools">
+      <mat-icon>build
+      </mat-icon>
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #toolsMenu="matMenu">
+      <button mat-menu-item (click)="diagram.saveSVG()">
+        <mat-icon>email</mat-icon> Test Email Template
+      </button>
+      <button mat-menu-item (click)="diagram.saveSVG()">
+        <mat-icon>search</mat-icon> Renderer Markdown
+      </button>
+      <button mat-menu-item [matMenuTriggerFor]="scripts">
+        <mat-icon>description</mat-icon> Script Documentation
+      </button>
+    </mat-menu>
+
+      <mat-menu #scripts="matMenu">
+      <div *ngFor="let script of ['# 1','# 2','# 3']">
+        <button mat-menu-item (click)="displayScriptDocumentation(script)">
+          <mat-icon>description</mat-icon>{{script}}
+        </button>
+      </div>
+    </mat-menu>
   </mat-toolbar-row>
 </mat-toolbar>
 
@@ -82,4 +113,5 @@
   </div>
 </div>
 
-<input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.dmn,.xml,application/xml,text/xml">
+<input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file"
+  accept=".bpmn,.dmn,.xml,application/xml,text/xml">

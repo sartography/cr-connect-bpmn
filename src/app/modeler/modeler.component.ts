@@ -15,13 +15,13 @@ import {
   newFileFromResponse,
   WorkflowSpec
 } from 'sartography-workflow-lib';
-import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
-import {NewFileDialogComponent} from '../_dialogs/new-file-dialog/new-file-dialog.component';
-import {ConfirmDialogComponent} from '../_dialogs/confirm-dialog/confirm-dialog.component';
-import {BpmnWarning} from '../_interfaces/bpmn-warning';
-import {FileMetaDialogData, NewFileDialogData} from '../_interfaces/dialog-data';
-import {ImportEvent} from '../_interfaces/import-event';
-import {DiagramComponent} from '../diagram/diagram.component';
+import { FileMetaDialogComponent } from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
+import { NewFileDialogComponent } from '../_dialogs/new-file-dialog/new-file-dialog.component';
+import { ConfirmDialogComponent } from '../_dialogs/confirm-dialog/confirm-dialog.component';
+import { BpmnWarning } from '../_interfaces/bpmn-warning';
+import { FileMetaDialogData, NewFileDialogData } from '../_interfaces/dialog-data';
+import { ImportEvent } from '../_interfaces/import-event';
+import { DiagramComponent } from '../diagram/diagram.component';
 
 @Component({
   selector: 'app-modeler',
@@ -48,6 +48,7 @@ export class ModelerComponent implements AfterViewInit {
       this.loadFilesFromDb();
     });
   }
+  scripts = [1,2,3];
   title = 'bpmn-js-angular';
   diagramUrl = 'https://cdn.staticaly.com/gh/bpmn-io/bpmn-js-examples/dfceecba/starter/diagram.bpmn';
   importError?: Error;
@@ -246,6 +247,23 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   editFileMeta() {
+    const dialogRef = this.dialog.open(FileMetaDialogComponent, {
+      data: {
+        fileName: this.diagramFile ? this.diagramFile.name : this.fileName || '',
+        fileType: this.diagramType || getDiagramTypeFromXml(this.xml),
+        file: this.diagramFile || undefined,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((data: FileMetaDialogData) => {
+      if (data && data.fileName) {
+        this._upsertFileMeta(data);
+      }
+    });
+  }
+
+  displayScriptDocumentation(documentation: string) {
+
     const dialogRef = this.dialog.open(FileMetaDialogComponent, {
       data: {
         fileName: this.diagramFile ? this.diagramFile.name : this.fileName || '',
