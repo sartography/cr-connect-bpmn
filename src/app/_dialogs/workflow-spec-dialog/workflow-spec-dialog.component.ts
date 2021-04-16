@@ -89,19 +89,7 @@ export class WorkflowSpecDialogComponent {
             description: 'Write a few sentences explaining to users why this workflow exists and what it should be used for.',
             required: true,
           },
-        },
-        {
-          key: 'display_order',
-          type: 'input',
-          defaultValue: this.data.display_order,
-          templateOptions: {
-            type: 'number',
-            label: 'Display Order',
-            placeholder: 'Order in which spec will be displayed',
-            description: 'Sort order that the spec should appear in within its category. Lower numbers will appear first.',
-            required: true,
-          },
-        },
+        }
       ];
     });
   }
