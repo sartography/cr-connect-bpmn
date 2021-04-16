@@ -7,12 +7,11 @@
             [(ngModel)]="template"
             ></textarea>
         </mat-form-field>
-
     </p>
 
     <markdown [data]="result"></markdown>
     <div mat-dialog-actions>
         <button mat-button [mat-dialog-close]="">Exit</button>
-        <button mat-button (click)="render()">Render</button>
+        <button mat-button color="primary" (click)="render()">Render</button>
      </div>
 </mat-card>
