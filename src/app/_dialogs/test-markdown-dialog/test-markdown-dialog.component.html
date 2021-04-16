@@ -1,17 +1,23 @@
 <mat-card fxLayoutGap>
     <p>
         <mat-form-field appearance="fill">
-            <mat-label>Textarea</mat-label>
+            <mat-label>Markdown Template</mat-label>
             <textarea matInput
             (change)="render()"
             [(ngModel)]="template"
             ></textarea>
+            <mat-form-field appearance="fill">
+                <mat-label>Json Data</mat-label>
+                <textarea matInput
+                (change)="render()"
+                [(ngModel)]="data"
+                ></textarea>
+            </mat-form-field>
         </mat-form-field>
     </p>
-
     <markdown [data]="result"></markdown>
     <div mat-dialog-actions>
         <button mat-button [mat-dialog-close]="">Exit</button>
-        <button mat-button color="primary" (click)="render()">Render</button>
+        <button mat-raised-button color="primary" (click)="render()">Render</button>
      </div>
 </mat-card>

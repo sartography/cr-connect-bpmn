@@ -42,7 +42,7 @@ export class ModelerComponent implements AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
   ) {
-    this.api.listScripts().subscribe((data) => {this.scriptsInfo = data;})
+    this.api.listScripts().subscribe((data) => {this.scriptsInfo = data; });
     this.route.queryParams.subscribe(q => {
       this._handleAction(q);
     });
@@ -279,7 +279,7 @@ export class ModelerComponent implements AfterViewInit {
 
   testEmailTemplate(documentation: string) {
     const dialogRef = this.dialog.open(TestEmailDialogComponent);
-    
+
     dialogRef.afterClosed().subscribe((data: FileMetaDialogData) => {
       if (data && data.fileName) {
         this._upsertFileMeta(data);
@@ -289,7 +289,7 @@ export class ModelerComponent implements AfterViewInit {
 
   testMarkdown() {
     const dialogRef = this.dialog.open(TestMarkdownDialogComponent, {
-     
+
     });
   }
 

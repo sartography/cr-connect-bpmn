@@ -140,6 +140,9 @@ describe('ModelerComponent', () => {
       expect(fmReq.request.method).toEqual('GET');
       fmReq.flush(new ArrayBuffer(8), {headers: mockHeaders});
     });
+    const sReq = httpMock.expectOne('apiRoot/list_scripts');
+    expect(sReq.request.method).toEqual('GET');
+    sReq.flush("");
   });
 
   afterEach(() => {

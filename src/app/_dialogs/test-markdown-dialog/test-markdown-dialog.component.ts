@@ -6,14 +6,14 @@ import { ApiService } from 'sartography-workflow-lib';
   templateUrl: './test-markdown-dialog.component.html',
   styleUrls: ['./test-markdown-dialog.component.scss']
 })
-export class TestMarkdownDialogComponent{
-data: string  = "{}";
-template: string = "";
-result: string = "";
+export class TestMarkdownDialogComponent {
+data  = '{}';
+template = '';
+result = '';
   constructor(
     private api: ApiService) { }
-    
-  render(){
+
+  render() {
     this.api.renderMarkdown(this.template, this.data).subscribe(data => this.result = data);
   }
 }

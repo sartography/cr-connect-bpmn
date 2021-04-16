@@ -8,7 +8,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   styleUrls: ['./script-doc-dialog.component.scss']
 })
 export class ScriptDocDialogComponent {
-  
+
   constructor(
     public dialogRef: MatDialogRef<ScriptDocDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: string

@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { ScriptDocDialogComponent } from './script-doc-dialog.component';
 
@@ -8,11 +9,24 @@ describe('ScriptDocDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ScriptDocDialogComponent ]
+      declarations: [ ScriptDocDialogComponent ],
+      imports : [MatDialogModule],
+      providers: [
+        {
+          provide: MatDialogRef,
+          useValue: {
+            close: (dialogResult: any) => {
+            }
+          }
+        },
+        {provide: MAT_DIALOG_DATA, useValue: {
+            confirm: false,
+          }},
+      ]
+
     })
     .compileComponents();
   }));
-
   beforeEach(() => {
     fixture = TestBed.createComponent(ScriptDocDialogComponent);
     component = fixture.componentInstance;
