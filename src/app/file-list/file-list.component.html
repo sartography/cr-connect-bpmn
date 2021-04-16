@@ -16,8 +16,8 @@
           Primary process
         </button>
       </ng-container>
-      <h4 (click)="editFile(fm)" mat-line>{{fm.name}}</h4>
-      <p (click)="editFile(fm)" mat-line>{{fm.last_updated | date}}</p>
+      <h4 (click)="editFile(fm)" mat-line>{{fm.file.name}}</h4>
+      <p (click)="editFile(fm)" mat-line> Updated: {{fm.file.lastModified | date}}</p>
       <button (click)="downloadFile(fm)" class="mat-elevation-z0" color="primary" mat-icon-button>
         <mat-icon>save_alt</mat-icon>
       </button>
