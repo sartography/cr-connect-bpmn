@@ -81,6 +81,7 @@ export class FileListComponent implements OnInit, OnChanges {
   makePrimary(fmPrimary: FileMeta) {
     if (fmPrimary.type === FileType.BPMN) {
       let numUpdated = 0;
+      // Fixme: This buisness rule does not belong here.
       this.fileMetas.forEach(fm => {
         fm.primary = (fmPrimary.id === fm.id);
         this.api.updateFileMeta(fm).subscribe(() => {

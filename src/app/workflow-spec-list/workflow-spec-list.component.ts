@@ -23,7 +23,6 @@ import {
 } from '../_interfaces/dialog-data';
 import { ApiErrorsComponent } from 'sartography-workflow-lib';
 import { ActivatedRoute } from '@angular/router';
-import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { environment } from '../../environments/environment.runtime';
 import { FormControl } from '@angular/forms';
@@ -109,7 +108,7 @@ export class WorkflowSpecListComponent implements OnInit {
       display_order: hasDisplayOrder ? selectedSpec.display_order : 0,
     };
 
-  
+
     // Open new filename/workflow spec dialog
     const dialogRef = this.dialog.open(WorkflowSpecDialogComponent, {
       height: '65vh',
@@ -119,7 +118,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
       if (data && data.id && data.name && data.display_name && data.description) {
-        data.display_order = this.categories.filter(function (entry) { return entry.id === data.category_id;}).length;
+        data.display_order = this.categories.filter(function (entry) { return entry.id === data.category_id; }).length;
         this._upsertWorkflowSpecification(selectedSpec == null,  data);
       }
     });
