@@ -2,10 +2,17 @@
     <p>
         <mat-form-field appearance="fill">
             <mat-label>Textarea</mat-label>
-            <textarea matInput></textarea>
+            <textarea matInput
+            (change)="render()"
+            [(ngModel)]="template"
+            ></textarea>
         </mat-form-field>
+
     </p>
+
+    <markdown [data]="result"></markdown>
     <div mat-dialog-actions>
         <button mat-button [mat-dialog-close]="">Exit</button>
-    </div>
+        <button mat-button (click)="render()">Render</button>
+     </div>
 </mat-card>

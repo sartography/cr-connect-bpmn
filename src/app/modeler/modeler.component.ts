@@ -25,6 +25,7 @@ import { ImportEvent } from '../_interfaces/import-event';
 import { DiagramComponent } from '../diagram/diagram.component';
 import { ScriptDocDialogComponent } from '../_dialogs/script-doc-dialog/script-doc-dialog.component';
 import { TestEmailDialogComponent } from '../_dialogs/test-email-dialog/test-email-dialog.component';
+import { TestMarkdownDialogComponent } from '../_dialogs/test-markdown-dialog/test-markdown-dialog.component';
 
 @Component({
   selector: 'app-modeler',
@@ -286,8 +287,10 @@ export class ModelerComponent implements AfterViewInit {
     });
   }
 
-  testMarkdown(documentation: string) {
-    //this.displayScriptDocumentation(documentation);
+  testMarkdown() {
+    const dialogRef = this.dialog.open(TestMarkdownDialogComponent, {
+     
+    });
   }
 
 

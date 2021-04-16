@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ApiService } from 'sartography-workflow-lib';
 
 @Component({
   selector: 'app-test-markdown-dialog',
@@ -6,7 +7,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./test-markdown-dialog.component.scss']
 })
 export class TestMarkdownDialogComponent{
-
-  constructor() { }
-
+data: string  = "{}";
+template: string = "";
+result: string = "";
+  constructor(
+    private api: ApiService) { }
+    
+  render(){
+    this.api.renderMarkdown(this.template, this.data).subscribe(data => this.result = data);
+  }
 }
