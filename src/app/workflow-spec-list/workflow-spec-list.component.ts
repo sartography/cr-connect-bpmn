@@ -110,6 +110,7 @@ export class WorkflowSpecListComponent implements OnInit {
       description: selectedSpec ? selectedSpec.description : '',
       category_id: selectedSpec ? selectedSpec.category_id : null,
       display_order: hasDisplayOrder ? selectedSpec.display_order : 0,
+      standalone: selectedSpec ? selectedSpec.standalone : null,
     };
 
 
@@ -259,6 +260,7 @@ export class WorkflowSpecListComponent implements OnInit {
         description: data.description,
         category_id: data.category_id,
         display_order: data.display_order,
+        standalone: data.standalone
       };
 
       if (isNew) {

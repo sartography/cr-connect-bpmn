@@ -19,6 +19,9 @@
       <dt>ID</dt><dd>{{workflowSpec.id}}</dd>
       <dt>Name</dt><dd>{{workflowSpec.name}}</dd>
       <dt>Description</dt><dd>{{workflowSpec.description}}</dd>
+      <dt>Standalone</dt><dd *ngIf="workflowSpec.standalone; then thenBlock else elseBlock"></dd>
+      <ng-template #thenBlock><dd>True</dd></ng-template>
+      <ng-template #elseBlock><dd>False</dd></ng-template>
     </dl>
 
     <h4>Workflow Spec Files</h4>
