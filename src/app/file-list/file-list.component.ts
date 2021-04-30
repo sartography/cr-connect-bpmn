@@ -112,13 +112,12 @@ export class FileListComponent implements OnInit, OnChanges {
           content_type: data.file.type,
           name: data.file.name,
           type: getFileType(data.file),
-          file: data.file,
           workflow_spec_id: this.workflowSpec.id,
         };
 
         if (isNumberDefined(data.fileMetaId)) {
           // Update existing file
-          this.api.updateFileData(newFileMeta).subscribe(() => {
+          this.api.updateFileData(newFileMeta, data.file).subscribe(() => {
             this._loadFileMetas();
           });
         } else {
@@ -127,7 +126,7 @@ export class FileListComponent implements OnInit, OnChanges {
             workflow_spec_id: this.workflowSpec.id,
           };
 
-          this.api.addFileMeta(fileParams, newFileMeta).subscribe(dbFm => {
+          this.api.addFile(fileParams, newFileMeta, data.file).subscribe(dbFm => {
             this._loadFileMetas();
           });
         }
@@ -146,15 +145,6 @@ export class FileListComponent implements OnInit, OnChanges {
   private _loadFileMetas() {
     this.api.getFileMetas({workflow_spec_id: this.workflowSpec.id}).subscribe(fms => {
       this.fileMetas = fms.sort((a, b) => (a.name > b.name) ? 1 : -1);
-      this._loadFileData();
-    });
-  }
-
-  private _loadFileData() {
-    this.fileMetas.forEach(fm => {
-      this.api.getFileData(fm.id).subscribe(response => {
-        fm.file = newFileFromResponse(fm, response);
-      });
     });
   }
 
