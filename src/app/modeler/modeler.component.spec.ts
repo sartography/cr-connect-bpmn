@@ -1,4 +1,4 @@
-import {APP_BASE_HREF} from '@angular/common';
+import {APP_BASE_HREF, DatePipe} from '@angular/common';
 import {HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {DebugNode} from '@angular/core';
@@ -431,11 +431,14 @@ describe('ModelerComponent', () => {
   it('should get file metadata tooltip text', () => {
     component.workflowSpec = undefined;
     expect(component.getFileMetaTooltipText(mockFileMeta0)).toEqual('Loading...');
+    mockFileMeta0.type = FileType.BPMN;
+    mockFileMeta0.last_modified = '2020-01-23T12:34:12.345Z';
+    const lastUpdated = new DatePipe('en-us').transform(mockFileMeta0.last_modified, 'medium');
 
     component.workflowSpec = mockWorkflowSpec0;
     const expectedString = `
           File name: one-fish.bpmn
-          Last updated: Jan 23, 2020, 7:34:12 AM
+          Last updated: ${lastUpdated}
           Version: 1.0
       `;
     mockFileMeta0.type = FileType.BPMN;
