@@ -89,7 +89,16 @@ export class WorkflowSpecDialogComponent {
             description: 'Write a few sentences explaining to users why this workflow exists and what it should be used for.',
             required: true,
           },
-        }
+        },
+        {
+          key: 'standalone',
+          type: 'checkbox',
+          defaultValue: this.data.standalone,
+          templateOptions: {
+            label: 'Standalone',
+            description: 'Is this a standalone workflow?',
+          },
+        },
       ];
     });
   }
