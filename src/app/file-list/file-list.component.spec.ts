@@ -15,9 +15,9 @@ import {
   ApiService,
   FileMeta,
   FileType,
-  MockEnvironment,
+  MockEnvironment, mockFile0,
   mockFileMeta0,
-  mockFileMetas,
+  mockFileMetas, mockFiles,
   mockWorkflowSpec0
 } from 'sartography-workflow-lib';
 import {DeleteFileDialogComponent} from '../_dialogs/delete-file-dialog/delete-file-dialog.component';
@@ -30,6 +30,9 @@ describe('FileListComponent', () => {
   let httpMock: HttpTestingController;
   let component: FileListComponent;
   let fixture: ComponentFixture<FileListComponent>;
+  const timeString = '2020-01-23T12:34:12.345Z';
+  const timeCode = new Date(timeString).getTime();
+
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -77,31 +80,12 @@ describe('FileListComponent', () => {
     component.workflowSpec = mockWorkflowSpec0;
     fixture.detectChanges();
 
-    const justFiles: File[] = [];
-    const fmsNoFiles: FileMeta[] = mockFileMetas.map(fm => {
-      justFiles.push(fm.file);
-      delete fm['file'];
-      return fm;
-    });
-    expect(justFiles.length).toEqual(mockFileMetas.length);
-    expect(fmsNoFiles.every(fm => !fm.file)).toEqual(true);
-    expect(justFiles.every(f => !!f.name)).toEqual(true);
 
     const fmsReq = httpMock.expectOne(`apiRoot/file?workflow_spec_id=${mockWorkflowSpec0.id}`);
     expect(fmsReq.request.method).toEqual('GET');
-    fmsReq.flush(fmsNoFiles);
+    fmsReq.flush(mockFileMetas);
     expect(component.fileMetas.length).toBeGreaterThan(0);
 
-    fmsNoFiles.forEach((fm, i) => {
-      const fReq = httpMock.expectOne(`apiRoot/file/${fm.id}/data`);
-      const mockHeaders = new HttpHeaders()
-        .append('last-modified', justFiles[i].lastModified.toString())
-        .append('content-type', justFiles[i].type);
-      fReq.flush(new ArrayBuffer(8), {headers: mockHeaders});
-
-      expect(fReq.request.method).toEqual('GET');
-      expect(component.fileMetas[i].file).toBeTruthy();
-    });
   });
 
   afterEach(() => {
@@ -195,7 +179,7 @@ describe('FileListComponent', () => {
 
     const expectedFile = new File([], mockDocMeta.name, {
       type: mockDocMeta.content_type,
-      lastModified: mockDocMeta.file.lastModified
+      lastModified: timeCode
     });
     const fReq = httpMock.expectOne(`apiRoot/file/${mockDocMeta.id}/data`);
 
@@ -215,7 +199,7 @@ describe('FileListComponent', () => {
 
   it('should upload new file from file dialog', () => {
     const openDialogSpy = spyOn(component.dialog, 'open')
-      .and.returnValue({afterClosed: () => of({file: mockFileMeta0.file})} as any);
+      .and.returnValue({afterClosed: () => of({file: mockFile0})} as any);
     const _loadFileMetasSpy = spyOn((component as any), '_loadFileMetas').and.stub();
     component.workflowSpec = mockWorkflowSpec0;
 
@@ -230,11 +214,11 @@ describe('FileListComponent', () => {
 
   it('should update existing file from file dialog', () => {
     const openDialogSpy = spyOn(component.dialog, 'open')
-      .and.returnValue({afterClosed: () => of({fileMetaId: mockFileMeta0.id, file: mockFileMeta0.file})} as any);
+      .and.returnValue({afterClosed: () => of({fileMetaId: mockFileMeta0.id, file: mockFile0})} as any);
     const _loadFileMetasSpy = spyOn((component as any), '_loadFileMetas').and.stub();
     component.workflowSpec = mockWorkflowSpec0;
 
-    (component as any)._openFileDialog(mockFileMeta0, mockFileMeta0.file);
+    (component as any)._openFileDialog(mockFileMeta0, mockFile0);
     const updateReq = httpMock.expectOne(`apiRoot/file/${mockFileMeta0.id}/data`);
     expect(updateReq.request.method).toEqual('PUT');
     updateReq.flush(mockFileMeta0);
@@ -251,7 +235,6 @@ describe('FileListComponent', () => {
 
     expect(updateFileMetaSpy).toHaveBeenCalledTimes(mockFileMetas.length);
     expect(component.fileMetas.length).toEqual(mockFileMetas.length);
-    expect(component.fileMetas.every(fm => !!fm.file)).toEqual(true);
     expect(component.fileMetas.reduce((sum, fm) => fm.primary ? sum + 1 : sum, 0)).toEqual(1);
     expect(_loadFileMetasSpy).toHaveBeenCalled();
   });

@@ -91,6 +91,10 @@ export class WorkflowSpecListComponent implements OnInit {
     this.selectedCat = selectedCat;
   }
 
+  isSelected(cat: WorkflowSpecCategory) {
+    return this.selectedCat && this.selectedCat === cat;
+  }
+
   selectSpec(selectedSpec?: WorkflowSpec) {
     this.selectedSpec = selectedSpec;
     this.location.replaceState(environment.homeRoute + '/' + selectedSpec.name);

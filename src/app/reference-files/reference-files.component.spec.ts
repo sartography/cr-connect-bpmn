@@ -12,7 +12,7 @@ import {RouterTestingModule} from '@angular/router/testing';
 import * as FileSaver from 'file-saver';
 import createClone from 'rfdc';
 import {of} from 'rxjs';
-import {ApiService, FileMeta, FileType, MockEnvironment, mockFileMetaReference0} from 'sartography-workflow-lib';
+import {ApiService, FileMeta, FileType, MockEnvironment, mockFileMetaReference0, mockFileReference0} from 'sartography-workflow-lib';
 import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
 import {ReferenceFilesComponent} from './reference-files.component';
 
@@ -26,9 +26,12 @@ describe('ReferenceFilesComponent', () => {
   const mockDocMeta: FileMeta = createClone()(mockFileMetaReference0);
   mockDocMeta.type = FileType.XLSX;
 
+  const timeString = '2020-01-23T12:34:12.345Z';
+  const timeCode = new Date(timeString).getTime();
+
   const expectedFile = new File([], mockDocMeta.name, {
     type: mockDocMeta.content_type,
-    lastModified: mockDocMeta.file.lastModified
+    lastModified: timeCode
   });
 
   const mockHeaders = new HttpHeaders()
@@ -101,7 +104,7 @@ describe('ReferenceFilesComponent', () => {
       .and.returnValue({
         afterClosed: () => of({
           fileMetaId: mockFileMetaReference0.id,
-          file: mockFileMetaReference0.file
+          file: mockFileReference0
         })
       } as any);
     const _loadReferenceFilesSpy = spyOn((component as any), '_loadReferenceFiles').and.stub();
