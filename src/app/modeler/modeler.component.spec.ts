@@ -1,4 +1,4 @@
-import {APP_BASE_HREF} from '@angular/common';
+import {APP_BASE_HREF, DatePipe} from '@angular/common';
 import {HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {DebugNode} from '@angular/core';
@@ -24,12 +24,13 @@ import {
   FileMeta,
   FileType,
   MockEnvironment,
+  mockFile0,
   mockFileMeta0,
   mockFileMetas,
   mockWorkflowSpec0,
   mockWorkflowSpecs
 } from 'sartography-workflow-lib';
-import {BPMN_DIAGRAM, BPMN_DIAGRAM_EMPTY, BPMN_DIAGRAM_WITH_WARNINGS} from '../../testing/mocks/diagram.mocks';
+import {BPMN_DIAGRAM, BPMN_DIAGRAM_EMPTY} from '../../testing/mocks/diagram.mocks';
 import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
 import {NewFileDialogComponent} from '../_dialogs/new-file-dialog/new-file-dialog.component';
 import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
@@ -132,14 +133,10 @@ describe('ModelerComponent', () => {
     expect(req.request.method).toEqual('GET');
     req.flush(mockFileMetas);
 
-    mockFileMetas.forEach((fm, i) => {
-      const fmReq = httpMock.expectOne(`apiRoot/file/${fm.id}/data`);
-      const mockHeaders = new HttpHeaders()
-        .append('last-modified', mockFileMetas[i].file.lastModified.toString())
-        .append('content-type', mockFileMetas[i].content_type);
-      expect(fmReq.request.method).toEqual('GET');
-      fmReq.flush(new ArrayBuffer(8), {headers: mockHeaders});
-    });
+    const fmReq = httpMock.expectOne(`apiRoot/file/${mockFileMeta0.id}/data`);
+
+
+
   });
 
   afterEach(() => {
@@ -225,8 +222,8 @@ describe('ModelerComponent', () => {
   it('should get the diagram file name', () => {
     expect(component.getFileName()).toEqual(mockFileMeta0.name);
 
-    const filename = 'expected_file_name.jpg';
-    component.diagramFile = new File([], filename, {type: 'image/jpeg'});
+    const filename = 'one-fish.bpmn';
+    component.diagramFileMeta.name = filename;
     expect(component.getFileName()).toEqual(filename);
   });
 
@@ -291,7 +288,7 @@ describe('ModelerComponent', () => {
     component.diagramComponent.writeValue(BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'cream_colored_ponies'));
     component.saveFileChanges();
 
-    expect(updateFileDataSpy).toHaveBeenCalledWith(mockFileMeta0);
+    expect(updateFileDataSpy).toHaveBeenCalledWith(mockFileMeta0, mockFile0);
     expect(snackBarOpenSpy).toHaveBeenCalled();
   });
 
@@ -318,12 +315,11 @@ describe('ModelerComponent', () => {
     const updateFileMetaSpy = spyOn(component.api, 'updateFileMeta')
       .and.returnValue(of(mockFileMeta0));
     const updateFileDataSpy = spyOn(component.api, 'updateFileData')
-      .and.returnValue(of(mockFileMeta0.file));
+      .and.returnValue(of(mockFile0));
     const loadFilesFromDbSpy = spyOn(component, 'loadFilesFromDb').and.stub();
     const snackBarSpy = spyOn(component.snackBar, 'open').and.stub();
     const noDateOrVersion: FileMeta = {
       content_type: mockFileMeta0.content_type,
-      file: mockFileMeta0.file,
       id: mockFileMeta0.id,
       name: mockFileMeta0.name,
       type: mockFileMeta0.type,
@@ -334,7 +330,7 @@ describe('ModelerComponent', () => {
     component._upsertFileMeta(data);
     expect(component.xml).toEqual(newXml);
     expect(updateFileMetaSpy).toHaveBeenCalledWith(noDateOrVersion);
-    expect(updateFileDataSpy).toHaveBeenCalledWith(noDateOrVersion);
+    expect(updateFileDataSpy).toHaveBeenCalledWith(noDateOrVersion, mockFile0);
     expect(loadFilesFromDbSpy).toHaveBeenCalled();
     expect(snackBarSpy).toHaveBeenCalled();
   });
@@ -349,13 +345,12 @@ describe('ModelerComponent', () => {
     const noDateOrVersion: FileMeta = {
       id: undefined,
       content_type: mockFileMeta0.content_type,
-      file: mockFileMeta0.file,
       name: mockFileMeta0.name,
       type: mockFileMeta0.type,
       workflow_spec_id: mockFileMeta0.workflow_spec_id,
     };
 
-    const addFileMetaSpy = spyOn(component.api, 'addFileMeta')
+    const addFileMetaSpy = spyOn(component.api, 'addFile')
       .and.returnValue(of(mockFileMeta0));
     const loadFilesFromDbSpy = spyOn(component, 'loadFilesFromDb').and.stub();
     const routerNavigateSpy = spyOn(component.router, 'navigate').and.stub();
@@ -367,7 +362,7 @@ describe('ModelerComponent', () => {
     component.draftXml = newXml;
     component._upsertFileMeta(data);
     expect(component.xml).toEqual(newXml);
-    expect(addFileMetaSpy).toHaveBeenCalledWith({workflow_spec_id: mockWorkflowSpec0.id}, noDateOrVersion);
+    expect(addFileMetaSpy).toHaveBeenCalledWith({workflow_spec_id: mockWorkflowSpec0.id}, noDateOrVersion, mockFile0);
     expect(loadFilesFromDbSpy).not.toHaveBeenCalled();
     expect(routerNavigateSpy).toHaveBeenCalled();
     expect(snackBarSpy).toHaveBeenCalled();
@@ -375,7 +370,7 @@ describe('ModelerComponent', () => {
 
   it('should load files from the database', () => {
     const mockHeaders = new HttpHeaders()
-      .append('last-modified', mockFileMeta0.file.lastModified.toString())
+      .append('last-modified', mockFileMeta0.last_modified.toString())
       .append('content-type', mockFileMeta0.content_type);
     const mockResponse = new HttpResponse<ArrayBuffer>({
       body: new ArrayBuffer(8),
@@ -394,9 +389,6 @@ describe('ModelerComponent', () => {
     expect(component.workflowSpec).toEqual(mockWorkflowSpec0);
     expect(getFileMetasSpy).toHaveBeenCalledWith({workflow_spec_id: mockWorkflowSpec0.id});
 
-    mockFileMetas.forEach(fm => {
-      expect(getFileDataSpy).toHaveBeenCalledWith(fm.id);
-    });
 
     expect(component.bpmnFiles.length).toEqual(mockFileMetas.length);
   });
@@ -404,8 +396,8 @@ describe('ModelerComponent', () => {
   it('should load a database file', () => {
     const onSubmitFileToOpenSpy = spyOn(component, 'onSubmitFileToOpen').and.stub();
     component.workflowSpecs = mockWorkflowSpecs;
-    component.loadDbFile(mockFileMeta0);
-    expect(component.diagramFile).toEqual(mockFileMeta0.file);
+    component.loadDbFile(mockFileMeta0, mockFile0);
+    expect(component.diagramFile).toEqual(mockFile0);
     expect(component.diagramFileMeta).toEqual(mockFileMeta0);
     expect(component.workflowSpec).toEqual(mockWorkflowSpec0);
     expect(onSubmitFileToOpenSpy).toHaveBeenCalled();
@@ -415,7 +407,7 @@ describe('ModelerComponent', () => {
     component.xml = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'sleigh_bells');
     component.draftXml = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'schnitzel_with_noodles');
     component.diagramFileMeta = mockFileMeta0;
-    component.diagramFile = mockFileMeta0.file;
+    component.diagramFile = mockFile0;
     component.workflowSpec = mockWorkflowSpec0;
     component.newDiagram();
 
@@ -430,36 +422,27 @@ describe('ModelerComponent', () => {
 
   it('should get a file metadata display string', () => {
     expect(component.getFileMetaDisplayString(undefined)).toEqual('Loading...');
-    const expectedString = 'one-fish.bpmn - v1.0 (Jan 23, 2020)';
-
-    const file = new File([], 'one-fish.bpmn', {
-      type: 'text/xml',
-      lastModified: new Date('2020-01-23T12:34:12.345Z').getTime(),
-    });
-    mockFileMeta0.file = file;
+    const expectedString = 'one-fish.bpmn';
+    mockFileMeta0.type = FileType.BPMN;
+    mockFileMeta0.last_modified = '2020-01-23T12:34:12.345Z';
     expect(component.getFileMetaDisplayString(mockFileMeta0)).toEqual(expectedString);
   });
 
   it('should get file metadata tooltip text', () => {
     component.workflowSpec = undefined;
     expect(component.getFileMetaTooltipText(mockFileMeta0)).toEqual('Loading...');
+    mockFileMeta0.type = FileType.BPMN;
+    mockFileMeta0.last_modified = '2020-01-23T12:34:12.345Z';
+    const lastUpdated = new DatePipe('en-us').transform(mockFileMeta0.last_modified, 'medium');
 
     component.workflowSpec = mockWorkflowSpec0;
     const expectedString = `
-          Workflow spec ID: all_things
-          Workflow name: all_things
-          Display name: Everything
-          Description: Do all the things
           File name: one-fish.bpmn
-          Last updated: Jan 23, 2020
+          Last updated: ${lastUpdated}
           Version: 1.0
       `;
-
-    const file = new File([], 'one-fish.bpmn', {
-      type: 'text/xml',
-      lastModified: new Date('2020-01-23T12:34:12.345Z').getTime(),
-    });
-    mockFileMeta0.file = file;
+    mockFileMeta0.type = FileType.BPMN;
+    mockFileMeta0.last_modified = '2020-01-23T12:34:12.345Z';
     expect(component.getFileMetaTooltipText(mockFileMeta0)).toEqual(expectedString);
   });
 
@@ -478,7 +461,7 @@ describe('ModelerComponent', () => {
 
   it('should display open file dialog', () => {
     const data: OpenFileDialogData = {
-      file: mockFileMeta0.file
+      file: mockFile0
     };
     const expectedFile = new File([], mockFileMeta0.name, {type: mockFileMeta0.content_type});
     const event = {target: {files: [expectedFile]}};

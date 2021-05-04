@@ -139,7 +139,8 @@ export class ModelerComponent implements AfterViewInit {
   }
 
   getFileName() {
-    return this.diagramFile ? this.diagramFile.name : this.fileName || 'No file selected';
+//    return this.diagramFile ? this.diagramFile.name : this.fileName || 'No file selected';
+    return this.diagramFileMeta ? this.diagramFileMeta.name : this.fileName || 'No file selected';
   }
 
   checkSaved() {
@@ -206,8 +207,8 @@ export class ModelerComponent implements AfterViewInit {
     return (this.xml !== this.draftXml) || this.isNew;
   }
 
-  loadDbFile(bf: FileMeta) {
-    this.diagramFile = bf.file;
+  loadDbFile(bf: FileMeta, f: File) {
+    this.diagramFile = f;
     this.diagramFileMeta = bf;
     this.onSubmitFileToOpen();
   }
@@ -263,10 +264,7 @@ export class ModelerComponent implements AfterViewInit {
 
   getFileMetaDisplayString(fileMeta: FileMeta) {
     if (fileMeta) {
-      const lastUpdated = new DatePipe('en-us').transform(fileMeta.file.lastModified);
-      return fileMeta.name +
-        (fileMeta.latest_version ? ` - v${fileMeta.latest_version}` : '') +
-        (lastUpdated ? ` (${lastUpdated})` : '');
+      return fileMeta.name;
     } else {
       return 'Loading...';
     }
@@ -276,13 +274,9 @@ export class ModelerComponent implements AfterViewInit {
     const spec = this.workflowSpec;
 
     if (spec) {
-      const lastUpdatedDate = new Date(fileMeta.file.lastModified);
-      const lastUpdated = new DatePipe('en-us').transform(lastUpdatedDate);
+      const lastUpdatedDate = new Date(fileMeta.last_modified);
+      const lastUpdated = new DatePipe('en-us').transform(lastUpdatedDate, 'medium');
       return `
-          Workflow spec ID: ${spec.id}
-          Workflow name: ${spec.name}
-          Display name: ${spec.display_name}
-          Description: ${spec.description}
           File name: ${fileMeta.name}
           Last updated: ${lastUpdated}
           Version: ${fileMeta.latest_version}
@@ -298,19 +292,18 @@ export class ModelerComponent implements AfterViewInit {
       this.api.getFileMetas({workflow_spec_id: wfs.id}).subscribe(files => {
         this.bpmnFiles = [];
         files.forEach(f => {
-          this.api.getFileData(f.id).subscribe(response => {
-            if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
-              f.content_type = 'text/xml';
-              f.file = newFileFromResponse(f, response);
-              this.bpmnFiles.push(f);
+          if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
+            f.content_type = 'text/xml';
+            this.bpmnFiles.push(f);
 
-              if (f.id === this.fileMetaId) {
-                this.diagramFileMeta = f;
-                this.diagramFile = f.file;
+            if (f.id === this.fileMetaId) {
+              this.diagramFileMeta = f;
+              this.api.getFileData(f.id).subscribe(response => {
+                this.diagramFile = newFileFromResponse(f, response);
                 this.onSubmitFileToOpen();
-              }
+              });
             }
-          });
+          }
         });
       });
     });
@@ -326,13 +319,14 @@ export class ModelerComponent implements AfterViewInit {
         content_type: 'text/xml',
         name: data.fileName,
         type: fileType,
-        file: new File([this.xml], data.fileName, {type: 'text/xml'}),
         workflow_spec_id: this.workflowSpec.id,
       };
+      this.diagramFile = new File([this.xml], data.fileName, {type: 'text/xml'});
+
 
       if (this.workflowSpec && isNumberDefined(fileMetaId)) {
         // Update existing file meta
-        this.api.updateFileData(this.diagramFileMeta).subscribe(() => {
+        this.api.updateFileData(this.diagramFileMeta, this.diagramFile).subscribe(() => {
           this.api.updateFileMeta(this.diagramFileMeta).subscribe(() => {
             this.loadFilesFromDb();
             this.snackBar.open(`Saved changes to file ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
@@ -340,7 +334,7 @@ export class ModelerComponent implements AfterViewInit {
         });
       } else {
         // Add new file meta
-        this.api.addFileMeta({workflow_spec_id: this.workflowSpec.id}, this.diagramFileMeta).subscribe(fileMeta => {
+        this.api.addFile({workflow_spec_id: this.workflowSpec.id}, this.diagramFileMeta, this.diagramFile).subscribe(fileMeta => {
           this.router.navigate(['/modeler', this.workflowSpec.id, fileMeta.id]);
           this.snackBar.open(`Saved new file ${fileMeta.name} to workflow spec ${this.workflowSpec.name}.`, 'Ok', {duration: 5000});
         }, () => {
@@ -355,7 +349,7 @@ export class ModelerComponent implements AfterViewInit {
 
   private saveFileChanges() {
     this.xml = this.draftXml;
-    this.diagramFileMeta.file = new File([this.xml], this.diagramFileMeta.name, {type: 'text/xml'});
+    this.diagramFile = new File([this.xml], this.diagramFileMeta.name, {type: 'text/xml'});
 
     // Propose removal
     // if (this.svg && this.svg !== '') {
@@ -363,7 +357,7 @@ export class ModelerComponent implements AfterViewInit {
     //   // this.api.updateFileData();
     // }
 
-    this.api.updateFileData(this.diagramFileMeta).subscribe(newFileMeta => {
+    this.api.updateFileData(this.diagramFileMeta, this.diagramFile).subscribe(newFileMeta => {
       this.diagramFileMeta = newFileMeta;
       this.snackBar.open(`Saved changes to file metadata ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
     });

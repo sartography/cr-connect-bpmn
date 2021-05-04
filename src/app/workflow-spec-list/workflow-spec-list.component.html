@@ -33,7 +33,7 @@
 
         <div *ngIf="!(searchField.value && cat.workflow_specs.length === 0)">
         <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
-          <mat-expansion-panel hideToggle (opened)="selectCat(cat)" [expanded]="selectedSpec.category_id == cat.id">
+          <mat-expansion-panel hideToggle (opened)="selectCat(cat)" [expanded]="isSelected(cat)">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 {{cat.display_name}}

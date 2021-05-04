@@ -9,7 +9,7 @@ import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
-import {ApiService, MockEnvironment, mockFileMeta0} from 'sartography-workflow-lib';
+import {ApiService, MockEnvironment, mockFile0, mockFileMeta0} from 'sartography-workflow-lib';
 import {OpenFileDialogData} from '../../_interfaces/dialog-data';
 
 import { OpenFileDialogComponent } from './open-file-dialog.component';
@@ -78,14 +78,14 @@ describe('OpenFileDialogComponent', () => {
 
   it('should save data on submit', () => {
     const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
-    component.data.file = mockFileMeta0.file;
+    component.data.file = mockFile0;
     component.onSubmit();
     expect(closeSpy).toHaveBeenCalledWith(component.data);
   });
 
   it('should not change data on cancel', () => {
     const closeSpy = spyOn(component.dialogRef, 'close').and.stub();
-    const expectedData: OpenFileDialogData = { file: mockFileMeta0.file };
+    const expectedData: OpenFileDialogData = { file: mockFile0 };
 
     component.data.file = expectedData.file;
     component.onNoClick();
@@ -111,14 +111,14 @@ describe('OpenFileDialogComponent', () => {
     component.data.file = undefined;
     expect(component.getFileName()).toEqual('Click to select a file');
 
-    component.data.file = mockFileMeta0.file;
-    expect(component.getFileName()).toEqual(mockFileMeta0.file.name);
+    component.data.file = mockFile0;
+    expect(component.getFileName()).toEqual(mockFile0.name);
   });
 
   it('should get a file from the file input field event', () => {
-    const event = {target: {files: [mockFileMeta0.file]}};
+    const event = {target: {files: [mockFile0]}};
     (component as any).onFileSelected(event);
-    expect(component.data.file).toEqual(mockFileMeta0.file);
+    expect(component.data.file).toEqual(mockFile0);
   });
 
   it('should determine if a string is a valid URL', () => {
