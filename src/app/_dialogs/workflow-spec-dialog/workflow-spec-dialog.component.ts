@@ -97,6 +97,7 @@ export class WorkflowSpecDialogComponent {
           templateOptions: {
             label: 'Standalone',
             description: 'Is this a standalone workflow?',
+            required: true,
           },
         },
       ];
