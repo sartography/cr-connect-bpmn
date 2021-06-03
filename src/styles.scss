@@ -2,5 +2,6 @@
 @import '~bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
 @import '~bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css';
 @import '~diagram-js-minimap/assets/diagram-js-minimap.css';
+@import '~diagram-js-code-editor/assets/diagram-js-code-editor.css';
 @import './material-theme.scss';
 @include cr-connect-theme($cr-connect-theme);
