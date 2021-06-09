@@ -29,10 +29,11 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('propertiesRef', {static: true}) propertiesRef: ElementRef;
   @Output() private importDone: EventEmitter<ImportEvent> = new EventEmitter();
   private diagramType: FileType;
-  private modeler: BpmnModeler | DmnModeler;
+  public modeler: BpmnModeler | DmnModeler;
   private xml = '';
   private svg;
   private disabled = false;
+  public eventBus;
 
   // Hack so we can spy on this function
   private _formatDate = formatDate;
@@ -204,7 +205,23 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
       }
     });
 
+    this.eventBus = this.modeler.get('eventBus');
+    this.eventBus.on('editor.scripts.request', () => {
+      this.api.listScripts().subscribe((data) => {
+        this.modeler.get('eventBus').fire('editor.scripts.response', { scripts: data });
+      })
+    });
+    
+    // this.modeler.get('eventBus').on('editor.objects.request', () => {
+    //   let data = [{userId: "int", description: "string"}]
+    //   this.modeler.get('eventBus').fire('editor.scripts.response', {objects: data});
+    // });
+
     return this.modeler as BpmnModeler;
+  }
+
+  private validate(){
+
   }
 
   private initializeDMNModeler(): DmnModeler {
