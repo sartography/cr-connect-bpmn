@@ -181,7 +181,9 @@ export class WorkflowSpecListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((data: DeleteWorkflowSpecDialogData) => {
       if (data && data.confirm && data.workflowSpec) {
         this._deleteWorkflowSpec(data.workflowSpec);
-        this.selectedSpec = this.masterStatusSpec;
+        if (typeof this.masterStatusSpec !== 'undefined') {
+          this.selectSpec(this.masterStatusSpec);
+        }
       }
     });
   }
@@ -269,6 +271,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
       if (isNew) {
         this._addWorkflowSpec(newSpec);
+        this.selectSpec(newSpec);
       } else {
         this._updateWorkflowSpec(data.id, newSpec);
       }
