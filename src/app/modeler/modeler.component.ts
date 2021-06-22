@@ -66,6 +66,8 @@ export class ModelerComponent implements AfterViewInit {
   @ViewChild(DiagramComponent) private diagramComponent: DiagramComponent;
   @ViewChild('fileInput', { static: true }) fileInput: ElementRef;
   private diagramType: FileType;
+  private validationState: boolean;
+  private validationData: Object = {};
   private workflowSpecId: string;
   private fileMetaId: number;
   private isNew = false;
@@ -90,40 +92,10 @@ export class ModelerComponent implements AfterViewInit {
       this.svg = newSvgValue;
     });
 
-    this.diagramComponent.modeler.get('eventBus').on('editor.validate.request', (request) => {
-      this.saveChanges();
-      console.log("Validating...", request.code);
-      this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id).subscribe(apiErrors => {
-        // apiErrors = 
-        console.log(33);
-        if (apiErrors && apiErrors.length > 0) {
-          let passing = true;
-          let data = {};
-          apiErrors.forEach((error) => {
-            if (error.code == "validation_break") {
-              data = error.task_data;
-            }
-            else
-            {
-              passing = false;
-            }
-          });
-
-      this.diagramComponent.eventBus.fire('editor.validate.response', { passing: true, msg: "msg", data: data});
-          // this.bottomSheet.open(ApiErrorsComponent, { data: { apiErrors: apiErrors } });
-        } else {
-          // this.snackBar.open('Workflow specification is valid!', 'Ok', { duration: 5000 });
-        }
-      });
-    });
-
-
-
     if (this.requestFileClick) {
       this.fileInput.nativeElement.click();
       this.requestFileClick = false;
     }
-
   }
 
   handleImported(event: ImportEvent) {
@@ -225,7 +197,27 @@ export class ModelerComponent implements AfterViewInit {
     }
   }
 
+  partially_validate(until_task: string) {
+    this.saveChanges();
+    this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id, until_task).subscribe(apiErrors => {
+      this.validationState = true;
+      if (apiErrors && apiErrors.length > 0) {
+          apiErrors.forEach((error) => {
+            if (error.code == "validation_break") {
+              this.validationData = error.task_data;
+            } else {
+              this.validationState = false;
+            }
+          });    
+        }
+      if (!this.validationState) {
+        this.bottomSheet.open(ApiErrorsComponent, { data: { apiErrors: apiErrors } });
+      }
+    });
+  }
+
   validate() {
+    this.saveChanges();
     this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id).subscribe(apiErrors => {
       if (apiErrors && apiErrors.length > 0) {
         this.bottomSheet.open(ApiErrorsComponent, { data: { apiErrors: apiErrors } });
@@ -382,12 +374,6 @@ export class ModelerComponent implements AfterViewInit {
   private saveFileChanges() {
     this.xml = this.draftXml;
     this.diagramFile = new File([this.xml], this.diagramFileMeta.name, { type: 'text/xml' });
-
-    // Propose removal
-    // if (this.svg && this.svg !== '') {
-    //   const svgFile = new File([this.svg], this.diagramFileMeta.name, {type: 'text/xml'});
-    //   // this.api.updateFileData();
-    // }
 
     this.api.updateFileData(this.diagramFileMeta, this.diagramFile).subscribe(newFileMeta => {
       this.diagramFileMeta = newFileMeta;
