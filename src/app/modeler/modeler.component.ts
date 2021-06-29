@@ -201,16 +201,17 @@ export class ModelerComponent implements AfterViewInit {
     this.saveChanges();
     this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id, until_task).subscribe(apiErrors => {
       this.validationState = true;
-      if (apiErrors && apiErrors.length > 0) {
-          apiErrors.forEach((error) => {
-            if (error.code == "validation_break") {
-              this.validationData = error.task_data;
-            } else {
-              this.validationState = false;
-            }
-          });    
-        }
-      if (!this.validationState) {
+      this.validationData = { "required_only": undefined, "all_fields": undefined }
+      if (apiErrors && apiErrors.length == 2) {
+        if (apiErrors[0].code == "validation_break") {
+          this.validationData["all_fields"] = apiErrors[0].task_data;
+        } else { this.validationState = false; }
+        if (apiErrors[1].code == "validation_break") {
+          this.validationData["required_only"] = apiErrors[1].task_data;
+        } else { this.validationState = false; }
+      } else { this.validationState = false; }
+
+      if (this.validationState == false) {
         this.bottomSheet.open(ApiErrorsComponent, { data: { apiErrors: apiErrors } });
       }
     });

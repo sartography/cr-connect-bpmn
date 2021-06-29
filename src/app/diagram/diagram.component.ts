@@ -11,7 +11,8 @@ import {
   BPMN_DIAGRAM_DEFAULT,
   DMN_DIAGRAM_DEFAULT,
   FileType,
-  getDiagramTypeFromXml
+  getDiagramTypeFromXml,
+  CameltoSnakeCase
 } from 'sartography-workflow-lib';
 import { v4 as uuidv4 } from 'uuid';
 import { BpmnWarning } from '../_interfaces/bpmn-warning';
@@ -65,8 +66,8 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
     console.log('DiagramComponent default onChange');
   }
 
-
   ngOnChanges(changes: SimpleChanges) {
+    // ? I feel like there's better ways to handle the changes to a single attribute but I didn't want to mess around with getters and setters since this class already had some
     if (changes.validation_data) {
       this.validation_data = changes.validation_data.currentValue;
       if (this.modeler) {
@@ -222,14 +223,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
 
     eventBus.on('editor.scripts.request', () => {
       this.api.listScripts().subscribe((data) => {
-        data.forEach(element => {
-          var string = element.name,
-            regex = /(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z])/g;
-          var modified = string.replace(regex, function (match) {
-            return "_" + match.toLowerCase();
-          }).toLowerCase();
-          element.name = modified;
-        });
+        data.forEach(element => {element.name = CameltoSnakeCase(element.name);});
         this.modeler.get('eventBus').fire('editor.scripts.response', { scripts: data });
       })
     });
