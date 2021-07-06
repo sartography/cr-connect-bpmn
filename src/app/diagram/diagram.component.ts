@@ -1,6 +1,5 @@
 import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { stringify } from '@angular/compiler/src/util';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, NgZone, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
@@ -67,7 +66,6 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // ? I feel like there's better ways to handle the changes to a single attribute but I didn't want to mess around with getters and setters since this class already had some
     if (changes.validation_data) {
       this.validation_data = changes.validation_data.currentValue;
       if (this.modeler) {
@@ -219,13 +217,13 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
         });
       }
     });
-    var eventBus = this.modeler.get('eventBus');
+    const eventBus = this.modeler.get('eventBus');
 
     eventBus.on('editor.scripts.request', () => {
       this.api.listScripts().subscribe((data) => {
-        data.forEach(element => {element.name = CameltoSnakeCase(element.name);});
+        data.forEach(element => {element.name = CameltoSnakeCase(element.name); });
         this.modeler.get('eventBus').fire('editor.scripts.response', { scripts: data });
-      })
+      });
     });
 
     eventBus.on('editor.validate.request', (request) => {
