@@ -1,0 +1,24 @@
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SettingsService {
+
+  private studyIdKey = 'study_id';
+
+  constructor() { }
+
+  setStudyIdForValidation(id: number) {
+    localStorage.setItem(this.studyIdKey, id.toString());
+  }
+
+  getStudyIdForValidation() {
+    const value = localStorage.getItem(this.studyIdKey);
+    if (value) {
+      return parseInt(value, 10);
+    } else {
+      return null;
+    }
+  }
+}

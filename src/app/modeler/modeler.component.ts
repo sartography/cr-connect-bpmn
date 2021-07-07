@@ -22,6 +22,7 @@ import { BpmnWarning } from '../_interfaces/bpmn-warning';
 import { FileMetaDialogData, NewFileDialogData } from '../_interfaces/dialog-data';
 import { ImportEvent } from '../_interfaces/import-event';
 import { DiagramComponent } from '../diagram/diagram.component';
+import {SettingsService} from '../settings.service';
 
 @Component({
   selector: 'app-modeler',
@@ -37,6 +38,7 @@ export class ModelerComponent implements AfterViewInit {
     public dialog: MatDialog,
     private route: ActivatedRoute,
     private router: Router,
+    private settingsService: SettingsService
   ) {
     this.route.queryParams.subscribe(q => {
       this._handleAction(q);
@@ -199,7 +201,8 @@ export class ModelerComponent implements AfterViewInit {
 
   partially_validate(until_task: string) {
     this.saveChanges();
-    this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id, until_task).subscribe(apiErrors => {
+    const study_id = this.settingsService.getStudyIdForValidation();
+    this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id, until_task, study_id).subscribe(apiErrors => {
       this.validationState = true;
       this.validationData = { 'required_only': undefined, 'all_fields': undefined };
       if (apiErrors && apiErrors.length === 2) {
@@ -219,7 +222,8 @@ export class ModelerComponent implements AfterViewInit {
 
   validate() {
     this.saveChanges();
-    this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id).subscribe(apiErrors => {
+    const studyId = this.settingsService.getStudyIdForValidation();
+    this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id, '', studyId).subscribe(apiErrors => {
       if (apiErrors && apiErrors.length > 0) {
         this.bottomSheet.open(ApiErrorsComponent, { data: { apiErrors: apiErrors } });
       } else {

@@ -26,6 +26,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { environment } from '../../environments/environment.runtime';
 import { FormControl } from '@angular/forms';
+import {SettingsService} from '../settings.service';
 
 
 export interface WorkflowSpecCategoryGroup {
@@ -58,7 +59,8 @@ export class WorkflowSpecListComponent implements OnInit {
     private bottomSheet: MatBottomSheet,
     public dialog: MatDialog,
     private route: ActivatedRoute,
-    private location: Location
+    private location: Location,
+    private settingsService: SettingsService
   ) {
   }
 
@@ -78,7 +80,8 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   validateWorkflowSpec(wfs: WorkflowSpec) {
-    this.api.validateWorkflowSpecification(wfs.id).subscribe(apiErrors => {
+    const studyId = this.settingsService.getStudyIdForValidation();
+    this.api.validateWorkflowSpecification(wfs.id, '', studyId).subscribe(apiErrors => {
       if (apiErrors && apiErrors.length > 0) {
         this.bottomSheet.open(ApiErrorsComponent, { data: { apiErrors: apiErrors } });
       } else {
