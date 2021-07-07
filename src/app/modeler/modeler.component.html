@@ -73,7 +73,7 @@
 
 <div fxLayout="column">
   <div class="diagram-parent">
-    <app-diagram #diagram (importDone)="handleImported($event)" [fileName]="getFileName()"></app-diagram>
+    <app-diagram #diagram (importDone)="handleImported($event)" [fileName]="getFileName()" [validation_data]="validationData" (validationStart)="partially_validate($event)" ></app-diagram>
 
     <div *ngIf="importError" class="import-error">
       <strong>Failed to render diagram: </strong>
