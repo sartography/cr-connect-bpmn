@@ -12,6 +12,8 @@
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
+        <div>Last Modified: {{refFile.last_modified | date:'medium'}}</div>
+        <div *ngIf="refFile.user_uid">By: {{refFile.user_uid}}</div>
         <hr>
       </mat-card-content>
       <mat-card-footer>
