@@ -1,0 +1,14 @@
+<div class="container" fxLayout="column" fxLayoutGap="40px">
+  <h1>Settings</h1>
+
+  <h4>Validation Settings</h4>
+  <mat-form-field appearance="fill" *ngIf="studies">
+    <mat-label>Select Study</mat-label>
+    <mat-hint>Here you can specify a default study to use when performing validation.</mat-hint>
+    <mat-select matNativeControl required [(value)]="selectedStudyId" (selectionChange)="selectStudy($event.value)">
+      <mat-option *ngFor="let s of studies" [value]="s.id">
+        {{s.id}} - {{s.title}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

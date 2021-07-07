@@ -46,13 +46,14 @@ import {FooterComponent} from './footer/footer.component';
 import {HomeComponent} from './home/home.component';
 import {ModelerComponent} from './modeler/modeler.component';
 import {NavbarComponent} from './navbar/navbar.component';
-import {ProtocolBuilderComponent} from './protocol-builder/protocol-builder.component';
 import {ReferenceFilesComponent} from './reference-files/reference-files.component';
 import {WorkflowSpecCardComponent} from './workflow-spec-card/workflow-spec-card.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { ConfirmDialogComponent } from './_dialogs/confirm-dialog/confirm-dialog.component';
 import {MatExpansionModule} from '@angular/material/expansion';
+import { SettingsComponent } from './settings/settings.component';
+import {MatSelect, MatSelectModule} from '@angular/material/select';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -100,9 +101,9 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
     WorkflowSpecListComponent,
     HomeComponent,
     WorkflowSpecCardComponent,
-    ProtocolBuilderComponent,
     ReferenceFilesComponent,
     ConfirmDialogComponent,
+    SettingsComponent,
   ],
     imports: [
         BrowserAnimationsModule,
@@ -124,6 +125,7 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
         MatTabsModule,
         MatToolbarModule,
         MatTooltipModule,
+        MatSelectModule,
         ReactiveFormsModule,
         SartographyFormsModule,
         SartographyPipesModule,

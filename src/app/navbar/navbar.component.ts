@@ -55,17 +55,11 @@ export class NavbarComponent {
     const displayName = this.user.display_name || this.user.first_name || this.user.last_name;
     this.navLinks = [
       {path: '/home', id: 'nav_home', label: 'Configurator'},
-      {path: '/pb', id: 'nav_pb', label: 'Protocol Builder Tester'},
       {path: '/reffiles', id: 'nav_reffiles', label: 'Reference Files'},
-      {path: '/help', id: 'nav_help', label: 'Help'},
+      {path: '/settings', id: 'settings', label: 'Settings'},
       {
         id: 'nav_account', label: `${displayName} (${this.user.email_address})`,
-        icon: 'account_circle',
-        links: [
-          {path: '/profile', id: 'nav_profile', label: 'Profile', icon: 'person'},
-          {path: '/notifications', id: 'nav_notifications', label: 'Notifications', icon: 'notifications'},
-          {path: '/sign-out', id: 'nav_sign_out', label: 'Sign out', icon: 'exit_to_app'},
-        ]
+        icon: 'account_circle'
       }
     ];
   }
