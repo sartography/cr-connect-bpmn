@@ -98,6 +98,7 @@ export class WorkflowSpecDialogComponent {
             label: 'Standalone',
             description: 'Is this a standalone workflow?',
             required: true,
+            indeterminate: false,
           },
         },
       ];
