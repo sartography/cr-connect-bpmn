@@ -68,7 +68,7 @@ export class ModelerComponent implements AfterViewInit {
   @ViewChild(DiagramComponent) private diagramComponent: DiagramComponent;
   @ViewChild('fileInput', { static: true }) fileInput: ElementRef;
   private diagramType: FileType;
-  private validationState: boolean;
+  private validationState: string;
   validationData: Object = {};
   private workflowSpecId: string;
   private fileMetaId: number;
@@ -202,19 +202,20 @@ export class ModelerComponent implements AfterViewInit {
   partially_validate(until_task: string) {
     this.saveChanges();
     const study_id = this.settingsService.getStudyIdForValidation();
-    this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id, until_task, study_id).subscribe(apiErrors => {
-      this.validationState = true;
-      this.validationData = { 'required_only': undefined, 'all_fields': undefined };
-      if (apiErrors && apiErrors.length === 2) {
-        if (apiErrors[0].code === 'validation_break') {
-          this.validationData['all_fields'] = apiErrors[0].task_data;
-        } else { this.validationState = false; }
-        if (apiErrors[1].code === 'validation_break') {
-          this.validationData['required_only'] = apiErrors[1].task_data;
-        } else { this.validationState = false; }
-      } else { this.validationState = false; }
+    this.validationState = 'unknown';
+    this.validationData = { 'testing_only': {a: 1, b: 'b', c: false, e: [], d: undefined}, 'real_fields': undefined };
 
-      if (this.validationState === false) {
+    this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id, until_task, study_id).subscribe(apiErrors => {
+      if (apiErrors && apiErrors.length === 1) {
+        if (apiErrors[0].code === 'validation_break') {
+          this.validationData = apiErrors[0];
+           this.validationState = 'passing';
+        } else {
+          this.validationData = apiErrors[0];
+          this.validationState = 'failing';
+        }
+      }
+      if (apiErrors.length > 0 && this.validationState !== 'passing') {
         this.bottomSheet.open(ApiErrorsComponent, { data: { apiErrors: apiErrors } });
       }
     });

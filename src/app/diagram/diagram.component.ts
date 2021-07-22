@@ -27,10 +27,11 @@ import { dmnModelerConfig } from './dmn-modeler-config';
 export class DiagramComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
   @Input() fileName: string;
   @Input() validation_data: Object = {};
+  @Input() validation_state: string;
   @ViewChild('containerRef', { static: true }) containerRef: ElementRef;
   @ViewChild('propertiesRef', { static: true }) propertiesRef: ElementRef;
   @Output() private importDone: EventEmitter<ImportEvent> = new EventEmitter();
-  @Input() validationState: string;
+
   @Output() validationStart: EventEmitter<string> = new EventEmitter();
   private diagramType: FileType;
   private modeler: BpmnModeler | DmnModeler;
@@ -69,7 +70,20 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
     if (changes.validation_data) {
       this.validation_data = changes.validation_data.currentValue;
       if (this.modeler) {
-        this.modeler.get('eventBus').fire('editor.objects.response', { objects: this.validation_data });
+        if(this.validation_data['task_data']) {
+          this.modeler.get('eventBus').fire('editor.objects.response', {objects: this.validation_data['task_data']});
+        }
+      }
+    }
+    if (changes.validation_state) {
+      this.validation_state = changes.validation_state.currentValue;
+      if (this.modeler) {
+        const resp = {state: this.validation_state, line_number: undefined
+        };
+        if (this.validation_data['line_number']){
+          resp.line_number = this.validation_data['line_number'];
+        }
+        this.modeler.get('eventBus').fire('editor.validation.response', resp);
       }
     }
   }
@@ -226,7 +240,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
       });
     });
 
-    eventBus.on('editor.validate.request', (request) => {
+    eventBus.on('editor.validation.request', (request) => {
       this.validationStart.emit(request.task_name);
     });
 
