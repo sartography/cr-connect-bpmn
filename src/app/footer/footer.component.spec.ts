@@ -1,5 +1,5 @@
 import {APP_BASE_HREF} from '@angular/common';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {MockEnvironment} from 'sartography-workflow-lib';
 import {FooterComponent} from './footer.component';
 
@@ -7,7 +7,7 @@ describe('FooterComponent', () => {
   let component: FooterComponent;
   let fixture: ComponentFixture<FooterComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [FooterComponent],
       providers: [
