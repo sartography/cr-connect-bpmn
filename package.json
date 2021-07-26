@@ -50,7 +50,7 @@
     "file-saver": "^2.0.2",
     "lodash.isequal": "^4.5.0",
     "ngx-device-detector": "^1.4.5",
-    "ngx-file-drop": "^9.0.1",
+    "ngx-file-drop": "^11.1.0",
     "ngx-highlightjs": "^4.1.1",
     "ngx-markdown": "^9.1.1",
     "protractor": "~7.0.0",
