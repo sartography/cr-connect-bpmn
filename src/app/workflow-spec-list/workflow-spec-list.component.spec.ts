@@ -141,7 +141,8 @@ describe('WorkflowSpecListComponent', () => {
       description: '',
       category_id: 0,
       display_order: 0,
-      standalone: false
+      standalone: false,
+      library: false
     };
 
     const _upsertWorkflowSpecificationSpy = spyOn((component as any), '_upsertWorkflowSpecification')
