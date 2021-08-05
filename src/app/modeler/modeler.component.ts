@@ -68,7 +68,7 @@ export class ModelerComponent implements AfterViewInit {
   @ViewChild(DiagramComponent) private diagramComponent: DiagramComponent;
   @ViewChild('fileInput', { static: true }) fileInput: ElementRef;
   private diagramType: FileType;
-  private validationState: string;
+  validationState: string;
   validationData: Object = {};
   private workflowSpecId: string;
   private fileMetaId: number;

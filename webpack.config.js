@@ -15,11 +15,9 @@ module.exports = {
         loader: 'postcss-loader',
         options: {
           ident: 'postcss',
-          postcssOptions: {
             plugins: () => [
               require('postcss-short')(),
             ]
-          }
         }
       },
       {
