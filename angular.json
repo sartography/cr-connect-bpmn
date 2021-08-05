@@ -96,7 +96,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular-devkit/custom-webpack:browser",
           "options": {
             "port": 5002,
             "customWebpackConfig": {
