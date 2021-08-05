@@ -73,7 +73,7 @@ export class WorkflowSpecListComponent implements OnInit {
         this._loadWorkflowSpecCategories();
       }
     });
-    this._loadWorkflowLibraries();
+   // this._loadWorkflowLibraries();
     this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe(value => {
       this._loadWorkflowSpecs(null, value);

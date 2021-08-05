@@ -51,6 +51,16 @@ export class MdDialogMock {
   }
 }
 
+const librarySpec0: WorkflowSpec = {
+  id: 'one_thing',
+  name: 'one_thing',
+  display_name: 'One thing',
+  description: 'Do just one thing',
+  category_id: 2,
+  library: true,
+  category: mockWorkflowSpecCategory2,
+  display_order: 2,
+};
 
 describe('WorkflowSpecListComponent', () => {
   let httpMock: HttpTestingController;
@@ -118,9 +128,16 @@ describe('WorkflowSpecListComponent', () => {
     catReq.flush(mockWorkflowSpecCategories);
     expect(component.categories.length).toBeGreaterThan(0);
 
-    const specReq = httpMock.expectOne('apiRoot/workflow-specification');
+    const specReq2 =  httpMock.expectOne('apiRoot/workflow-specification?libraries=true')
+    expect(specReq2.request.method).toEqual('GET');
+    specReq2.flush([librarySpec0]);
+    fixture.detectChanges();
+    expect(component.workflowLibraries.length).toBeGreaterThan(0);
+
+    const specReq =  httpMock.expectOne('apiRoot/workflow-specification')
     expect(specReq.request.method).toEqual('GET');
     specReq.flush(mockWorkflowSpecs);
+    fixture.detectChanges();
     expect(component.workflowSpecs.length).toBeGreaterThan(0);
   });
 
@@ -199,6 +216,11 @@ describe('WorkflowSpecListComponent', () => {
     const wfsReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}`);
     expect(wfsReq.request.method).toEqual('PUT');
     wfsReq.flush(mockWorkflowSpec0);
+
+    const wfsReq2 = httpMock.expectOne(`apiRoot/workflow-specification?libraries=true`);
+    expect(wfsReq2.request.method).toEqual('GET');
+    wfsReq2.flush([librarySpec0]);
+
 
     expect(_loadWorkflowSpecsSpy).toHaveBeenCalled();
     expect(_displayMessageSpy).toHaveBeenCalled();
