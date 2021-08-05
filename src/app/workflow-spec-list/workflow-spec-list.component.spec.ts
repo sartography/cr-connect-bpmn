@@ -128,13 +128,13 @@ describe('WorkflowSpecListComponent', () => {
     catReq.flush(mockWorkflowSpecCategories);
     expect(component.categories.length).toBeGreaterThan(0);
 
-    const specReq2 =  httpMock.expectOne('apiRoot/workflow-specification?libraries=true')
+    const specReq2 =  httpMock.expectOne('apiRoot/workflow-specification?libraries=true');
     expect(specReq2.request.method).toEqual('GET');
     specReq2.flush([librarySpec0]);
     fixture.detectChanges();
     expect(component.workflowLibraries.length).toBeGreaterThan(0);
 
-    const specReq =  httpMock.expectOne('apiRoot/workflow-specification')
+    const specReq =  httpMock.expectOne('apiRoot/workflow-specification');
     expect(specReq.request.method).toEqual('GET');
     specReq.flush(mockWorkflowSpecs);
     fixture.detectChanges();
