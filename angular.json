@@ -96,13 +96,10 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/custom-webpack:browser",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
             "port": 5002,
-            "customWebpackConfig": {
-              "path": "./webpack.config.js"
-            },
-            "browserTarget": "cr-connect-bpmn:build"
+            "browserTarget": "cr-connect-bpmn:build",
           },
           "configurations": {
             "production": {
