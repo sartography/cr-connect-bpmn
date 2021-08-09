@@ -54,6 +54,7 @@ import { ConfirmDialogComponent } from './_dialogs/confirm-dialog/confirm-dialog
 import {MatExpansionModule} from '@angular/material/expansion';
 import { SettingsComponent } from './settings/settings.component';
 import {MatSelect, MatSelectModule} from '@angular/material/select';
+import {LibraryListComponent} from './library-list/library-list.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -92,6 +93,7 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
     FileMetaDialogComponent,
     FooterComponent,
     GetIconCodePipe,
+    LibraryListComponent,
     ModelerComponent,
     NavbarComponent,
     NewFileDialogComponent,

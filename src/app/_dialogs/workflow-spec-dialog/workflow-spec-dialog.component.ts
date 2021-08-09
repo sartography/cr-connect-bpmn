@@ -101,6 +101,17 @@ export class WorkflowSpecDialogComponent {
             indeterminate: false,
           },
         },
+        {
+          key: 'library',
+          type: 'checkbox',
+          defaultValue: this.data.library,
+          templateOptions: {
+            label: 'Library',
+            description: 'Is this a library workflow?',
+            required: true,
+            indeterminate: false,
+          },
+        },
       ];
     });
   }
