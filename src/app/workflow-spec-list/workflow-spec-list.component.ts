@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import createClone from 'rfdc';
+import * as cloneDeep from "lodash/cloneDeep";
 import {
   ApiService,
   isNumberDefined,
@@ -352,7 +352,7 @@ export class WorkflowSpecListComponent implements OnInit {
     id: number | string, direction: number,
     list: Array<WorkflowSpecCategoryGroup | WorkflowSpec>
   ): Array<WorkflowSpecCategoryGroup | WorkflowSpec> {
-    const listClone = createClone({ circles: true })(list);
+    const listClone = cloneDeep(list);
     const reorderedList = listClone.filter(item => item.id !== null && item.id !== undefined);
     const i = reorderedList.findIndex(spec => spec.id === id);
     if (i !== -1) {
@@ -373,7 +373,7 @@ export class WorkflowSpecListComponent implements OnInit {
     let numUpdated = 0;
     cats.forEach((cat, j) => {
       if (isNumberDefined(cat.id)) {
-        const newCat: WorkflowSpecCategoryGroup = createClone({ circles: true })(cat);
+        const newCat: WorkflowSpecCategoryGroup = cloneDeep(cat);
         delete newCat.workflow_specs;
 
         newCat.display_order = j;
@@ -395,7 +395,7 @@ export class WorkflowSpecListComponent implements OnInit {
     }
     let numUpdated = 0;
     specs.forEach((spec, j) => {
-      const newSpec = createClone({ circles: true })(spec);
+      const newSpec = cloneDeep(spec);
       newSpec.display_order = j;
       this.api.updateWorkflowSpecification(newSpec.id, newSpec).subscribe(() => {
         numUpdated++;

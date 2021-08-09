@@ -10,7 +10,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import * as FileSaver from 'file-saver';
-import createClone from 'rfdc';
+import * as cloneDeep from "lodash/cloneDeep";
 import {of} from 'rxjs';
 import {ApiService, FileMeta, FileType, MockEnvironment, mockFileMetaReference0, mockFileReference0} from 'sartography-workflow-lib';
 import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
@@ -23,7 +23,7 @@ describe('ReferenceFilesComponent', () => {
   const mockRouter = {navigate: jasmine.createSpy('navigate')};
 
   // Mock file and response headers
-  const mockDocMeta: FileMeta = createClone()(mockFileMetaReference0);
+  const mockDocMeta: FileMeta = cloneDeep(mockFileMetaReference0);
   mockDocMeta.type = FileType.XLSX;
 
   const timeString = '2020-01-23T12:34:12.345Z';

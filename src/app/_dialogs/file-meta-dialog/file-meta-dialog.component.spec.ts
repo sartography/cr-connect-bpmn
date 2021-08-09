@@ -6,10 +6,10 @@ import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {FormlyModule} from '@ngx-formly/core';
 import {FormlyMaterialModule} from '@ngx-formly/material';
-import createClone from 'rfdc';
 import {FileType} from 'sartography-workflow-lib';
 import {FileMetaDialogData} from '../../_interfaces/dialog-data';
 import {FileMetaDialogComponent} from './file-meta-dialog.component';
+import * as cloneDeep from "lodash/cloneDeep";
 
 describe('EditFileMetaDialogComponent', () => {
   let component: FileMetaDialogComponent;
@@ -86,7 +86,7 @@ describe('EditFileMetaDialogComponent', () => {
 
     component.model = dataBefore;
     component.onSubmit();
-    const expectedData: FileMetaDialogData = createClone()(dataBefore);
+    const expectedData: FileMetaDialogData = cloneDeep(dataBefore);
     expectedData.fileName = 'green_eggs.v1-2020-01-01.XML.bpmn';
     expect(closeSpy).toHaveBeenCalledWith(expectedData);
   });
