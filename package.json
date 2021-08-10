@@ -45,7 +45,7 @@
     "camunda-bpmn-moddle": "^4.4.0",
     "camunda-dmn-moddle": "^1.0.0",
     "diagram-js": "^6.6.1",
-    "diagram-js-code-editor": "^1.1.7",
+    "diagram-js-code-editor": "^1.1.8",
     "diagram-js-minimap": "^2.0.3",
     "dmn-js": "^7.5.1",
     "dmn-js-properties-panel": "^0.3.5",
