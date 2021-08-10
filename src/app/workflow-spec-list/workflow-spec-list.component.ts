@@ -44,6 +44,7 @@ export interface WorkflowSpecCategoryGroup {
 })
 export class WorkflowSpecListComponent implements OnInit {
   workflowSpecs: WorkflowSpec[] = [];
+  workflowLibraries: WorkflowSpec[] = [];
   selectedSpec: WorkflowSpec;
   masterStatusSpec: WorkflowSpec;
   selectedCat: WorkflowSpecCategory;
@@ -72,6 +73,7 @@ export class WorkflowSpecListComponent implements OnInit {
         this._loadWorkflowSpecCategories();
       }
     });
+   // this._loadWorkflowLibraries();
     this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe(value => {
       this._loadWorkflowSpecs(null, value);
@@ -118,6 +120,7 @@ export class WorkflowSpecListComponent implements OnInit {
       category_id: selectedSpec ? selectedSpec.category_id : null,
       display_order: hasDisplayOrder ? selectedSpec.display_order : 0,
       standalone: selectedSpec ? selectedSpec.standalone : null,
+      library: selectedSpec ? selectedSpec.library : null,
     };
 
 
@@ -221,8 +224,17 @@ export class WorkflowSpecListComponent implements OnInit {
         this.workflowSpecsByCategory[i + 1].workflow_specs = [];
       });
       this._loadWorkflowSpecs(selectedSpecName);
+      this._loadWorkflowLibraries();
     });
   }
+  private _loadWorkflowLibraries() {
+
+    this.api.getWorkflowSpecificationLibraries().subscribe(wfs => {
+      this.workflowLibraries = wfs;
+    });
+  }
+
+
   private _loadWorkflowSpecs(selectedSpecName: String = null, searchSpecName: String = null) {
 
     this.api.getWorkflowSpecList().subscribe(wfs => {
@@ -269,7 +281,8 @@ export class WorkflowSpecListComponent implements OnInit {
         description: data.description,
         category_id: data.category_id,
         display_order: data.display_order,
-        standalone: data.standalone
+        standalone: data.standalone,
+        library: data.library
       };
 
       if (isNew) {
@@ -304,6 +317,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _updateWorkflowSpec(specId: string, newSpec: WorkflowSpec) {
     this.api.updateWorkflowSpecification(specId, newSpec).subscribe(_ => {
+      this._loadWorkflowLibraries();
       this._loadWorkflowSpecs();
       this._displayMessage('Saved changes to workflow spec.');
     });
