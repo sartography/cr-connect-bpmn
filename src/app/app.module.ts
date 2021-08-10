@@ -53,8 +53,9 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import { ConfirmDialogComponent } from './_dialogs/confirm-dialog/confirm-dialog.component';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { SettingsComponent } from './settings/settings.component';
-import {MatSelect, MatSelectModule} from '@angular/material/select';
+import { MatSelectModule} from '@angular/material/select';
 import {LibraryListComponent} from './library-list/library-list.component';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -107,36 +108,37 @@ export function getBaseHref(platformLocation: PlatformLocation): string {
     ConfirmDialogComponent,
     SettingsComponent,
   ],
-    imports: [
-        BrowserAnimationsModule,
-        BrowserModule,
-        FlexLayoutModule,
-        FormlyModule,
-        FormsModule,
-        HttpClientModule,
-        MatBottomSheetModule,
-        MatButtonModule,
-        MatCardModule,
-        MatDialogModule,
-        MatDividerModule,
-        MatIconModule,
-        MatInputModule,
-        MatListModule,
-        MatMenuModule,
-        MatSnackBarModule,
-        MatTabsModule,
-        MatToolbarModule,
-        MatTooltipModule,
-        MatSelectModule,
-        ReactiveFormsModule,
-        SartographyFormsModule,
-        SartographyPipesModule,
-        SartographyWorkflowLibModule,
-        AppRoutingModule,
-        MatSidenavModule,
-        MatExpansionModule,
-        // <-- This line MUST be last (https://angular.io/guide/router#module-import-order-matters)
-    ],
+  imports: [
+    BrowserAnimationsModule,
+    BrowserModule,
+    FlexLayoutModule,
+    FormlyModule,
+    FormsModule,
+    HttpClientModule,
+    MatBottomSheetModule,
+    MatButtonModule,
+    MatCardModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatSnackBarModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+    SartographyFormsModule,
+    SartographyPipesModule,
+    SartographyWorkflowLibModule,
+    AppRoutingModule,
+    MatSidenavModule,
+    MatExpansionModule,
+    MatCheckboxModule,
+    // <-- This line MUST be last (https://angular.io/guide/router#module-import-order-matters)
+  ],
   bootstrap: [AppComponent],
   entryComponents: [
     DeleteFileDialogComponent,

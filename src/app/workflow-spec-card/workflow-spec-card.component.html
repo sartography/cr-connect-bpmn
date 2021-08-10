@@ -23,7 +23,10 @@
       <ng-template #thenBlock><dd>True</dd></ng-template>
       <ng-template #elseBlock><dd>False</dd></ng-template>
     </dl>
-
+    <div *ngIf="!workflowSpec.library">
+      <h4>Included Libraries</h4>
+      <app-library-list [workflowSpecId]="workflowSpec.id"></app-library-list>
+    </div>
     <h4>Workflow Spec Files</h4>
     <app-file-list [workflowSpec]="workflowSpec"></app-file-list>
   </mat-card-content>
