@@ -1,6 +1,9 @@
 {
   "name": "cr-connect-bpmn",
   "version": "0.0.0",
+  "engines": {
+    "npm": "7.20.3"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
