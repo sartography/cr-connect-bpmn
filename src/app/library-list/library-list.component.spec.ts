@@ -27,8 +27,6 @@ describe('LibraryListComponent', () => {
       ],
       providers: [
         ApiService,
-        {
-        },
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
         {provide: APP_BASE_HREF, useValue: ''},
       ],
