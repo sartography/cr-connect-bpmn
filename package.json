@@ -59,7 +59,7 @@
     "ngx-markdown": "^12.0.1",
     "protractor": "~7.0.0",
     "rxjs": "^6.5.5",
-    "sartography-workflow-lib": "^0.0.537",
+    "sartography-workflow-lib": "^0.0.538",
     "tslib": "^2.0.0",
     "uuid": "^7.0.2",
     "zone.js": "~0.11.4"
