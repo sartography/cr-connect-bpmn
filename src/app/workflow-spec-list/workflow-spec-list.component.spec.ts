@@ -1,6 +1,6 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef} from '@angular/material/bottom-sheet';
 import {MatCardModule} from '@angular/material/card';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
@@ -10,8 +10,8 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
-import createClone from 'rfdc';
-import {Observable, of} from 'rxjs';
+import * as cloneDeep from "lodash/cloneDeep";
+import {of} from 'rxjs';
 import {
   ApiErrorsComponent,
   ApiService,
@@ -68,7 +68,7 @@ describe('WorkflowSpecListComponent', () => {
   let fixture: ComponentFixture<WorkflowSpecListComponent>;
   let dialog: MatDialog;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         BrowserAnimationsModule,
@@ -190,7 +190,7 @@ describe('WorkflowSpecListComponent', () => {
     _updateWorkflowSpecSpy.calls.reset();
 
     component.selectedSpec = mockWorkflowSpec0;
-    const modifiedData: WorkflowSpecDialogData = createClone({circles: true})(mockWorkflowSpec0);
+    const modifiedData: WorkflowSpec = cloneDeep(mockWorkflowSpec0);
     modifiedData.display_name = 'Modified';
     (component as any)._upsertWorkflowSpecification(false, modifiedData);
     expect(_addWorkflowSpecSpy).not.toHaveBeenCalled();
@@ -291,7 +291,7 @@ describe('WorkflowSpecListComponent', () => {
     _updateWorkflowSpecCategorySpy.calls.reset();
 
     component.selectedCat = mockWorkflowSpecCategory0;
-    const modifiedData: WorkflowSpecCategoryDialogData = createClone({circles: true})(mockWorkflowSpecCategory0);
+    const modifiedData: WorkflowSpecCategoryDialogData = cloneDeep(mockWorkflowSpecCategory0);
     modifiedData.display_name = 'Modified';
     (component as any)._upsertWorkflowSpecCategory(modifiedData);
     expect(_addWorkflowSpecCategorySpy).not.toHaveBeenCalled();
@@ -506,7 +506,7 @@ describe('WorkflowSpecListComponent', () => {
       category_id: null,
     };
     (component as any)._loadWorkflowSpecs();
-    const allSpecs = createClone({circles: true})(mockWorkflowSpecs);
+    const allSpecs = cloneDeep(mockWorkflowSpecs);
     allSpecs.push(mockMasterSpec);
 
     const req = httpMock.expectOne(`apiRoot/workflow-specification`);

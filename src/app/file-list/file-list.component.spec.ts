@@ -1,7 +1,7 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {HttpHeaders} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
@@ -9,7 +9,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
-import createClone from 'rfdc';
+import * as cloneDeep from "lodash/cloneDeep";
 import {of} from 'rxjs';
 import {
   ApiService,
@@ -34,7 +34,7 @@ describe('FileListComponent', () => {
   const timeCode = new Date(timeString).getTime();
 
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         BrowserAnimationsModule,
@@ -147,7 +147,7 @@ describe('FileListComponent', () => {
     expect(routerNavigateSpy).toHaveBeenCalledWith([`/modeler/${mockWorkflowSpec0.id}/${mockFileMeta0.id}`]);
 
     routerNavigateSpy.calls.reset();
-    const mockDmnMeta = createClone()(mockFileMeta0);
+    const mockDmnMeta = cloneDeep(mockFileMeta0);
     mockDmnMeta.type = FileType.DMN;
     component.editFile(mockDmnMeta);
     expect(routerNavigateSpy).toHaveBeenCalledWith([`/modeler/${mockWorkflowSpec0.id}/${mockDmnMeta.id}`]);
@@ -157,7 +157,7 @@ describe('FileListComponent', () => {
     const routerNavigateSpy = spyOn((component as any).router, 'navigate');
     const editFileMetaSpy = spyOn(component, 'editFileMeta');
     component.workflowSpec = mockWorkflowSpec0;
-    const mockDocMeta = createClone()(mockFileMeta0);
+    const mockDocMeta = cloneDeep(mockFileMeta0);
     mockDocMeta.type = FileType.DOCX;
     component.editFile(mockDocMeta);
     expect(routerNavigateSpy).not.toHaveBeenCalled();
@@ -173,7 +173,7 @@ describe('FileListComponent', () => {
   it('should open file metadata dialog', () => {
     const _openFileDialogSpy = spyOn((component as any), '_openFileDialog').and.stub();
     component.workflowSpec = mockWorkflowSpec0;
-    const mockDocMeta: FileMeta = createClone()(mockFileMeta0);
+    const mockDocMeta: FileMeta = cloneDeep(mockFileMeta0);
     mockDocMeta.type = FileType.DOCX;
     component.editFileMeta(mockDocMeta);
 

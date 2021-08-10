@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, TemplateRef} from '@angular/core';
+import {Component, Input, TemplateRef} from '@angular/core';
 import {ApiService, WorkflowSpec} from 'sartography-workflow-lib';
 
 @Component({
@@ -6,15 +6,12 @@ import {ApiService, WorkflowSpec} from 'sartography-workflow-lib';
   templateUrl: './workflow-spec-card.component.html',
   styleUrls: ['./workflow-spec-card.component.scss']
 })
-export class WorkflowSpecCardComponent implements OnInit {
+export class WorkflowSpecCardComponent {
   @Input() workflowSpec: WorkflowSpec;
   @Input() actionButtons: TemplateRef<any>;
 
   constructor(
     private api: ApiService
   ) {
-  }
-
-  ngOnInit(): void {
   }
 }

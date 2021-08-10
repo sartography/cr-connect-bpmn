@@ -60,10 +60,11 @@ const routes: Routes = [
   declarations: [],
   imports: [
     RouterModule.forRoot(routes, {
-      scrollPositionRestoration: 'enabled',
-      anchorScrolling: 'enabled',
-      scrollOffset: [0, 84],
-    })
+    scrollPositionRestoration: 'enabled',
+    anchorScrolling: 'enabled',
+    scrollOffset: [0, 84],
+    relativeLinkResolution: 'legacy'
+})
   ],
   exports: [RouterModule],
   providers: [

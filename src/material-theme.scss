@@ -1,7 +1,8 @@
+@use '~@angular/material' as mat;
 @import "material";
 
-@include mat-core($custom-typography);
-@include angular-material-theme($cr-connect-theme);
+@include mat.core($custom-typography);
+@include mat.all-component-themes($cr-connect-theme);
 
 @mixin cr-connect-theme($theme) {
   $primary: map-get($theme, primary);
