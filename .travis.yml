@@ -5,13 +5,15 @@ dist: bionic
 language: node_js
 
 node_js:
-  - 12
+  - 14
 
 services:
   - docker
   - xvfb
 
 before_install:
+  - dpkg --compare-versions `npm -v` ge 7.10 || npm i -g npm@^7.10
+  - npm --version
   - |
     if [[ $TRAVIS_BRANCH =~ ^(feature\/.*)$ ]]; then
       export E2E_TAG="dev"
