@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import * as fileSaver from 'file-saver';
@@ -11,7 +11,7 @@ import {OpenFileDialogData} from '../_interfaces/dialog-data';
   templateUrl: './reference-files.component.html',
   styleUrls: ['./reference-files.component.scss']
 })
-export class ReferenceFilesComponent implements OnInit {
+export class ReferenceFilesComponent {
   referenceFiles: FileMeta[];
 
   constructor(
@@ -20,9 +20,6 @@ export class ReferenceFilesComponent implements OnInit {
     private snackBar: MatSnackBar,
   ) {
     this._loadReferenceFiles();
-  }
-
-  ngOnInit(): void {
   }
 
   _loadReferenceFiles() {
