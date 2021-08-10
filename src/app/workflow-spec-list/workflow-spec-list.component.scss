@@ -4,8 +4,12 @@
   margin: 0;
   max-height: 40px;
 }
-.container {
+.workflow-specs {
   padding: 3rem;
+}
+
+.buttons {
+  height: 60px;
 }
 
 .content {
@@ -42,13 +46,14 @@
 .workflow-spec {
   border-left: 4px solid $brand-gray-light;
   font-size: 1em;
+  cursor: pointer;
+
   &:hover {
     border-left: 4px solid $brand-primary;
     background-color: $brand-primary-tint-4;
     cursor: pointer;
   }
 
-  cursor: pointer;
   .spec_menu_item {
     flex-flow: row;
     display: inline-block;
