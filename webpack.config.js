@@ -14,10 +14,11 @@ module.exports = {
         test: /\.scss$/,
         loader: 'postcss-loader',
         options: {
-          ident: 'postcss',
-            plugins: () => [
-              require('postcss-short')(),
-            ]
+          postcssOptions: {
+            plugins: [
+              "postcss-short",
+            ],
+          },
         }
       },
       {
