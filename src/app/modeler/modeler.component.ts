@@ -10,7 +10,6 @@ import {
   ApiService,
   FileMeta,
   FileType,
-  getDiagramTypeFromXml,
   isNumberDefined,
   newFileFromResponse,
   WorkflowSpec
@@ -23,6 +22,7 @@ import { FileMetaDialogData, NewFileDialogData } from '../_interfaces/dialog-dat
 import { ImportEvent } from '../_interfaces/import-event';
 import { DiagramComponent } from '../diagram/diagram.component';
 import {SettingsService} from '../settings.service';
+import { getDiagramTypeFromXml } from '../_util/diagram-type';
 
 @Component({
   selector: 'app-modeler',

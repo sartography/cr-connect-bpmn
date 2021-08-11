@@ -10,7 +10,6 @@ import {
   BPMN_DIAGRAM_DEFAULT,
   DMN_DIAGRAM_DEFAULT,
   FileType,
-  getDiagramTypeFromXml,
   CameltoSnakeCase
 } from 'sartography-workflow-lib';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,6 +17,7 @@ import { BpmnWarning } from '../_interfaces/bpmn-warning';
 import { ImportEvent } from '../_interfaces/import-event';
 import { bpmnModelerConfig } from './bpmn-modeler-config';
 import { dmnModelerConfig } from './dmn-modeler-config';
+import { getDiagramTypeFromXml } from '../_util/diagram-type';
 
 @Component({
   selector: 'app-diagram',
@@ -63,7 +63,6 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
   }
 
   onChange(newValue: string, svgValue: string) {
-    console.log('DiagramComponent default onChange');
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -134,13 +133,23 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
     const modeler = this.initializeModeler(diagramType);
 
     return this.zone.run(() => {
+      const isDMN = diagramType === FileType.DMN;
       if (!xml) {
-        const defaultXml = diagramType === FileType.DMN ? DMN_DIAGRAM_DEFAULT : BPMN_DIAGRAM_DEFAULT;
+        const defaultXml = isDMN ? DMN_DIAGRAM_DEFAULT : BPMN_DIAGRAM_DEFAULT;
         xml = defaultXml.replace(/REPLACE_ME/gi, () => this.getRandomString(7));
       }
 
       // Add an arbitrary string to get the save button to enable
-      this.modeler.importXML(xml, (e, w) => this.onImport(e, w));
+      if (isDMN) {
+        // DMN Modeler takes a callback
+        this.modeler.importXML(xml, (e, w) => this.onImport(e, w));
+      } else {
+        // BPMN Modeler returns a Promise
+        this.modeler.importXML(xml).then(
+          (e, w) => this.onImport(e, w),
+          error => this.onImport(error, [error.warnings])
+        );
+      }
     });
   }
 
@@ -178,7 +187,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
   }
 
   onImport(err?: HttpErrorResponse, warnings?: BpmnWarning[]) {
-    if (err) {
+    if (err && warnings && warnings.length > 0) {
       this._handleErrors(err);
     } else {
       this._handleWarnings(warnings);
@@ -198,7 +207,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
   private _handleWarnings(warnings: BpmnWarning[]) {
     this.importDone.emit({
       type: 'success',
-      warnings: warnings
+      warnings: warnings || []
     });
   }
 
