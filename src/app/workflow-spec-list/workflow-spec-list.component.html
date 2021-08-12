@@ -1,11 +1,11 @@
-<div class="container mat-typography" fxLayout="column" fxLayoutGap="10px">
+<div class="workflow-specs" fxLayout="column" fxLayoutGap="10px">
   <h1>Workflow Specifications</h1>
-  <div fxLayout="row" fxLayoutGap="10px">
-    <button id="add_spec" mat-flat-button color="primary" (click)="editWorkflowSpec()">
+  <div class="buttons" fxLayout="row" fxLayoutGap="10px">
+    <button id="add_spec" mat-flat-button color="primary" (click)="editWorkflowSpec()" fxLayoutAlign="stretch">
       <mat-icon>library_add</mat-icon>
       Add new workflow specification
     </button>
-    <button id="add_category" mat-flat-button color="accent" (click)="editWorkflowSpecCategory()">
+    <button id="add_category" mat-flat-button color="accent" (click)="editWorkflowSpecCategory()"  fxLayoutAlign="stretch">
       <mat-icon>post_add</mat-icon>
       Add category
     </button>
@@ -20,7 +20,7 @@
           <h4>Master Specification</h4>
           <mat-list>
             <mat-list-item class="workflow-spec" fxLayout="row">
-              <a class="spec_menu_item" (click)="selectSpec(masterStatusSpec)">{{masterStatusSpec.display_name}}</a>
+              <span class="spec_menu_item" (click)="selectSpec(masterStatusSpec)">{{masterStatusSpec.display_name}}</span>
             </mat-list-item>
           </mat-list>
         </div>
@@ -31,7 +31,7 @@
           <h4>Libraries</h4>
           <mat-list>
             <mat-list-item *ngFor="let wfs of workflowLibraries" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
-              <a [ngClass]="{'spec_menu_item':true, 'spec-selected': selectedSpec && wfs.id === selectedSpec.id}" (click)="selectSpec(wfs)">{{wfs.display_name}}</a>
+              <span [ngClass]="{'spec_menu_item':true, 'spec-selected': selectedSpec && wfs.id === selectedSpec.id}" (click)="selectSpec(wfs)">{{wfs.display_name}}</span>
               <span class="spec-actions" fxLayout="row" fxLayoutGap="10px">
                 <button
                   mat-icon-button
@@ -85,7 +85,7 @@
             </mat-expansion-panel-header>
             <mat-list>
               <mat-list-item *ngFor="let wfs of cat.workflow_specs" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
-                <a [ngClass]="{'spec_menu_item':true, 'spec-selected': selectedSpec && wfs.id === selectedSpec.id}" (click)="selectSpec(wfs)">{{wfs.display_name}}</a>
+                <span [ngClass]="{'spec_menu_item':true, 'spec-selected': selectedSpec && wfs.id === selectedSpec.id}" (click)="selectSpec(wfs)">{{wfs.display_name}}</span>
                 <span class="spec-actions" fxLayout="row" fxLayoutGap="10px" *ngIf="cat && cat.id !== null">
                 <button
                   *ngIf="cat && cat.workflow_specs.length > 0 && wfs.display_order !== 0"

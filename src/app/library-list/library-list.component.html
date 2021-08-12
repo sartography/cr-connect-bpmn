@@ -1,46 +1,10 @@
 <div class="file-list">
   <mat-list>
     <mat-list-item
-      *ngFor="let fm of fileMetas"
-      [attr.data-file-meta-id]="fm.id"
-      [attr.data-workflow-spec-id]="workflowSpec.id"
+      *ngFor="let fm of workflowLibraries"
     >
-      <mat-icon (click)="editFile(fm)" mat-list-icon>{{fm.type | getIconCode}}</mat-icon>
-      <ng-container *ngIf="fm.type === fileType.BPMN">
-        <button (click)="makePrimary(fm)" *ngIf="!fm.primary" mat-flat-button class="make-primary">
-          <mat-icon>radio_button_unchecked</mat-icon>
-          Make primary process
-        </button>
-        <button *ngIf="fm.primary" mat-flat-button class="make-primary">
-          <mat-icon>radio_button_checked</mat-icon>
-          Primary process
-        </button>
-      </ng-container>
-      <h4 (click)="editFile(fm)" mat-line>{{fm.name}}</h4>
-      <p (click)="editFile(fm)" mat-line> Updated: {{fm.last_modified | date:'medium'}}</p>
-      <button (click)="downloadFile(fm)" class="mat-elevation-z0" color="primary" mat-icon-button>
-        <mat-icon>save_alt</mat-icon>
-      </button>
-      <button (click)="editFile(fm)" class="mat-elevation-z0" color="primary" mat-icon-button>
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button (click)="confirmDelete(fm)" class="mat-elevation-z0" color="warn" mat-icon-button>
-        <mat-icon>delete</mat-icon>
-      </button>
+      <mat-checkbox (click)="updateItem(fm,isChecked(fm))" [checked]="isChecked(fm)">{{fm.display_name}}</mat-checkbox>
     </mat-list-item>
   </mat-list>
 </div>
-<div class="file-list-actions">
-  <button [queryParams]="{action: 'newFile'}" [routerLink]="['/modeler/' + workflowSpec.id]" mat-button>
-    <mat-icon>note_add</mat-icon>
-    Add new BPMN or DMN file
-  </button>
-  <button [queryParams]="{action: 'openFile'}" [routerLink]="['/modeler/' + workflowSpec.id]" mat-button>
-    <mat-icon>cloud_upload</mat-icon>
-    Upload BPMN or DMN file
-  </button>
-  <button (click)="editFile()" mat-button>
-    <mat-icon>cloud_upload</mat-icon>
-    Upload Template file
-  </button>
-</div>
+
