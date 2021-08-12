@@ -20,12 +20,10 @@ export class FileMetaDialogComponent {
     public dialogRef: MatDialogRef<FileMetaDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: FileMetaDialogData,
   ) {
-    const fileTypeOptions = Object.entries(FileType).map(ft => {
-      return {
+    const fileTypeOptions = Object.entries(FileType).map(ft => ({
         label: ft[0],
         value: ft[1]
-      };
-    });
+      }));
 
     this.fields = [
       {

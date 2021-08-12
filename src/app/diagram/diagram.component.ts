@@ -1,6 +1,17 @@
 import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, NgZone, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  NgZone,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import DmnModeler from 'dmn-js/lib/Modeler';
@@ -8,9 +19,9 @@ import * as fileSaver from 'file-saver';
 import {
   ApiService,
   BPMN_DIAGRAM_DEFAULT,
+  CameltoSnakeCase,
   DMN_DIAGRAM_DEFAULT,
   FileType,
-  CameltoSnakeCase
 } from 'sartography-workflow-lib';
 import { v4 as uuidv4 } from 'uuid';
 import { BpmnWarning } from '../_interfaces/bpmn-warning';
@@ -26,20 +37,18 @@ import { getDiagramTypeFromXml } from '../_util/diagram-type';
 })
 export class DiagramComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
   @Input() fileName: string;
-  @Input() validation_data: Object = {};
+  @Input() validation_data: { [key: string]: any } = {};
   @Input() validation_state: string;
-  @ViewChild('containerRef', { static: true }) containerRef: ElementRef;
-  @ViewChild('propertiesRef', { static: true }) propertiesRef: ElementRef;
-  @Output() private importDone: EventEmitter<ImportEvent> = new EventEmitter();
-
+  @ViewChild('containerRef', {static: true}) containerRef: ElementRef;
+  @ViewChild('propertiesRef', {static: true}) propertiesRef: ElementRef;
   @Output() validationStart: EventEmitter<string> = new EventEmitter();
+  public eventBus;
+  @Output() private importDone: EventEmitter<ImportEvent> = new EventEmitter();
   private diagramType: FileType;
   private modeler: BpmnModeler | DmnModeler;
   private xml = '';
   private svg;
   private disabled = false;
-  public eventBus;
-
   // Hack so we can spy on this function
   private _formatDate = formatDate;
 
@@ -69,18 +78,19 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
     if (changes.validation_data) {
       this.validation_data = changes.validation_data.currentValue;
       if (this.modeler) {
-        if(this.validation_data['task_data']) {
-          this.modeler.get('eventBus').fire('editor.objects.response', {objects: this.validation_data['task_data']});
+        if (this.validation_data.task_data) {
+          this.modeler.get('eventBus').fire('editor.objects.response', {objects: this.validation_data.task_data});
         }
       }
     }
     if (changes.validation_state) {
       this.validation_state = changes.validation_state.currentValue;
       if (this.modeler) {
-        const resp = {state: this.validation_state, line_number: undefined
+        const resp = {
+          state: this.validation_state, line_number: undefined,
         };
-        if (this.validation_data['line_number']){
-          resp.line_number = this.validation_data['line_number'];
+        if (this.validation_data.line_number) {
+          resp.line_number = this.validation_data.line_number;
         }
         this.modeler.get('eventBus').fire('editor.validation.response', resp);
       }
@@ -147,7 +157,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
         // BPMN Modeler returns a Promise
         this.modeler.importXML(xml).then(
           (e, w) => this.onImport(e, w),
-          error => this.onImport(error, [error.warnings])
+          error => this.onImport(error, [error.warnings]),
         );
       }
     });
@@ -156,7 +166,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
   saveSVG() {
     this.saveDiagram();
     this.modeler.saveSVG((err, svg) => {
-      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const blob = new Blob([svg], {type: 'image/svg+xml'});
       fileSaver.saveAs(blob, `${this.diagramType.toString().toUpperCase()} Diagram - ${new Date().toISOString()}.svg`);
     });
   }
@@ -165,13 +175,13 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
     if (this.modeler && this.modeler.saveSVG) {
       this.modeler.saveSVG((svgErr, svg) => {
         this.svg = svg;
-        this.modeler.saveXML({ format: true }, (xmlErr, xml) => {
+        this.modeler.saveXML({format: true}, (xmlErr, xml) => {
           this.xml = xml;
           this.writeValue(xml);
         });
       });
     } else {
-      this.modeler.saveXML({ format: true }, (xmlErr, xml) => {
+      this.modeler.saveXML({format: true}, (xmlErr, xml) => {
         this.xml = xml;
         this.writeValue(xml);
       });
@@ -180,8 +190,8 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
 
   saveXML() {
     this.saveDiagram();
-    this.modeler.saveXML({ format: true }, (err, xml) => {
-      const blob = new Blob([xml], { type: 'text/xml' });
+    this.modeler.saveXML({format: true}, (err, xml) => {
+      const blob = new Blob([xml], {type: 'text/xml'});
       fileSaver.saveAs(blob, this.insertDateIntoFileName());
     });
   }
@@ -207,14 +217,14 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
   private _handleWarnings(warnings: BpmnWarning[]) {
     this.importDone.emit({
       type: 'success',
-      warnings: warnings || []
+      warnings: warnings || [],
     });
   }
 
   private _handleErrors(err) {
     this.importDone.emit({
       type: 'error',
-      error: err
+      error: err,
     });
   }
 
@@ -230,7 +240,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
 
     this.modeler.get('eventBus').on('commandStack.changed', () => this.saveDiagram());
 
-    this.modeler.on('import.done', ({ error }) => {
+    this.modeler.on('import.done', ({error}) => {
       if (!error) {
         this.modeler.get('canvas').zoom('fit-viewport');
         window.scrollTo({
@@ -244,8 +254,10 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
 
     eventBus.on('editor.scripts.request', () => {
       this.api.listScripts().subscribe((data) => {
-        data.forEach(element => {element.name = CameltoSnakeCase(element.name); });
-        this.modeler.get('eventBus').fire('editor.scripts.response', { scripts: data });
+        data.forEach(element => {
+          element.name = CameltoSnakeCase(element.name);
+        });
+        this.modeler.get('eventBus').fire('editor.scripts.response', {scripts: data});
       });
     });
 
@@ -282,7 +294,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
       }
     });
 
-    this.modeler.on('import.done', ({ error }) => {
+    this.modeler.on('import.done', ({error}) => {
       if (!error) {
         const activeView = this.modeler.getActiveView();
 

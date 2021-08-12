@@ -9,7 +9,7 @@ import {FormlyMaterialModule} from '@ngx-formly/material';
 import {FileType} from 'sartography-workflow-lib';
 import {FileMetaDialogData} from '../../_interfaces/dialog-data';
 import {FileMetaDialogComponent} from './file-meta-dialog.component';
-import * as cloneDeep from "lodash/cloneDeep";
+import * as cloneDeep from 'lodash/cloneDeep';
 
 describe('EditFileMetaDialogComponent', () => {
   let component: FileMetaDialogComponent;

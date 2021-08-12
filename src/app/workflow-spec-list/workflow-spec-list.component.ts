@@ -2,16 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import * as cloneDeep from "lodash/cloneDeep";
+import * as cloneDeep from 'lodash/cloneDeep';
 import {
+  ApiErrorsComponent,
   ApiService,
   isNumberDefined,
   moveArrayElementDown,
   moveArrayElementUp,
   WorkflowSpec,
-  WorkflowSpecCategory
+  WorkflowSpecCategory,
 } from 'sartography-workflow-lib';
-import { DeleteWorkflowSpecCategoryDialogComponent } from '../_dialogs/delete-workflow-spec-category-dialog/delete-workflow-spec-category-dialog.component';
+import {
+  DeleteWorkflowSpecCategoryDialogComponent
+} from '../_dialogs/delete-workflow-spec-category-dialog/delete-workflow-spec-category-dialog.component';
 import { DeleteWorkflowSpecDialogComponent } from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
 import { WorkflowSpecCategoryDialogComponent } from '../_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
 import { WorkflowSpecDialogComponent } from '../_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
@@ -19,14 +22,13 @@ import {
   DeleteWorkflowSpecCategoryDialogData,
   DeleteWorkflowSpecDialogData,
   WorkflowSpecCategoryDialogData,
-  WorkflowSpecDialogData
+  WorkflowSpecDialogData,
 } from '../_interfaces/dialog-data';
-import { ApiErrorsComponent } from 'sartography-workflow-lib';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { environment } from '../../environments/environment.runtime';
 import { FormControl } from '@angular/forms';
-import {SettingsService} from '../settings.service';
+import { SettingsService } from '../settings.service';
 
 
 export interface WorkflowSpecCategoryGroup {
@@ -40,7 +42,7 @@ export interface WorkflowSpecCategoryGroup {
 @Component({
   selector: 'app-workflow-spec-list',
   templateUrl: './workflow-spec-list.component.html',
-  styleUrls: ['./workflow-spec-list.component.scss']
+  styleUrls: ['./workflow-spec-list.component.scss'],
 })
 export class WorkflowSpecListComponent implements OnInit {
   workflowSpecs: WorkflowSpec[] = [];
@@ -61,7 +63,7 @@ export class WorkflowSpecListComponent implements OnInit {
     public dialog: MatDialog,
     private route: ActivatedRoute,
     private location: Location,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
   ) {
   }
 
@@ -73,7 +75,7 @@ export class WorkflowSpecListComponent implements OnInit {
         this._loadWorkflowSpecCategories();
       }
     });
-   // this._loadWorkflowLibraries();
+    // this._loadWorkflowLibraries();
     this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe(value => {
       this._loadWorkflowSpecs(null, value);
@@ -85,9 +87,9 @@ export class WorkflowSpecListComponent implements OnInit {
     const studyId = this.settingsService.getStudyIdForValidation();
     this.api.validateWorkflowSpecification(wfs.id, '', studyId).subscribe(apiErrors => {
       if (apiErrors && apiErrors.length > 0) {
-        this.bottomSheet.open(ApiErrorsComponent, { data: { apiErrors: apiErrors } });
+        this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors}});
       } else {
-        this.snackBar.open('Workflow specification is valid!', 'Ok', { duration: 5000 });
+        this.snackBar.open('Workflow specification is valid!', 'Ok', {duration: 5000});
       }
     });
   }
@@ -133,8 +135,8 @@ export class WorkflowSpecListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
       if (data && data.id && data.name && data.display_name && data.description) {
-        data.display_order = this.categories.filter(function (entry) { return entry.id === data.category_id; }).length;
-        this._upsertWorkflowSpecification(selectedSpec == null,  data);
+        data.display_order = this.categories.filter(entry => entry.id === data.category_id).length;
+        this._upsertWorkflowSpecification(selectedSpec == null, data);
       }
     });
   }
@@ -166,7 +168,7 @@ export class WorkflowSpecListComponent implements OnInit {
       data: {
         confirm: false,
         category: cat,
-      }
+      },
     });
 
     dialogRef.afterClosed().subscribe((data: DeleteWorkflowSpecCategoryDialogData) => {
@@ -181,7 +183,7 @@ export class WorkflowSpecListComponent implements OnInit {
       data: {
         confirm: false,
         workflowSpec: wfs,
-      }
+      },
     });
 
     dialogRef.afterClosed().subscribe((data: DeleteWorkflowSpecDialogData) => {
@@ -227,6 +229,7 @@ export class WorkflowSpecListComponent implements OnInit {
       this._loadWorkflowLibraries();
     });
   }
+
   private _loadWorkflowLibraries() {
 
     this.api.getWorkflowSpecificationLibraries().subscribe(wfs => {
@@ -235,7 +238,7 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
 
-  private _loadWorkflowSpecs(selectedSpecName: String = null, searchSpecName: String = null) {
+  private _loadWorkflowSpecs(selectedSpecName: string = null, searchSpecName: string = null) {
 
     this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
@@ -282,7 +285,7 @@ export class WorkflowSpecListComponent implements OnInit {
         category_id: data.category_id,
         display_order: data.display_order,
         standalone: data.standalone,
-        library: data.library
+        library: data.library,
       };
 
       if (isNew) {
@@ -359,12 +362,12 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   private _displayMessage(message: string) {
-    this.snackBar.open(message, 'Ok', { duration: 3000 });
+    this.snackBar.open(message, 'Ok', {duration: 3000});
   }
 
   private _reorder(
     id: number | string, direction: number,
-    list: Array<WorkflowSpecCategoryGroup | WorkflowSpec>
+    list: Array<WorkflowSpecCategoryGroup | WorkflowSpec>,
   ): Array<WorkflowSpecCategoryGroup | WorkflowSpec> {
     const listClone = cloneDeep(list);
     const reorderedList = listClone.filter(item => item.id !== null && item.id !== undefined);

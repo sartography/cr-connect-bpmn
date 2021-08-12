@@ -13,6 +13,6 @@ export const bpmnModelerConfig: ModelerConfig = {
     codeModule,
   ],
   moddleExtensions: {
-    camunda: bpmnModdleDescriptor['default']
+    camunda: bpmnModdleDescriptor.default
   }
 };

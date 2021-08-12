@@ -31,9 +31,7 @@ export class AppPage {
   }
 
   focus(selector: string) {
-    return browser.controlFlow().execute(() => {
-      return browser.executeScript('arguments[0].focus()', this.getElement(selector).getWebElement());
-    });
+    return browser.controlFlow().execute(() => browser.executeScript('arguments[0].focus()', this.getElement(selector).getWebElement()));
   }
 
   getElement(selector: string): ElementFinder {
@@ -49,9 +47,7 @@ export class AppPage {
   }
 
   getNumTabs() {
-    return browser.getAllWindowHandles().then(wh => {
-      return wh.length;
-    });
+    return browser.getAllWindowHandles().then(wh => wh.length);
   }
 
   async getRoute() {
@@ -78,13 +74,11 @@ export class AppPage {
   }
 
   switchFocusToTab(tabIndex: number) {
-    return browser.getAllWindowHandles().then(wh => {
-      return wh.forEach((h, i) => {
+    return browser.getAllWindowHandles().then(wh => wh.forEach((h, i) => {
         if (i === tabIndex) {
           return browser.switchTo().window(h);
         }
-      });
-    });
+      }));
   }
 
   waitFor(t: number) {
