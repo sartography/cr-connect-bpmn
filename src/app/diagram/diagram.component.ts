@@ -36,14 +36,14 @@ import { getDiagramTypeFromXml } from '../_util/diagram-type';
   styleUrls: ['diagram.component.scss'],
 })
 export class DiagramComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
+  @ViewChild('containerRef', {static: true}) containerRef: ElementRef;
+  @ViewChild('propertiesRef', {static: true}) propertiesRef: ElementRef;
   @Input() fileName: string;
   @Input() validation_data: { [key: string]: any } = {};
   @Input() validation_state: string;
-  @ViewChild('containerRef', {static: true}) containerRef: ElementRef;
-  @ViewChild('propertiesRef', {static: true}) propertiesRef: ElementRef;
   @Output() validationStart: EventEmitter<string> = new EventEmitter();
-  public eventBus;
   @Output() private importDone: EventEmitter<ImportEvent> = new EventEmitter();
+  public eventBus;
   private diagramType: FileType;
   private modeler: BpmnModeler | DmnModeler;
   private xml = '';
