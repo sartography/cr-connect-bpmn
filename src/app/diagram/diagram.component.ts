@@ -29,6 +29,7 @@ import { bpmnModelerConfig } from './bpmn-modeler-config';
 import { dmnModelerConfig } from './dmn-modeler-config';
 import { getDiagramTypeFromXml } from '../_util/diagram-type';
 import isEqual from 'lodash.isequal';
+import { migrateDiagram } from '@bpmn-io/dmn-migrate';
 
 @Component({
   selector: 'app-diagram',
@@ -138,11 +139,15 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
   }
 
   openDiagram(xml?: string, diagramType?: FileType) {
+    console.log('openDiagram > diagramType', diagramType);
     this.diagramType = diagramType || getDiagramTypeFromXml(xml);
+
+    console.log('openDiagram > this.diagramType', this.diagramType);
+
     this.xml = xml;
     const modeler = this.initializeModeler(diagramType);
 
-    return this.zone.run(() => {
+    return this.zone.run(async () => {
       const isDMN = diagramType === FileType.DMN;
 
       if (!xml) {
@@ -154,7 +159,9 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
       // Add an arbitrary string to get the save button to enable
       if (isDMN) {
         // DMN Modeler takes a callback
-        this.modeler.importXML(xml, (e, w) => this.onImport(e, w || e && e.warnings));
+        // Convert any v1.1 or 1.2 DMN files to v1.3
+        const convertedXML = await this.convertDMN(xml);
+        this.modeler.importXML(convertedXML, (e, w) => this.onImport(e, w || e && e.warnings));
       } else {
         // BPMN Modeler returns a Promise
         this.modeler.importXML(xml).then(
@@ -375,5 +382,9 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
       // No extension in file name yet. Add it, based on the diagram type.
       return `${this.fileName}_${dateString}.${this.diagramType}`;
     }
+  }
+
+  private async convertDMN(xml: string) {
+    return await migrateDiagram(xml);
   }
 }
