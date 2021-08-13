@@ -37,7 +37,7 @@ import {
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {FileListComponent} from '../file-list/file-list.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list.component';
-//import {WorkflowSpecDialogComponent} from '../_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
+
 
 export class MdDialogMock {
   // When the component calls this.dialog.open(...) we'll return an object
@@ -526,7 +526,6 @@ describe('WorkflowSpecListComponent', () => {
 
   it('should call editWorkflowSpec, open Dialog & call _upsertWorkflowSpecification when Edit button is clicked', fakeAsync(() => {
       spyOn(dialog, 'open').and.callThrough();
-      //const _upsertWorkflowSpecification = spyOn((component as any), '_upsertWorkflowSpecification').and.stub();
       const button = fixture.debugElement.nativeElement.querySelector('#add_spec');
       button.click();
       httpMock.expectOne(`apiRoot/workflow-specification-category`);
