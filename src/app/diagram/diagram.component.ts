@@ -1,5 +1,4 @@
 import { formatDate } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   AfterViewInit,
   Component,
@@ -43,7 +42,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
   @Input() validation_data: { [key: string]: any } = {};
   @Input() validation_state: string;
   @Output() validationStart: EventEmitter<string> = new EventEmitter();
-  @Output() private importDone: EventEmitter<ImportEvent> = new EventEmitter();
+  @Output() importDone: EventEmitter<ImportEvent> = new EventEmitter();
   public eventBus;
   private diagramType: FileType;
   private modeler: BpmnModeler | DmnModeler;
@@ -170,7 +169,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
     await this.saveDiagram();
     const {svg} = await this.modeler.saveSVG();
     const blob = new Blob([svg], {type: 'image/svg+xml'});
-    this._fileSaveAs(blob, this.insertDateIntoFileName());
+    fileSaver.saveAs(blob, this.insertDateIntoFileName());
   }
 
   async saveDiagram() {
@@ -186,9 +185,9 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
 
   async saveXML() {
     await this.saveDiagram();
-    const {xml} = await this.modeler.saveXML({format: true})
+    const {xml} = await this.modeler.saveXML({format: true});
     const blob = new Blob([xml], {type: 'text/xml'});
-    this._fileSaveAs(blob, this.insertDateIntoFileName());
+    fileSaver.saveAs(blob, this.insertDateIntoFileName());
   }
 
   onImport(err?: Error | BpmnError, warnings?: BpmnWarning[]) {
@@ -242,7 +241,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
         const diagramType = getDiagramTypeFromXml(xml);
         this.openDiagram(xml, diagramType);
       },
-      error => this._handleErrors(error)
+      error => this._handleErrors(error),
     );
   }
 
@@ -377,9 +376,4 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
       return `${this.fileName}_${dateString}.${this.diagramType}`;
     }
   }
-
-  private _fileSaveAs(blob: Blob, filename: string) {
-    fileSaver.saveAs(blob, filename);
-  };
-
 }

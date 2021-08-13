@@ -28,13 +28,13 @@ describe('DiagramComponent', () => {
   const mockRouter = {navigate: jasmine.createSpy('navigate')};
   const testSaveAs = async (fileType: FileType, xml: string, callMethod: string, filename: string) => {
     const saveDiagramSpy = spyOn(component, 'saveDiagram').and.callThrough();
-    const _fileSaveAsSpy = spyOn((component as any), '_fileSaveAs').and.stub();
+    const fileSaveAsSpy = spyOn(FileSaver, 'saveAs').and.stub();
     component.fileName = filename + '.' + fileType;
     component.diagramType = fileType;
     component.xml = xml;
     await component[callMethod]();
     await expect(saveDiagramSpy).toHaveBeenCalled();
-    await expect(_fileSaveAsSpy).toHaveBeenCalledWith(jasmine.any(Blob), jasmine.stringMatching(filename));
+    await expect(fileSaveAsSpy).toHaveBeenCalledWith(jasmine.any(Blob), jasmine.stringMatching(filename));
   };
 
   beforeEach(waitForAsync(() => {
