@@ -24,11 +24,12 @@ import {
   FileType,
 } from 'sartography-workflow-lib';
 import { v4 as uuidv4 } from 'uuid';
-import { BpmnWarning } from '../_interfaces/bpmn-warning';
+import { BpmnError, BpmnWarning } from '../_interfaces/bpmn-warning';
 import { ImportEvent } from '../_interfaces/import-event';
 import { bpmnModelerConfig } from './bpmn-modeler-config';
 import { dmnModelerConfig } from './dmn-modeler-config';
 import { getDiagramTypeFromXml } from '../_util/diagram-type';
+import isEqual from 'lodash.isequal';
 
 @Component({
   selector: 'app-diagram',
@@ -144,61 +145,89 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
 
     return this.zone.run(() => {
       const isDMN = diagramType === FileType.DMN;
+
       if (!xml) {
         const defaultXml = isDMN ? DMN_DIAGRAM_DEFAULT : BPMN_DIAGRAM_DEFAULT;
-        xml = defaultXml.replace(/REPLACE_ME/gi, () => this.getRandomString(7));
+        const randomString = this.getRandomString(7);
+        xml = defaultXml.replace(/REPLACE_ME/gi, () => randomString);
       }
 
       // Add an arbitrary string to get the save button to enable
       if (isDMN) {
         // DMN Modeler takes a callback
-        this.modeler.importXML(xml, (e, w) => this.onImport(e, w));
+        this.modeler.importXML(xml, (e, w) => this.onImport(e, w || e && e.warnings));
       } else {
         // BPMN Modeler returns a Promise
         this.modeler.importXML(xml).then(
-          (e, w) => this.onImport(e, w),
-          error => this.onImport(error, [error.warnings]),
+          (e, w) => this.onImport(e, w || e && e.warnings),
+          e => this.onImport(e, e && e.warnings),
         );
       }
     });
   }
 
-  saveSVG() {
-    this.saveDiagram();
-    this.modeler.saveSVG((err, svg) => {
-      const blob = new Blob([svg], {type: 'image/svg+xml'});
-      fileSaver.saveAs(blob, `${this.diagramType.toString().toUpperCase()} Diagram - ${new Date().toISOString()}.svg`);
-    });
+  async saveSVG() {
+    await this.saveDiagram();
+    const {svg} = await this.modeler.saveSVG();
+    const blob = new Blob([svg], {type: 'image/svg+xml'});
+    this._fileSaveAs(blob, this.insertDateIntoFileName());
   }
 
-  saveDiagram() {
+  async saveDiagram() {
     if (this.modeler && this.modeler.saveSVG) {
-      this.modeler.saveSVG((svgErr, svg) => {
-        this.svg = svg;
-        this.modeler.saveXML({format: true}, (xmlErr, xml) => {
-          this.xml = xml;
-          this.writeValue(xml);
-        });
-      });
-    } else {
-      this.modeler.saveXML({format: true}, (xmlErr, xml) => {
-        this.xml = xml;
-        this.writeValue(xml);
-      });
+      const {svg} = await this.modeler.saveSVG();
+      this.svg = svg;
     }
+
+    const {xml} = await this.modeler.saveXML({format: true});
+    this.xml = xml;
+    this.writeValue(xml);
   }
 
-  saveXML() {
-    this.saveDiagram();
-    this.modeler.saveXML({format: true}, (err, xml) => {
-      const blob = new Blob([xml], {type: 'text/xml'});
-      fileSaver.saveAs(blob, this.insertDateIntoFileName());
-    });
+  async saveXML() {
+    await this.saveDiagram();
+    const {xml} = await this.modeler.saveXML({format: true})
+    const blob = new Blob([xml], {type: 'text/xml'});
+    this._fileSaveAs(blob, this.insertDateIntoFileName());
   }
 
-  onImport(err?: HttpErrorResponse, warnings?: BpmnWarning[]) {
-    if (err && warnings && warnings.length > 0) {
-      this._handleErrors(err);
+  onImport(err?: Error | BpmnError, warnings?: BpmnWarning[]) {
+    warnings = warnings || [];
+
+    // SUCCESS (no errors or warnings)
+    // -----------------------------------------
+    // err = {warnings: []}
+    // warnings = []
+    // -----------------------------------------
+    // err = undefined
+    // warnings = []
+    // -----------------------------------------
+
+    // ERROR
+    // -----------------------------------------
+    // err = {warnings: [{message: '...', error: {stack '...', message: '...'}}]}
+    // warnings = [{message: '...', error: {stack '...', message: '...'}}]
+    // -----------------------------------------
+
+    // SUCCESS WITH WARNINGS
+    // -----------------------------------------
+    // err = {warnings: [{message: '...', error: {}}]
+    // warnings = [{message: '...', error: {}}]
+    // -----------------------------------------
+    // err = undefined
+    // warnings = [{message: '...', error: {}}]
+    // -----------------------------------------
+    const isSuccess = (!err || isEqual(err, {warnings: []})) && isEqual(warnings, []);
+    const isError = !isSuccess && err && (
+      err instanceof Error ||
+      err.warnings && err.warnings.some(w => w.error && !isEqual(w.error, {}))
+    );
+
+    if (isSuccess && !isError) {
+      this._handleSuccess();
+    } else if (isError) {
+      const errors = err || warnings.filter(w => !!w.error);
+      this._handleErrors(errors);
     } else {
       this._handleWarnings(warnings);
     }
@@ -208,10 +237,20 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
    * Load diagram from URL and emit completion event
    */
   loadUrl(url: string) {
-    this.api.getStringFromUrl(url).subscribe(xml => {
-      const diagramType = getDiagramTypeFromXml(xml);
-      this.openDiagram(xml, diagramType);
-    }, error => this._handleErrors(error));
+    this.api.getStringFromUrl(url).subscribe(
+      xml => {
+        const diagramType = getDiagramTypeFromXml(xml);
+        this.openDiagram(xml, diagramType);
+      },
+      error => this._handleErrors(error)
+    );
+  }
+
+  private _handleSuccess() {
+    this.importDone.emit({
+      type: 'success',
+      warnings: [],
+    });
   }
 
   private _handleWarnings(warnings: BpmnWarning[]) {
@@ -338,4 +377,9 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
       return `${this.fileName}_${dateString}.${this.diagramType}`;
     }
   }
+
+  private _fileSaveAs(blob: Blob, filename: string) {
+    fileSaver.saveAs(blob, filename);
+  };
+
 }
