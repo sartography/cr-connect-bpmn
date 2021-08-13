@@ -139,11 +139,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
   }
 
   openDiagram(xml?: string, diagramType?: FileType) {
-    console.log('openDiagram > diagramType', diagramType);
     this.diagramType = diagramType || getDiagramTypeFromXml(xml);
-
-    console.log('openDiagram > this.diagramType', this.diagramType);
-
     this.xml = xml;
     const modeler = this.initializeModeler(diagramType);
 
@@ -156,19 +152,12 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
         xml = defaultXml.replace(/REPLACE_ME/gi, () => randomString);
       }
 
-      // Add an arbitrary string to get the save button to enable
-      if (isDMN) {
-        // DMN Modeler takes a callback
-        // Convert any v1.1 or 1.2 DMN files to v1.3
-        const convertedXML = await this.convertDMN(xml);
-        this.modeler.importXML(convertedXML, (e, w) => this.onImport(e, w || e && e.warnings));
-      } else {
-        // BPMN Modeler returns a Promise
-        this.modeler.importXML(xml).then(
-          (e, w) => this.onImport(e, w || e && e.warnings),
-          e => this.onImport(e, e && e.warnings),
-        );
-      }
+      // Convert any DMN 1.1 or 1.2 DMN to v1.3
+      const convertedXML = isDMN ? await this.convertDMN(xml) : xml;
+      this.modeler.importXML(convertedXML).then(
+        (e, w) => this.onImport(e, w || e && e.warnings),
+        e => this.onImport(e, e && e.warnings),
+      );
     });
   }
 
@@ -274,6 +263,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
   }
 
   private initializeBPMNModeler(): BpmnModeler {
+    this.diagramType = FileType.BPMN;
     this.modeler = new BpmnModeler({
       container: this.containerRef.nativeElement,
       propertiesPanel: {
@@ -315,6 +305,7 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit, On
 
 
   private initializeDMNModeler(): DmnModeler {
+    this.diagramType = FileType.DMN;
     this.modeler = new DmnModeler({
       container: this.containerRef.nativeElement,
       drd: {

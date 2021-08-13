@@ -16,7 +16,7 @@ import {
 import {
   BPMN_DIAGRAM,
   BPMN_DIAGRAM_WITH_WARNINGS,
-  DMN_DIAGRAM,
+  DMN_DIAGRAM, DMN_DIAGRAM_EMPTY,
   DMN_DIAGRAM_WITH_WARNINGS,
 } from '../../testing/mocks/diagram.mocks';
 import { DiagramComponent } from './diagram.component';
@@ -121,9 +121,9 @@ describe('DiagramComponent', () => {
   it('should expose DMN import warnings', (done) => {
     const diagramURL = 'some-url';
     component.importDone.subscribe(result => {
-      expect(result.type).toEqual('success');
-      expect(result.warnings.length).toEqual(1);
-      expect(result.warnings[0].message).toContain('unparsable content <decision> detected');
+      expect(result.type).toEqual('error');
+      expect(result.error.warnings.length).toEqual(1);
+      expect(result.error.warnings[0].message).toContain('unparsable content <decision> detected');
       done();
     });
     component.loadUrl(diagramURL);
@@ -192,10 +192,10 @@ describe('DiagramComponent', () => {
     expect(importXMLSpy).toHaveBeenCalled();
   });
 
-  it('should open an existing DMN diagram from XML', () => {
+  it('should open an existing DMN diagram from XML', async () => {
     const initializeDMNModelerSpy = spyOn(component, 'initializeDMNModeler').and.stub();
     const importXMLSpy = spyOn(component.modeler, 'importXML').and.callThrough();
-    component.openDiagram(DMN_DIAGRAM, FileType.DMN);
+    await component.openDiagram(DMN_DIAGRAM, FileType.DMN);
     expect(initializeDMNModelerSpy).toHaveBeenCalled();
     expect(importXMLSpy).toHaveBeenCalled();
   });
@@ -239,16 +239,20 @@ describe('DiagramComponent', () => {
     expect(onChangeSpy).toHaveBeenCalled();
   });
 
-  it('should edit DMN diagram', () => {
+  it('should edit DMN diagram', async () => {
+    fixture.detectChanges();
+    await fixture.whenRenderingDone();
+
     const initializeModelerSpy = spyOn(component, 'initializeModeler').and.stub();
     const onChangeSpy = spyOn(component, 'onChange').and.stub();
+    const dmnMigrateSpy = spyOn((component as any), 'convertDMN').and.returnValue(DMN_DIAGRAM_EMPTY);
     const importXMLSpy = spyOn(component.modeler, 'importXML').and.callThrough();
     spyOn(component, 'getRandomString').and.returnValue('REPLACE_ME');
 
-    component.diagramType = FileType.DMN;
-    component.openDiagram(DMN_DIAGRAM_DEFAULT, FileType.DMN);
+    await component.openDiagram(DMN_DIAGRAM_DEFAULT, FileType.DMN);
     expect(initializeModelerSpy).toHaveBeenCalledWith(FileType.DMN);
-    expect(importXMLSpy).toHaveBeenCalledWith(DMN_DIAGRAM_DEFAULT, jasmine.any(Function));
+    expect(dmnMigrateSpy).toHaveBeenCalledOnceWith(DMN_DIAGRAM_DEFAULT);
+    expect(importXMLSpy).toHaveBeenCalledWith(DMN_DIAGRAM_EMPTY);
     initializeModelerSpy.calls.reset();
 
     component.writeValue(DMN_DIAGRAM);

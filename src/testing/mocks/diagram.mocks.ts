@@ -46,31 +46,27 @@ export const BPMN_DIAGRAM_WITH_WARNINGS = `
   </definitions>
 `;
 
-export const DMN_DIAGRAM_EMPTY = `
-  <?xml version="1.0" encoding="UTF-8"?>
-  <definitions
-    xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
-    xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
-    xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
-  >
-    <decision id="Decision_REPLACE_ME" name="Decision_REPLACE_ME">
-      <decisionTable id="decisionTable_1">
-        <input id="input_1">
-          <inputExpression id="inputExpression_1" typeRef="string">
-            <text></text>
-          </inputExpression>
-        </input>
-        <output id="output_1" typeRef="string" />
-      </decisionTable>
-    </decision>
-    <dmndi:DMNDI>
-      <dmndi:DMNDiagram id="DMNDiagram_REPLACE_ME">
-        <dmndi:DMNShape id="DMNShape_REPLACE_ME" dmnElementRef="Decision_REPLACE_ME">
-          <dc:Bounds height="80" width="180" x="100" y="100" />
-        </dmndi:DMNShape>
-      </dmndi:DMNDiagram>
-    </dmndi:DMNDI>
-  </definitions>
+export const DMN_DIAGRAM_EMPTY = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+  // eslint-disable-next-line max-len
+  `<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" id="Definitions_REPLACE_ME" name="DRD" namespace="http://camunda.org/schema/1.0/dmn">
+  <decision id="Decision_REPLACE_ME" name="Decision 1">
+    <decisionTable id="decisionTable_1">
+      <input id="input_1">
+        <inputExpression id="inputExpression_1" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="output_1" typeRef="string" />
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_1f4cl4k">
+      <dmndi:DMNShape id="DMNShape_0yvbgg8" dmnElementRef="Decision_REPLACE_ME">
+        <dc:Bounds height="80" width="180" x="157" y="81" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
 `;
 
 export const DMN_DIAGRAM = `
