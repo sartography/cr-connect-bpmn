@@ -37,7 +37,7 @@ import {
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {FileListComponent} from '../file-list/file-list.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list.component';
-import {WorkflowSpecDialogComponent} from '../_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
+//import {WorkflowSpecDialogComponent} from '../_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
 
 export class MdDialogMock {
   // When the component calls this.dialog.open(...) we'll return an object
@@ -166,8 +166,10 @@ describe('WorkflowSpecListComponent', () => {
       .and.stub();
     const openDialogSpy = spyOn(component.dialog, 'open')
       .and.returnValue({afterClosed: () => of(mockSpecData)} as any);
-
-    component.editWorkflowSpec(mockWorkflowSpec0);
+    component.selectedSpec = mockWorkflowSpec1;
+    component.selectedSpec.parents = [];
+    component.selectedSpec.libraries = [];
+    component.editWorkflowSpec();
     expect(openDialogSpy).toHaveBeenCalled();
     expect(_upsertWorkflowSpecificationSpy).not.toHaveBeenCalled();
 
@@ -524,11 +526,104 @@ describe('WorkflowSpecListComponent', () => {
 
   it('should call editWorkflowSpec, open Dialog & call _upsertWorkflowSpecification when Edit button is clicked', fakeAsync(() => {
       spyOn(dialog, 'open').and.callThrough();
-      const _upsertWorkflowSpecification = spyOn((component as any), '_upsertWorkflowSpecification').and.stub();
+      //const _upsertWorkflowSpecification = spyOn((component as any), '_upsertWorkflowSpecification').and.stub();
       const button = fixture.debugElement.nativeElement.querySelector('#add_spec');
       button.click();
-      const req = httpMock.expectOne(`apiRoot/workflow-specification-category`);
+      httpMock.expectOne(`apiRoot/workflow-specification-category`);
       expect(dialog.open).toHaveBeenCalled();
     }
   ));
+
+  it('should disallow deselecting library if being used as library', () => {
+    let mockSpecData: WorkflowSpecDialogData = {
+      id: '25',
+      name: 'name1',
+      display_name: 'displayname',
+      description: 'descr',
+      category_id: 0,
+      display_order: 0,
+      standalone: false,
+      library: false
+    };
+
+    const _upsertWorkflowSpecificationSpy = spyOn((component as any), '_upsertWorkflowSpecification')
+      .and.stub();
+    const openDialogSpy = spyOn(component.dialog, 'open')
+      .and.returnValue({afterClosed: () => of(mockSpecData)} as any);
+    const canSaveSpy = spyOn(component, 'canSaveWorkflowSpec').and.callThrough();
+    const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
+    const localSelectedSpec = cloneDeep(mockWorkflowSpec0);
+    localSelectedSpec.parents = [
+      { id: 1234,
+        display_name: 'test parent',
+        name: 'parent1'
+      }]
+    component.selectedSpec = localSelectedSpec;
+    component.editWorkflowSpec(localSelectedSpec);
+    expect(openDialogSpy).toHaveBeenCalled();
+    expect(_upsertWorkflowSpecificationSpy).not.toHaveBeenCalled();
+    expect(canSaveSpy).toHaveBeenCalled();
+    expect(snackBarSpy).toHaveBeenCalled();
+  });
+
+  it('should disallow saving as both library and standalone', () => {
+    // we need to have id,name and display_name filled out because there is a conditional
+    // that fails prior to saving if any of these are blank
+    let mockSpecData: WorkflowSpecDialogData = {
+      id: '25',
+      name: 'name1',
+      display_name: 'displayname',
+      description: 'descr',
+      category_id: 0,
+      display_order: 0,
+      standalone: true,
+      library: true
+    };
+
+    const _upsertWorkflowSpecificationSpy = spyOn((component as any), '_upsertWorkflowSpecification')
+      .and.stub();
+    const openDialogSpy = spyOn(component.dialog, 'open')
+      .and.returnValue({afterClosed: () => of(mockSpecData)} as any);
+    const canSaveSpy = spyOn(component, 'canSaveWorkflowSpec').and.callThrough();
+    const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
+    const localSelectedSpec = cloneDeep(mockWorkflowSpec0);
+    localSelectedSpec.parents = [
+      { id: 1234,
+        display_name: 'test parent',
+        name: 'parent1'
+      }]
+    component.selectedSpec = localSelectedSpec;
+    component.editWorkflowSpec(localSelectedSpec);
+    expect(openDialogSpy).toHaveBeenCalled();
+    expect(_upsertWorkflowSpecificationSpy).not.toHaveBeenCalled();
+    expect(canSaveSpy).toHaveBeenCalled();
+    expect(snackBarSpy).toHaveBeenCalled();
+  });
+
+  it('should not delete a library if it is being used', () => {
+
+    const badWorkflowSpec = cloneDeep(mockWorkflowSpec0);
+    badWorkflowSpec.parents=[
+      { id: 1234,
+        display_name: 'test parent',
+        name: 'parent1'
+      }]
+    badWorkflowSpec.library=true;
+    const mockConfirmDeleteData: DeleteWorkflowSpecDialogData = {
+      confirm: false,
+      workflowSpec: badWorkflowSpec
+    };
+
+    const _deleteWorkflowSpecSpy = spyOn((component as any), '_deleteWorkflowSpec').and.stub();
+    const openDialogSpy = spyOn(component.dialog, 'open')
+      .and.returnValue({afterClosed: () => of(mockConfirmDeleteData)} as any);
+    const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
+    mockConfirmDeleteData.confirm = true;
+    component.confirmDeleteWorkflowSpec(badWorkflowSpec);
+    expect(openDialogSpy).toHaveBeenCalled();
+    expect(_deleteWorkflowSpecSpy).not.toHaveBeenCalled();
+    expect(snackBarSpy).toHaveBeenCalled();
+  });
+
+
 });

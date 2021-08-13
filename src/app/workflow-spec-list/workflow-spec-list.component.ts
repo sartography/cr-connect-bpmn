@@ -73,7 +73,7 @@ export class WorkflowSpecListComponent implements OnInit {
         this._loadWorkflowSpecCategories();
       }
     });
-   // this._loadWorkflowLibraries();
+
     this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe(value => {
       this._loadWorkflowSpecs(null, value);
@@ -109,6 +109,18 @@ export class WorkflowSpecListComponent implements OnInit {
     return this.selectedSpec != null && this.selectedSpec.category_id === cat.id;
   }
 
+  canSaveWorkflowSpec(proposed: WorkflowSpecDialogData){
+    if ((this.selectedSpec.parents.length > 0) && (!proposed.library)){
+      this.snackBar.open('This Workflow Specification is still being used as a Library. Please remove references first!', 'Ok', { duration: 5000 });
+      return false;
+    }
+    if (proposed.standalone && proposed.library){
+      this.snackBar.open('A workflow spec cannot be both a standalone and a library!', 'Ok', { duration: 5000 });
+      return false;
+    }
+    return true;
+  }
+
   editWorkflowSpec(selectedSpec?: WorkflowSpec) {
 
     const hasDisplayOrder = selectedSpec && isNumberDefined(selectedSpec.display_order);
@@ -133,8 +145,12 @@ export class WorkflowSpecListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
       if (data && data.id && data.name && data.display_name && data.description) {
-        data.display_order = this.categories.filter(function (entry) { return entry.id === data.category_id; }).length;
-        this._upsertWorkflowSpecification(selectedSpec == null,  data);
+        if (this.canSaveWorkflowSpec(data)) {
+          data.display_order = this.categories.filter(function (entry) {
+            return entry.id === data.category_id;
+          }).length;
+          this._upsertWorkflowSpecification(selectedSpec == null, data);
+        }
       }
     });
   }
@@ -176,6 +192,16 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
+
+  canDeleteWorkflowSpec(wfs){
+    if ((wfs.parents.length > 0) && (wfs.library)){
+      this.snackBar.open('This Workflow Specification is still being used as a Library. Please remove references first!', 'Ok', { duration: 5000 });
+      return false;
+    }
+    return true;
+  }
+
+
   confirmDeleteWorkflowSpec(wfs: WorkflowSpec) {
     const dialogRef = this.dialog.open(DeleteWorkflowSpecDialogComponent, {
       data: {
@@ -185,7 +211,7 @@ export class WorkflowSpecListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((data: DeleteWorkflowSpecDialogData) => {
-      if (data && data.confirm && data.workflowSpec) {
+      if (data && data.confirm && data.workflowSpec && this.canDeleteWorkflowSpec(data.workflowSpec)) {
         this._deleteWorkflowSpec(data.workflowSpec);
         if (typeof this.masterStatusSpec !== 'undefined') {
           this.selectSpec(this.masterStatusSpec);
@@ -391,7 +417,7 @@ export class WorkflowSpecListComponent implements OnInit {
         delete newCat.workflow_specs;
 
         newCat.display_order = j;
-        this.api.updateWorkflowSpecCategory(cat.id, newCat as WorkflowSpecCategory).subscribe(updatedCat => {
+        this.api.updateWorkflowSpecCategory(cat.id, newCat as WorkflowSpecCategory).subscribe(() => {
           numUpdated++;
           if (numUpdated === cats.length) {
             this._loadWorkflowSpecCategories();
