@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import * as cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep } from 'lodash';
 import {
   ApiErrorsComponent,
   ApiService,

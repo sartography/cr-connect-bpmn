@@ -9,7 +9,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
-import * as cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep } from 'lodash';
 import {of} from 'rxjs';
 import {
   ApiService,
