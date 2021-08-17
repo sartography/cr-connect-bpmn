@@ -19,19 +19,30 @@
         "@angular-eslint/component-selector": [
           "error",
           {
+            "type": "element",
             "prefix": "app",
-            "style": "kebab-case",
-            "type": "element"
+            "style": "kebab-case"
           }
         ],
         "@angular-eslint/directive-selector": [
           "error",
           {
+            "type": "attribute",
             "prefix": "app",
-            "style": "camelCase",
-            "type": "attribute"
+            "style": "camelCase"
           }
-        ]
+        ],
+        "@typescript-eslint/naming-convention": [
+          "error",
+          {
+            "selector": "objectLiteralProperty",
+            "format": ["camelCase", "snake_case"],
+            "leadingUnderscore": "allow",
+            "trailingUnderscore": "allow"
+          }
+        ],
+        "no-underscore-dangle": "off",
+        "arrow-body-style": "warn"
       }
     },
     {

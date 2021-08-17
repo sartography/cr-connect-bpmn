@@ -4,16 +4,14 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-
 import {
   ApiErrorsComponent,
   ApiService,
   FileMeta,
   FileType,
-  getDiagramTypeFromXml,
   isNumberDefined,
   newFileFromResponse,
-  WorkflowSpec
+  WorkflowSpec,
 } from 'sartography-workflow-lib';
 import { FileMetaDialogComponent } from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
 import { NewFileDialogComponent } from '../_dialogs/new-file-dialog/new-file-dialog.component';
@@ -22,34 +20,17 @@ import { BpmnWarning } from '../_interfaces/bpmn-warning';
 import { FileMetaDialogData, NewFileDialogData } from '../_interfaces/dialog-data';
 import { ImportEvent } from '../_interfaces/import-event';
 import { DiagramComponent } from '../diagram/diagram.component';
-import {SettingsService} from '../settings.service';
+import { SettingsService } from '../settings.service';
+import { getDiagramTypeFromXml } from '../_util/diagram-type';
 
 @Component({
   selector: 'app-modeler',
   templateUrl: './modeler.component.html',
-  styleUrls: ['./modeler.component.scss']
+  styleUrls: ['./modeler.component.scss'],
 })
 export class ModelerComponent implements AfterViewInit {
-
-  constructor(
-    private api: ApiService,
-    private bottomSheet: MatBottomSheet,
-    private snackBar: MatSnackBar,
-    public dialog: MatDialog,
-    private route: ActivatedRoute,
-    private router: Router,
-    private settingsService: SettingsService
-  ) {
-    this.route.queryParams.subscribe(q => {
-      this._handleAction(q);
-    });
-
-    this.route.paramMap.subscribe(paramMap => {
-      this.workflowSpecId = paramMap.get('workflowSpecId');
-      this.fileMetaId = parseInt(paramMap.get('fileMetaId'), 10);
-      this.loadFilesFromDb();
-    });
-  }
+  @ViewChild('fileInput', {static: true}) fileInput: ElementRef;
+  @ViewChild(DiagramComponent) private diagramComponent: DiagramComponent;
   title = 'bpmn-js-angular';
   diagramUrl = 'https://cdn.staticaly.com/gh/bpmn-io/bpmn-js-examples/dfceecba/starter/diagram.bpmn';
   importError?: Error;
@@ -62,18 +43,36 @@ export class ModelerComponent implements AfterViewInit {
   diagramFileMeta: FileMeta;
   fileName: string;
   fileTypes = FileType;
+  validationState: string;
+  validationData: { [key: string]: any } = {};
   private xml = '';
   private draftXml = '';
   private svg = '';
-  @ViewChild(DiagramComponent) private diagramComponent: DiagramComponent;
-  @ViewChild('fileInput', { static: true }) fileInput: ElementRef;
   private diagramType: FileType;
-  validationState: string;
-  validationData: Object = {};
   private workflowSpecId: string;
   private fileMetaId: number;
   private isNew = false;
   private requestFileClick = false;
+
+  constructor(
+    private api: ApiService,
+    private bottomSheet: MatBottomSheet,
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog,
+    private route: ActivatedRoute,
+    private router: Router,
+    private settingsService: SettingsService,
+  ) {
+    this.route.queryParams.subscribe(q => {
+      this._handleAction(q);
+    });
+
+    this.route.paramMap.subscribe(paramMap => {
+      this.workflowSpecId = paramMap.get('workflowSpecId');
+      this.fileMetaId = parseInt(paramMap.get('fileMetaId'), 10);
+      this.loadFilesFromDb();
+    });
+  }
 
   static isXmlFile(file: File) {
     return file.type.toLowerCase() === 'text/xml' ||
@@ -104,15 +103,15 @@ export class ModelerComponent implements AfterViewInit {
     const {
       type,
       error,
-      warnings
+      warnings,
     } = event;
 
     if (type === 'success') {
-      this.snackBar.open(`Rendered diagram with ${warnings.length} warnings`, 'Ok', { duration: 5000 });
+      this.snackBar.open(`Rendered diagram with ${warnings.length} warnings`, 'Ok', {duration: 5000});
     }
 
     if (type === 'error') {
-      this.bottomSheet.open(ApiErrorsComponent, { data: { apiErrors: [error] } });
+      this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors: [error]}});
     }
 
     this.importError = error;
@@ -136,7 +135,7 @@ export class ModelerComponent implements AfterViewInit {
     } else {
       this.handleImported({
         type: 'error',
-        error: new Error('Wrong file type. Please choose a BPMN XML file.')
+        error: new Error('Wrong file type. Please choose a BPMN XML file.'),
       });
     }
 
@@ -155,7 +154,7 @@ export class ModelerComponent implements AfterViewInit {
         data: {
           title: 'Unsaved Changes!',
           message: 'Are you sure you want to abandon changes?',
-        }
+        },
       });
       dialogRef.afterClosed().subscribe(dialogResult => {
         if (dialogResult) {
@@ -178,7 +177,7 @@ export class ModelerComponent implements AfterViewInit {
     this.xml = (event.target as FileReader).result.toString();
     const diagramType = getDiagramTypeFromXml(this.xml);
     this.diagramComponent.openDiagram(this.xml, diagramType);
-  }
+  };
 
   readFile(file: File) {
     // FileReader must be instantiated this way so unit test can spy on it.
@@ -203,20 +202,20 @@ export class ModelerComponent implements AfterViewInit {
     this.saveChanges();
     const study_id = this.settingsService.getStudyIdForValidation();
     this.validationState = 'unknown';
-    this.validationData = { 'testing_only': {a: 1, b: 'b', c: false, e: [], d: undefined}, 'real_fields': undefined };
+    this.validationData = {testing_only: {a: 1, b: 'b', c: false, e: [], d: undefined}, real_fields: undefined};
 
     this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id, until_task, study_id).subscribe(apiErrors => {
       if (apiErrors && apiErrors.length === 1) {
         if (apiErrors[0].code === 'validation_break') {
           this.validationData = apiErrors[0];
-           this.validationState = 'passing';
+          this.validationState = 'passing';
         } else {
           this.validationData = apiErrors[0];
           this.validationState = 'failing';
         }
       }
       if (apiErrors.length > 0 && this.validationState !== 'passing') {
-        this.bottomSheet.open(ApiErrorsComponent, { data: { apiErrors: apiErrors } });
+        this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors}});
       }
     });
   }
@@ -226,9 +225,9 @@ export class ModelerComponent implements AfterViewInit {
     const studyId = this.settingsService.getStudyIdForValidation();
     this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id, '', studyId).subscribe(apiErrors => {
       if (apiErrors && apiErrors.length > 0) {
-        this.bottomSheet.open(ApiErrorsComponent, { data: { apiErrors: apiErrors } });
+        this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors}});
       } else {
-        this.snackBar.open('Workflow specification is valid!', 'Ok', { duration: 5000 });
+        this.snackBar.open('Workflow specification is valid!', 'Ok', {duration: 5000});
       }
     });
   }
@@ -319,7 +318,7 @@ export class ModelerComponent implements AfterViewInit {
   private loadFilesFromDb() {
     this.api.getWorkflowSpecification(this.workflowSpecId).subscribe(wfs => {
       this.workflowSpec = wfs;
-      this.api.getFileMetas({ workflow_spec_id: wfs.id }).subscribe(files => {
+      this.api.getFileMetas({workflow_spec_id: wfs.id}).subscribe(files => {
         this.bpmnFiles = [];
         files.forEach(f => {
           if ((f.type === FileType.BPMN) || (f.type === FileType.DMN)) {
@@ -351,7 +350,7 @@ export class ModelerComponent implements AfterViewInit {
         type: fileType,
         workflow_spec_id: this.workflowSpec.id,
       };
-      this.diagramFile = new File([this.xml], data.fileName, { type: 'text/xml' });
+      this.diagramFile = new File([this.xml], data.fileName, {type: 'text/xml'});
 
 
       if (this.workflowSpec && isNumberDefined(fileMetaId)) {
@@ -359,14 +358,14 @@ export class ModelerComponent implements AfterViewInit {
         this.api.updateFileData(this.diagramFileMeta, this.diagramFile).subscribe(() => {
           this.api.updateFileMeta(this.diagramFileMeta).subscribe(() => {
             this.loadFilesFromDb();
-            this.snackBar.open(`Saved changes to file ${this.diagramFileMeta.name}.`, 'Ok', { duration: 5000 });
+            this.snackBar.open(`Saved changes to file ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
           });
         });
       } else {
         // Add new file meta
-        this.api.addFile({ workflow_spec_id: this.workflowSpec.id }, this.diagramFileMeta, this.diagramFile).subscribe(fileMeta => {
+        this.api.addFile({workflow_spec_id: this.workflowSpec.id}, this.diagramFileMeta, this.diagramFile).subscribe(fileMeta => {
           this.router.navigate(['/modeler', this.workflowSpec.id, fileMeta.id]);
-          this.snackBar.open(`Saved new file ${fileMeta.name} to workflow spec ${this.workflowSpec.name}.`, 'Ok', { duration: 5000 });
+          this.snackBar.open(`Saved new file ${fileMeta.name} to workflow spec ${this.workflowSpec.name}.`, 'Ok', {duration: 5000});
         }, () => {
           // if this fails, we make sure that the file is treated as still new,
           // and we make the user re-enter the file details as they weren't actually saved.
@@ -379,11 +378,11 @@ export class ModelerComponent implements AfterViewInit {
 
   private saveFileChanges() {
     this.xml = this.draftXml;
-    this.diagramFile = new File([this.xml], this.diagramFileMeta.name, { type: 'text/xml' });
+    this.diagramFile = new File([this.xml], this.diagramFileMeta.name, {type: 'text/xml'});
 
     this.api.updateFileData(this.diagramFileMeta, this.diagramFile).subscribe(newFileMeta => {
       this.diagramFileMeta = newFileMeta;
-      this.snackBar.open(`Saved changes to file metadata ${this.diagramFileMeta.name}.`, 'Ok', { duration: 5000 });
+      this.snackBar.open(`Saved changes to file metadata ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
     });
   }
 

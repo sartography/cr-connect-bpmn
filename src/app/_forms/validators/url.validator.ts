@@ -1,6 +1,6 @@
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 
-export function ValidateUrl(control: AbstractControl): ValidationErrors {
+export const ValidateUrl = (control: AbstractControl): ValidationErrors => {
 
   const urlRegEx = new RegExp(
     '^' +
@@ -28,4 +28,4 @@ export function ValidateUrl(control: AbstractControl): ValidationErrors {
     const error: ValidationErrors = { url: true };
     return error;
   }
-}
+};

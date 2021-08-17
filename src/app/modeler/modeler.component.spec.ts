@@ -1,24 +1,24 @@
-import {APP_BASE_HREF, DatePipe} from '@angular/common';
-import {HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {DebugNode} from '@angular/core';
+import { APP_BASE_HREF, DatePipe } from '@angular/common';
+import { HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { DebugNode } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef} from '@angular/material/bottom-sheet';
-import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
-import {MatListModule} from '@angular/material/list';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
-import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {ActivatedRoute, convertToParamMap} from '@angular/router';
-import {RouterTestingModule} from '@angular/router/testing';
-import {of} from 'rxjs';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import {
   ApiService,
   FileMeta,
@@ -28,17 +28,17 @@ import {
   mockFileMeta0,
   mockFileMetas,
   mockWorkflowSpec0,
-  mockWorkflowSpecs
+  mockWorkflowSpecs,
 } from 'sartography-workflow-lib';
-import {BPMN_DIAGRAM, BPMN_DIAGRAM_EMPTY} from '../../testing/mocks/diagram.mocks';
-import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
-import {NewFileDialogComponent} from '../_dialogs/new-file-dialog/new-file-dialog.component';
-import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
-import {BpmnWarning} from '../_interfaces/bpmn-warning';
-import {FileMetaDialogData, NewFileDialogData, OpenFileDialogData} from '../_interfaces/dialog-data';
-import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
-import {DiagramComponent} from '../diagram/diagram.component';
-import {ModelerComponent} from './modeler.component';
+import { BPMN_DIAGRAM, BPMN_DIAGRAM_EMPTY } from '../../testing/mocks/diagram.mocks';
+import { FileMetaDialogComponent } from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
+import { NewFileDialogComponent } from '../_dialogs/new-file-dialog/new-file-dialog.component';
+import { OpenFileDialogComponent } from '../_dialogs/open-file-dialog/open-file-dialog.component';
+import { BpmnWarning } from '../_interfaces/bpmn-warning';
+import { FileMetaDialogData, NewFileDialogData, OpenFileDialogData } from '../_interfaces/dialog-data';
+import { GetIconCodePipe } from '../_pipes/get-icon-code.pipe';
+import { DiagramComponent } from '../diagram/diagram.component';
+import { ModelerComponent } from './modeler.component';
 
 
 describe('ModelerComponent', () => {
@@ -82,8 +82,8 @@ describe('ModelerComponent', () => {
           provide: MatDialogRef,
           useValue: {
             close: (dialogResult: any) => {
-            }
-          }
+            },
+          },
         },
         {provide: MAT_DIALOG_DATA, useValue: []},
         {
@@ -91,29 +91,29 @@ describe('ModelerComponent', () => {
           useValue: {
             dismiss: () => {
             },
-          }
+          },
         },
         {provide: MAT_BOTTOM_SHEET_DATA, useValue: []},
         {
           provide: ActivatedRoute, useValue: {
             queryParams: of(convertToParamMap({
-              action: ''
+              action: '',
             })),
             paramMap: of(convertToParamMap({
               workflowSpecId: mockWorkflowSpec0.id,
-              fileMetaId: `${mockFileMeta0.id}`
-            }))
-          }
-        }
-      ]
+              fileMetaId: `${mockFileMeta0.id}`,
+            })),
+          },
+        },
+      ],
     }).overrideModule(BrowserDynamicTestingModule, {
       set: {
         entryComponents: [
           FileMetaDialogComponent,
           NewFileDialogComponent,
           OpenFileDialogComponent,
-        ]
-      }
+        ],
+      },
     }).compileComponents();
   }));
 
@@ -134,7 +134,6 @@ describe('ModelerComponent', () => {
     req.flush(mockFileMetas);
 
     const fmReq = httpMock.expectOne(`apiRoot/file/${mockFileMeta0.id}/data`);
-
 
 
   });
@@ -159,7 +158,7 @@ describe('ModelerComponent', () => {
 
     component.handleImported({
       type: 'error',
-      error
+      error,
     });
 
     expect(component.importError).toEqual(error);
@@ -167,13 +166,13 @@ describe('ModelerComponent', () => {
 
   it('sets warning messages', () => {
     const warnings: BpmnWarning[] = [{
-      message: 'WARNING'
+      message: 'WARNING',
     }];
 
     component.handleImported({
       type: 'success',
       error: null,
-      warnings: warnings,
+      warnings,
     });
 
     expect(component.importWarnings).toEqual(warnings);
@@ -193,7 +192,7 @@ describe('ModelerComponent', () => {
     const mockFileReader = {
       target: {result: BPMN_DIAGRAM},
       readAsText: (blob) => {
-      }
+      },
     };
     spyOn((window as any), 'FileReader').and.returnValue(mockFileReader);
     spyOn(mockFileReader, 'readAsText').and.callFake((blob) => {
@@ -214,7 +213,7 @@ describe('ModelerComponent', () => {
     component.onSubmitFileToOpen();
     const expectedParams = {
       type: 'error',
-      error: new Error('Wrong file type. Please choose a BPMN XML file.')
+      error: new Error('Wrong file type. Please choose a BPMN XML file.'),
     };
     expect(handleImportedSpy).toHaveBeenCalledWith(expectedParams);
   });
@@ -461,7 +460,7 @@ describe('ModelerComponent', () => {
 
   it('should display open file dialog', () => {
     const data: OpenFileDialogData = {
-      file: mockFile0
+      file: mockFile0,
     };
     const expectedFile = new File([], mockFileMeta0.name, {type: mockFileMeta0.content_type});
     const event = {target: {files: [expectedFile]}};

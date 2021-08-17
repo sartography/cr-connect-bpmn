@@ -24,12 +24,10 @@ export class WorkflowSpecDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: WorkflowSpecDialogData,
   ) {
     this.api.getWorkflowSpecCategoryList().subscribe(cats => {
-      this.categories = cats.map(c => {
-        return {
+      this.categories = cats.map(c => ({
           value: c.id,
           label: c.display_name,
-        };
-      });
+        }));
 
       this.fields = [
         {
