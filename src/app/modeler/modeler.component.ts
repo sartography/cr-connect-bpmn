@@ -1,9 +1,9 @@
-import { DatePipe } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import {DatePipe} from '@angular/common';
+import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import {MatBottomSheet} from '@angular/material/bottom-sheet';
+import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {
   ApiErrorsComponent,
   ApiService,
@@ -13,15 +13,15 @@ import {
   newFileFromResponse,
   WorkflowSpec,
 } from 'sartography-workflow-lib';
-import { FileMetaDialogComponent } from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
-import { NewFileDialogComponent } from '../_dialogs/new-file-dialog/new-file-dialog.component';
-import { ConfirmDialogComponent } from '../_dialogs/confirm-dialog/confirm-dialog.component';
-import { BpmnWarning } from '../_interfaces/bpmn-warning';
-import { FileMetaDialogData, NewFileDialogData } from '../_interfaces/dialog-data';
-import { ImportEvent } from '../_interfaces/import-event';
-import { DiagramComponent } from '../diagram/diagram.component';
-import { SettingsService } from '../settings.service';
-import { getDiagramTypeFromXml } from '../_util/diagram-type';
+import {FileMetaDialogComponent} from '../_dialogs/file-meta-dialog/file-meta-dialog.component';
+import {NewFileDialogComponent} from '../_dialogs/new-file-dialog/new-file-dialog.component';
+import {ConfirmDialogComponent} from '../_dialogs/confirm-dialog/confirm-dialog.component';
+import {BpmnWarning} from '../_interfaces/bpmn-warning';
+import {FileMetaDialogData, NewFileDialogData} from '../_interfaces/dialog-data';
+import {ImportEvent} from '../_interfaces/import-event';
+import {DiagramComponent} from '../diagram/diagram.component';
+import {SettingsService} from '../settings.service';
+import {getDiagramTypeFromXml} from '../_util/diagram-type';
 
 @Component({
   selector: 'app-modeler',
@@ -30,7 +30,6 @@ import { getDiagramTypeFromXml } from '../_util/diagram-type';
 })
 export class ModelerComponent implements AfterViewInit {
   @ViewChild('fileInput', {static: true}) fileInput: ElementRef;
-  @ViewChild(DiagramComponent) private diagramComponent: DiagramComponent;
   title = 'bpmn-js-angular';
   diagramUrl = 'https://cdn.staticaly.com/gh/bpmn-io/bpmn-js-examples/dfceecba/starter/diagram.bpmn';
   importError?: Error;
@@ -45,6 +44,7 @@ export class ModelerComponent implements AfterViewInit {
   fileTypes = FileType;
   validationState: string;
   validationData: { [key: string]: any } = {};
+  @ViewChild(DiagramComponent) private diagramComponent: DiagramComponent;
   private xml = '';
   private draftXml = '';
   private svg = '';
@@ -72,6 +72,10 @@ export class ModelerComponent implements AfterViewInit {
       this.fileMetaId = parseInt(paramMap.get('fileMetaId'), 10);
       this.loadFilesFromDb();
     });
+  }
+
+  get bpmnFilesNoSelf(): FileMeta[] {
+    return this.bpmnFiles.filter(f => f.id !== this.fileMetaId);
   }
 
   static isXmlFile(file: File) {
@@ -163,6 +167,25 @@ export class ModelerComponent implements AfterViewInit {
       });
     } else {
       this.router.navigate(['/home', this.workflowSpec.name]);
+    }
+  }
+
+  checkChangeBPMN(b: FileMeta) {
+    if (this.hasChanged()) {
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        maxWidth: '300px',
+        data: {
+          title: 'Unsaved Changes!',
+          message: 'Are you sure you want to abandon changes?',
+        },
+      });
+      dialogRef.afterClosed().subscribe(dialogResult => {
+        if (dialogResult) {
+          this.router.navigate(['/modeler', this.workflowSpecId, b.id]);
+        }
+      });
+    } else {
+      this.router.navigate(['/modeler', this.workflowSpecId, b.id])
     }
   }
 
