@@ -1,5 +1,6 @@
 import {Component, Input, TemplateRef} from '@angular/core';
-import {ApiService, WorkflowSpec} from 'sartography-workflow-lib';
+import { WorkflowSpec} from 'sartography-workflow-lib';
+
 
 @Component({
   selector: 'app-workflow-spec-card',
@@ -9,9 +10,11 @@ import {ApiService, WorkflowSpec} from 'sartography-workflow-lib';
 export class WorkflowSpecCardComponent {
   @Input() workflowSpec: WorkflowSpec;
   @Input() actionButtons: TemplateRef<any>;
-
+  showAll: boolean;
   constructor(
-    private api: ApiService
   ) {
+  }
+  expandToggle() {
+    this.showAll = !this.showAll;
   }
 }

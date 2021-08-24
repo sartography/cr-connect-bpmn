@@ -54,6 +54,10 @@
     cursor: pointer;
   }
 
+  .library_item {
+    padding: 10px;
+  }
+
   .spec_menu_item {
     flex-flow: row;
     display: inline-block;
@@ -73,7 +77,6 @@
     }
   }
 }
-
 
 .library-selected {
   font-weight: bold;

@@ -11,11 +11,14 @@ import {
 })
 export class LibraryListComponent implements OnInit, OnChanges {
   @Input() workflowSpecId: string;
+  @Input() showAll: boolean;
   workflowLibraries: WorkflowSpec[];
 
   constructor(
     private api: ApiService,
   ) {
+    this.showAll = false;
+    this.workflowLibraries =[];
   }
 
   ngOnInit() {
@@ -33,6 +36,10 @@ export class LibraryListComponent implements OnInit, OnChanges {
       checked = checked || (item.id === this.workflowSpecId);
     }
     return checked;
+  }
+
+  getCurrentItems(){
+    return this.workflowLibraries.filter((item)=> this.isChecked(item) || this.showAll)
   }
 
   updateItem(library: WorkflowSpec , checked: boolean) {
