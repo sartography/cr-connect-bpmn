@@ -10,7 +10,7 @@
       Add category
     </button>
       <mat-form-field class="search-field">
-        <input matInput type="search" placeholder="Search Workflows" class="form-control" [formControl]="searchField">
+        <label><input matInput type="search" placeholder="Search Workflows" class="form-control" [formControl]="searchField"></label>
       </mat-form-field>
   </div>
   <mat-drawer-container class="example-container" autosize>
@@ -26,38 +26,30 @@
         </div>
       </ng-container>
       <mat-divider></mat-divider>
+
       <ng-container>
         <div class="category">
-          <h4>Libraries</h4>
-          <mat-list>
-            <mat-list-item *ngFor="let wfs of workflowLibraries" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
-              <span [ngClass]="{'spec_menu_item':true, 'spec-selected': selectedSpec && wfs.id === selectedSpec.id}" (click)="selectSpec(wfs)">{{wfs.display_name}}</span>
-              <span class="spec-actions" fxLayout="row" fxLayoutGap="10px">
-                <button
-                  mat-icon-button
-                  title="Move up"
-                  color="primary"
-                >
-                  <mat-icon>arrow_upward</mat-icon>
-                </button>
-                <button
-
-                  mat-icon-button
-                  title="Move down"
-                  color="primary"
-
-                >
-                  <mat-icon>arrow_downward</mat-icon>
-                </button>
-              </span>
-              <!--
-              <ng-container *ngTemplateOutlet="workflowSpecCard; context: {wfs: wfs, cat: cat}"></ng-container>
-              -->
-            </mat-list-item>
-          </mat-list>
+          <mat-accordion class="example-headers-align">
+            <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+              <h4>Libraries</h4>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+              <mat-list>
+              <mat-list-item *ngFor="let wfs of workflowLibraries" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
+               <div>
+                 <span [ngClass]="{'library_item':true, 'spec_menu_item':true, 'library-selected': selectedSpec && wfs.id === selectedSpec.id}" (click)="selectSpec(wfs)">{{wfs.display_name}}</span>
+               </div>
+              </mat-list-item>
+              </mat-list>
+            </mat-expansion-panel>
+          </mat-accordion>
 
         </div>
       </ng-container>
+
+
       <mat-divider></mat-divider>
 
       <ng-container>

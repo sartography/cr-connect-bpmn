@@ -53,6 +53,15 @@
             "scripts": []
           },
           "configurations": {
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+
             "production": {
               "optimization": {
                 "scripts": true,
@@ -144,7 +153,11 @@
           "configurations": {
             "production": {
               "browserTarget": "cr-connect-bpmn:build:production"
+            },
+            "development": {
+              "browserTarget": "cr-connect-bpmn:build:development"
             }
+
           }
         },
         "extract-i18n": {

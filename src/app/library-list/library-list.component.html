@@ -1,9 +1,10 @@
 <div class="file-list">
   <mat-list>
     <mat-list-item
-      *ngFor="let fm of workflowLibraries"
+      *ngFor="let fm of getCurrentItems()"
     >
-      <mat-checkbox (click)="updateItem(fm,isChecked(fm))" [checked]="isChecked(fm)">{{fm.display_name}}</mat-checkbox>
+
+      <mat-checkbox  (click)="updateItem(fm,isChecked(fm))" [checked]="isChecked(fm)">{{fm.display_name}}</mat-checkbox>
     </mat-list-item>
   </mat-list>
 </div>

@@ -26,8 +26,11 @@
     <h4>Workflow Spec Files</h4>
     <app-file-list [workflowSpec]="workflowSpec"></app-file-list>
     <div *ngIf="!workflowSpec.library">
-      <h4>Included Libraries</h4>
-      <app-library-list [workflowSpecId]="workflowSpec.id"></app-library-list>
+      <h4 class="library-list">
+        <mat-icon (click)="expandToggle()" class="expand" *ngIf="!showAll">chevron_right</mat-icon>
+        <mat-icon (click)="expandToggle()" class="expand" *ngIf="showAll">expand_more</mat-icon>
+        Included Libraries</h4>
+      <app-library-list [showAll]="showAll"   [workflowSpecId]="workflowSpec.id"></app-library-list>
     </div>
   </mat-card-content>
   <mat-card-actions>
