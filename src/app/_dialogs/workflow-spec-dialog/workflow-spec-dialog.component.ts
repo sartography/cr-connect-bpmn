@@ -91,7 +91,7 @@ export class WorkflowSpecDialogComponent {
         {
           key: 'standalone',
           type: 'checkbox',
-          defaultValue: false,
+          defaultValue: this.data.standalone ? this.data.standalone : false,
           templateOptions: {
             label: 'Standalone',
             description: 'Is this a standalone workflow?',
@@ -101,7 +101,7 @@ export class WorkflowSpecDialogComponent {
         {
           key: 'library',
           type: 'checkbox',
-          defaultValue: false,
+          defaultValue: this.data.library ? this.data.library : false,
           templateOptions: {
             label: 'Library',
             description: 'Is this a library workflow?',
