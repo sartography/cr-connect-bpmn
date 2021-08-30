@@ -148,9 +148,9 @@ export class WorkflowSpecListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
       if (data && data.id && data.name && data.display_name && data.description) {
         if (this.canSaveWorkflowSpec(data)) {
-          data.display_order = this.categories.filter(function (entry) {
-            return entry.id === data.category_id;
-          }).length;
+          // data.display_order = this.categories.filter(function (entry) {
+          //   return entry.id === data.category_id;
+          // }).length;
           this._upsertWorkflowSpecification(selectedSpec == null, data);
         }
       }
@@ -222,21 +222,25 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  editCategoryDisplayOrder(catId: number, direction: number, cats: WorkflowSpecCategoryGroup[]) {
-    const reorderedCats = this._reorder(catId, direction, cats) as WorkflowSpecCategoryGroup[];
-    this._updateCatDisplayOrders(reorderedCats);
+  editCategoryDisplayOrder(catId: number, direction: number) {
+    // const reorderedCats = this._reorder(catId, direction, cats) as WorkflowSpecCategoryGroup[];
+    // this._updateCatDisplayOrders(reorderedCats);
+
+    // Send this info to a new endpoint
   }
 
-  editSpecDisplayOrder(specId: string, direction: number, specs: WorkflowSpec[]) {
-    const reorderedSpecs = this._reorder(specId, direction, specs) as WorkflowSpec[];
-    this._updateSpecDisplayOrders(reorderedSpecs);
+  editSpecDisplayOrder(specId: string, direction: number) {
+    // const reorderedSpecs = this._reorder(specId, direction, specs) as WorkflowSpec[];
+    // this._updateSpecDisplayOrders(reorderedSpecs);
+
+    this.api.reorderWorkflowSpecification();
   }
 
-  sortByDisplayOrder = (a, b) => (a.display_order < b.display_order) ? -1 : 1;
+  // sortByDisplayOrder = (a, b) => (a.display_order < b.display_order) ? -1 : 1;
 
   private _loadWorkflowSpecCategories(selectedSpecName: string = null) {
     this.api.getWorkflowSpecCategoryList().subscribe(cats => {
-      this.categories = cats.sort(this.sortByDisplayOrder);
+      // this.categories = cats.sort(this.sortByDisplayOrder);
 
       // Add a container for specs without a category
       this.workflowSpecsByCategory = [{
@@ -247,6 +251,7 @@ export class WorkflowSpecListComponent implements OnInit {
         display_order: -1, // Display it at the top
       }];
 
+      // note - wonder if this could also go to backend
       this.categories.forEach((cat, i) => {
         this.workflowSpecsByCategory.push(cat);
         this.workflowSpecsByCategory[i + 1].workflow_specs = [];
@@ -257,13 +262,13 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   private _loadWorkflowLibraries() {
-
     this.api.getWorkflowSpecificationLibraries().subscribe(wfs => {
       this.workflowLibraries = wfs;
     });
   }
 
 
+  // Need to step thru this
   private _loadWorkflowSpecs(selectedSpecName: string = null, searchSpecName: string = null) {
 
     this.api.getWorkflowSpecList().subscribe(wfs => {
@@ -271,6 +276,7 @@ export class WorkflowSpecListComponent implements OnInit {
       this.workflowSpecsByCategory.forEach(cat => {
         cat.workflow_specs = this.workflowSpecs
           .filter(wf => {
+            // Find and set master spec
             if (wf.is_master_spec) {
               this.masterStatusSpec = wf;
             } else {
@@ -281,7 +287,7 @@ export class WorkflowSpecListComponent implements OnInit {
               }
             }
           })
-          .sort(this.sortByDisplayOrder);
+          // .sort(this.sortByDisplayOrder);
       });
 
       // Set the selected workflow to something sensible.
@@ -313,6 +319,7 @@ export class WorkflowSpecListComponent implements OnInit {
         standalone: data.standalone,
         library: data.library,
       };
+      console.log('DO: ', data.display_order);
 
       if (isNew) {
         this._addWorkflowSpec(newSpec);
@@ -387,10 +394,23 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
+  private _reorderWorkflowSpecCategory() {
+    //wip
+ }
+
+ private _reorderWorkflowSpec(specId: string, direction: number) {
+    //First, convert direction to string
+    let d = (direction == -1) ? "moveUp" : "moveDown";
+    this.api.reorderWorkflowSpec(specId, d).subscribe(_ => {
+      //subscribe to some stuff
+      });
+ }
+
   private _displayMessage(message: string) {
     this.snackBar.open(message, 'Ok', {duration: 3000});
   }
 
+  /**
   private _reorder(
     id: number | string, direction: number,
     list: Array<WorkflowSpecCategoryGroup | WorkflowSpec>,
@@ -411,6 +431,7 @@ export class WorkflowSpecListComponent implements OnInit {
       return [];
     }
   }
+   **/
 
   private _updateCatDisplayOrders(cats: WorkflowSpecCategory[]) {
     let numUpdated = 0;
