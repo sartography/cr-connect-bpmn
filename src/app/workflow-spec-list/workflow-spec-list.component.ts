@@ -233,7 +233,7 @@ export class WorkflowSpecListComponent implements OnInit {
     // const reorderedSpecs = this._reorder(specId, direction, specs) as WorkflowSpec[];
     // this._updateSpecDisplayOrders(reorderedSpecs);
 
-    this.api.reorderWorkflowSpecification();
+    // this.api.reorderWorkflowSpecification();
   }
 
   // sortByDisplayOrder = (a, b) => (a.display_order < b.display_order) ? -1 : 1;
@@ -241,6 +241,7 @@ export class WorkflowSpecListComponent implements OnInit {
   private _loadWorkflowSpecCategories(selectedSpecName: string = null) {
     this.api.getWorkflowSpecCategoryList().subscribe(cats => {
       // this.categories = cats.sort(this.sortByDisplayOrder);
+      this.categories = cats;
 
       // Add a container for specs without a category
       this.workflowSpecsByCategory = [{
@@ -401,9 +402,9 @@ export class WorkflowSpecListComponent implements OnInit {
  private _reorderWorkflowSpec(specId: string, direction: number) {
     //First, convert direction to string
     let d = (direction == -1) ? "moveUp" : "moveDown";
-    this.api.reorderWorkflowSpec(specId, d).subscribe(_ => {
+    // this.api.reorderWorkflowSpec(specId, d).subscribe(_ => {
       //subscribe to some stuff
-      });
+    //  });
  }
 
   private _displayMessage(message: string) {

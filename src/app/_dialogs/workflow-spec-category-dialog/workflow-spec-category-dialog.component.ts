@@ -3,7 +3,7 @@ import {FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {toSnakeCase} from 'sartography-workflow-lib';
-import {WorkflowSpecCategoryDialogData, WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
+import {WorkflowSpecCategoryDialogData} from '../../_interfaces/dialog-data';
 
 @Component({
   selector: 'app-workflow-spec-category-dialog',
@@ -47,18 +47,6 @@ export class WorkflowSpecCategoryDialogComponent {
         placeholder: 'Title of the workflow spec category',
         description: 'This is a human-readable title for the workflow spec category,' +
           'which should be easy for others to read and remember.',
-        required: true,
-      },
-    },
-    {
-      key: 'display_order',
-      type: 'input',
-      defaultValue: this.data.display_order,
-      templateOptions: {
-        type: 'number',
-        label: 'Display Order',
-        placeholder: 'Order in which category will be displayed',
-        description: 'Sort order that the category should appear in. Lower numbers will appear first.',
         required: true,
       },
     },
