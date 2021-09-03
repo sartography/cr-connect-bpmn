@@ -133,8 +133,23 @@ export class ModelerComponent implements AfterViewInit {
   onSubmitFileToOpen() {
     this.expandToolbar = false;
 
+    if (this.diagramFile && this.diagramFile.type.toLowerCase() === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      this.api.createDMNFromSS(this.diagramFile).subscribe(file => {
+        let fileMeta = {
+          id: 0,
+          content_type: 'text/xml',
+          name: 'new_dmn',
+          type: FileType.DMN,
+        }
+        this.diagramFile = newFileFromResponse(fileMeta, file);
+        console.log(this.diagramFile);
+        console.log(file);
+        this.readFile(this.diagramFile);
+      });
 
-    if (this.diagramFile && ModelerComponent.isXmlFile(this.diagramFile)) {
+    }
+
+    else if (this.diagramFile && ModelerComponent.isXmlFile(this.diagramFile)) {
       this.readFile(this.diagramFile);
     } else {
       this.handleImported({
