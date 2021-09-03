@@ -84,7 +84,7 @@
                   mat-icon-button
                   title="Move up"
                   color="primary"
-                  (click)="editSpecDisplayOrder(wfs && wfs.id, -1)"
+                  (click)="editSpecDisplayOrder(cat, wfs.id, 'up')"
                 >
                   <mat-icon>arrow_upward</mat-icon>
                 </button>
@@ -93,7 +93,7 @@
                   mat-icon-button
                   title="Move down"
                   color="primary"
-                  (click)="editSpecDisplayOrder(wfs.id, 1)"
+                  (click)="editSpecDisplayOrder(cat, wfs.id, 'down')"
                 >
                   <mat-icon>arrow_downward</mat-icon>
                 </button>

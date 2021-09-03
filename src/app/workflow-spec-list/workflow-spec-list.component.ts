@@ -222,18 +222,20 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  editCategoryDisplayOrder(catId: number, direction: number) {
+  editCategoryDisplayOrder(catId: number, direction: string) {
     // const reorderedCats = this._reorder(catId, direction, cats) as WorkflowSpecCategoryGroup[];
     // this._updateCatDisplayOrders(reorderedCats);
 
     // Send this info to a new endpoint
   }
 
-  editSpecDisplayOrder(specId: string, direction: number) {
+  editSpecDisplayOrder(cat: WorkflowSpecCategoryGroup, specId: string, direction: string) {
     // const reorderedSpecs = this._reorder(specId, direction, specs) as WorkflowSpec[];
     // this._updateSpecDisplayOrders(reorderedSpecs);
-
-    // this.api.reorderWorkflowSpecification();
+    this.api.reorderWorkflowSpecification(specId, direction).subscribe(wfs => {
+      console.log('reorder');
+      // cat.workflow_specs= wfs;
+    });
   }
 
   // sortByDisplayOrder = (a, b) => (a.display_order < b.display_order) ? -1 : 1;
