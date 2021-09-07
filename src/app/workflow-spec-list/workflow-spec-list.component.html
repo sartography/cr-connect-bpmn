@@ -76,11 +76,11 @@
               </button>
             </mat-expansion-panel-header>
             <mat-list>
-              <mat-list-item *ngFor="let wfs of cat.workflow_specs" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
+              <mat-list-item *ngFor="let wfs of cat.workflow_specs; let i = index" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
                 <span [ngClass]="{'spec_menu_item':true, 'spec-selected': selectedSpec && wfs.id === selectedSpec.id}" (click)="selectSpec(wfs)">{{wfs.display_name}}</span>
-                <span class="spec-actions" fxLayout="row" fxLayoutGap="10px" *ngIf="cat && cat.id !== null">
+                <span class="spec-actions" fxLayout="row" fxLayoutGap="10px" *ngIf="cat.id !== null && cat">
                 <button
-                  *ngIf="cat && cat.workflow_specs.length > 0 && wfs.display_order !== 0"
+                  *ngIf="i!==0 && cat.workflow_specs.length > 0"
                   mat-icon-button
                   title="Move up"
                   color="primary"
@@ -89,7 +89,7 @@
                   <mat-icon>arrow_upward</mat-icon>
                 </button>
                 <button
-                  *ngIf="cat && cat.workflow_specs.length > 0 && (wfs.display_order < cat.workflow_specs.length - 1)"
+                  *ngIf="i!==cat.workflow_specs.length-1 && cat.workflow_specs.length > 0"
                   mat-icon-button
                   title="Move down"
                   color="primary"

@@ -233,8 +233,7 @@ export class WorkflowSpecListComponent implements OnInit {
     // const reorderedSpecs = this._reorder(specId, direction, specs) as WorkflowSpec[];
     // this._updateSpecDisplayOrders(reorderedSpecs);
     this.api.reorderWorkflowSpecification(specId, direction).subscribe(wfs => {
-      console.log('reorder');
-      // cat.workflow_specs= wfs;
+      cat.workflow_specs= wfs;
     });
   }
 
@@ -254,7 +253,7 @@ export class WorkflowSpecListComponent implements OnInit {
         display_order: -1, // Display it at the top
       }];
 
-      // note - wonder if this could also go to backend
+      // ?
       this.categories.forEach((cat, i) => {
         this.workflowSpecsByCategory.push(cat);
         this.workflowSpecsByCategory[i + 1].workflow_specs = [];
@@ -270,8 +269,6 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-
-  // Need to step thru this
   private _loadWorkflowSpecs(selectedSpecName: string = null, searchSpecName: string = null) {
 
     this.api.getWorkflowSpecList().subscribe(wfs => {
@@ -318,7 +315,7 @@ export class WorkflowSpecListComponent implements OnInit {
         display_name: data.display_name,
         description: data.description,
         category_id: data.category_id,
-        display_order: data.display_order,
+        // display_order: data.display_order,
         standalone: data.standalone,
         library: data.library,
       };
@@ -397,23 +394,13 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  private _reorderWorkflowSpecCategory() {
-    //wip
- }
-
- private _reorderWorkflowSpec(specId: string, direction: number) {
-    //First, convert direction to string
-    let d = (direction == -1) ? "moveUp" : "moveDown";
-    // this.api.reorderWorkflowSpec(specId, d).subscribe(_ => {
-      //subscribe to some stuff
-    //  });
- }
-
   private _displayMessage(message: string) {
     this.snackBar.open(message, 'Ok', {duration: 3000});
   }
 
   /**
+   *  Deprecated - backend now reorders
+   *
   private _reorder(
     id: number | string, direction: number,
     list: Array<WorkflowSpecCategoryGroup | WorkflowSpec>,
@@ -436,6 +423,9 @@ export class WorkflowSpecListComponent implements OnInit {
   }
    **/
 
+  /**
+   * Deprecated - backend updates display_order
+   *
   private _updateCatDisplayOrders(cats: WorkflowSpecCategory[]) {
     let numUpdated = 0;
     cats.forEach((cat, j) => {
@@ -453,6 +443,7 @@ export class WorkflowSpecListComponent implements OnInit {
       }
     });
   }
+
 
   private _updateSpecDisplayOrders(specs: WorkflowSpec[]) {
     if (this.selectedCat && this.selectedSpec.category) {
@@ -472,7 +463,7 @@ export class WorkflowSpecListComponent implements OnInit {
       });
     });
   }
-
+   */
 
 }
 
