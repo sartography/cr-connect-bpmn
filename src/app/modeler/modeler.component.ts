@@ -133,6 +133,7 @@ export class ModelerComponent implements AfterViewInit {
   onSubmitFileToOpen() {
     this.expandToolbar = false;
 
+    /** If it is a spreadsheet, create a DMN from it */
     if (this.diagramFile && this.diagramFile.type.toLowerCase() === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
       this.api.createDMNFromSS(this.diagramFile).subscribe(file => {
         let fileMeta = {
