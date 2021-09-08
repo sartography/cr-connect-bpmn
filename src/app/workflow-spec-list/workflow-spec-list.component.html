@@ -59,7 +59,7 @@
         <mat-divider></mat-divider>
 
       <mat-accordion class="example-headers-align" multi="false">
-      <ng-container *ngFor="let cat of workflowSpecsByCategory">
+      <ng-container *ngFor="let cat of workflowSpecsByCategory; let j = index">
 
         <div *ngIf="!(searchField.value && cat.workflow_specs.length === 0)">
         <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
@@ -110,20 +110,20 @@
                 <mat-icon>edit</mat-icon>
               </button>
               <button
-                *ngIf="!cat[0]"
+                *ngIf="j!==1"
                 mat-mini-fab
                 title="Move up"
                 color="primary"
-                (click)="editCategoryDisplayOrder(cat.id, -1)"
+                (click)="editCategoryDisplayOrder(cat, cat.id, 'up')"
               >
                 <mat-icon>arrow_upward</mat-icon>
               </button>
               <button
-                *ngIf="!cat[workflowSpecsByCategory.length-1]"
+                *ngIf="j!== cat[workflowSpecsByCategory.length-1]"
                 mat-mini-fab
                 title="Move down"
                 color="primary"
-                (click)="editCategoryDisplayOrder(cat.id, 1)"
+                (click)="editCategoryDisplayOrder(cat, cat.id, 'down')"
               >
                 <mat-icon>arrow_downward</mat-icon>
               </button>

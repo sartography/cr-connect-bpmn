@@ -222,16 +222,16 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  editCategoryDisplayOrder(catId: number, direction: string) {
-    // const reorderedCats = this._reorder(catId, direction, cats) as WorkflowSpecCategoryGroup[];
-    // this._updateCatDisplayOrders(reorderedCats);
-
-    // Send this info to a new endpoint
+  editCategoryDisplayOrder(cat: WorkflowSpecCategoryGroup, catId: number, direction: string) {
+    this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
+      console.log('wfsbcat: ', this.workflowSpecsByCategory);
+      console.log('this.categories', this.categories);
+      console.log('changed is ', cat_change);
+      // this.workflowSpecsByCategory = cat_change;
+    });
   }
 
   editSpecDisplayOrder(cat: WorkflowSpecCategoryGroup, specId: string, direction: string) {
-    // const reorderedSpecs = this._reorder(specId, direction, specs) as WorkflowSpec[];
-    // this._updateSpecDisplayOrders(reorderedSpecs);
     this.api.reorderWorkflowSpecification(specId, direction).subscribe(wfs => {
       cat.workflow_specs= wfs;
     });
@@ -253,7 +253,6 @@ export class WorkflowSpecListComponent implements OnInit {
         display_order: -1, // Display it at the top
       }];
 
-      // ?
       this.categories.forEach((cat, i) => {
         this.workflowSpecsByCategory.push(cat);
         this.workflowSpecsByCategory[i + 1].workflow_specs = [];
