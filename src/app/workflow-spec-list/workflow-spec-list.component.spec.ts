@@ -391,23 +391,28 @@ describe('WorkflowSpecListComponent', () => {
 
   });
 
+  /**
+   *  Deprecated - removed reorder and ability to directly edit display order
+   *
   it('should edit category display order', () => {
-    const _reorderSpy = spyOn((component as any), '_reorder').and.stub();
+    // const _reorderSpy = spyOn((component as any), '_reorder').and.stub();
     const _updateCatDisplayOrdersSpy = spyOn((component as any), '_updateCatDisplayOrders').and.stub();
 
     component.editCategoryDisplayOrder(2, -1, mockWorkflowSpecCategories);
-    expect(_reorderSpy).toHaveBeenCalled();
+    // expect(_reorderSpy).toHaveBeenCalled();
     expect(_updateCatDisplayOrdersSpy).toHaveBeenCalled();
   });
 
+
   it('should edit workflow spec display order', () => {
-    const _reorderSpy = spyOn((component as any), '_reorder').and.stub();
+    // const _reorderSpy = spyOn((component as any), '_reorder').and.stub();
     const _updateSpecDisplayOrdersSpy = spyOn((component as any), '_updateSpecDisplayOrders').and.stub();
 
     component.editSpecDisplayOrder('few_things', -1, mockWorkflowSpecs);
-    expect(_reorderSpy).toHaveBeenCalled();
+    // expect(_reorderSpy).toHaveBeenCalled();
     expect(_updateSpecDisplayOrdersSpy).toHaveBeenCalled();
   });
+
 
   it('should reorder categories', () => {
     const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
@@ -436,6 +441,7 @@ describe('WorkflowSpecListComponent', () => {
     expect(moveUpSpy).not.toHaveBeenCalled();
     expect(moveDownSpy).toHaveBeenCalled();
   });
+
 
   it('should reorder specs', () => {
     const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
@@ -468,23 +474,24 @@ describe('WorkflowSpecListComponent', () => {
     expect(moveUpSpy).not.toHaveBeenCalled();
     expect(moveDownSpy).toHaveBeenCalled();
   });
+   */
 
   it('should update all category display orders', () => {
-    const _loadWorkflowSpecCategoriesSpy = spyOn((component as any), '_loadWorkflowSpecCategories').and.stub();
-    (component as any)._updateCatDisplayOrders(mockWorkflowSpecCategories);
+    const editCategoryDisplayOrderSpy = spyOn((component as any), 'editCategoryDisplayOrder').and.stub();
 
-    mockWorkflowSpecCategories.forEach((spec, i) => {
-      const req = httpMock.expectOne(`apiRoot/workflow-specification-category/${spec.id}`);
+    mockWorkflowSpecCategories.forEach((cat, i) => {
+      let results = { param: 'direction', value: 'down' };
+      const req = httpMock.expectOne(`apiRoot/workflow-specification-category/${cat.id}/reorder?${results.param}=${results.value}`);
       expect(req.request.method).toEqual('PUT');
       req.flush(mockWorkflowSpecCategories[i]);
     });
 
-    expect(_loadWorkflowSpecCategoriesSpy).toHaveBeenCalled();
+    expect(editCategoryDisplayOrderSpy).toHaveBeenCalled();
   });
+  /**
 
   it('should update all spec display orders', () => {
     const _loadWorkflowSpecCategoriesSpy = spyOn((component as any), '_loadWorkflowSpecCategories').and.stub();
-    (component as any)._updateSpecDisplayOrders(mockWorkflowSpecs);
 
     mockWorkflowSpecs.forEach((spec, i) => {
       const req = httpMock.expectOne(`apiRoot/workflow-specification/${spec.id}`);
@@ -494,6 +501,7 @@ describe('WorkflowSpecListComponent', () => {
 
     expect(_loadWorkflowSpecCategoriesSpy).toHaveBeenCalled();
   });
+   */
 
 
 

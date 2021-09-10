@@ -7,8 +7,8 @@ import {
   ApiErrorsComponent,
   ApiService,
   isNumberDefined,
-  moveArrayElementDown,
-  moveArrayElementUp,
+  // moveArrayElementDown,
+  // moveArrayElementUp,
   WorkflowSpec,
   WorkflowSpecCategory,
 } from 'sartography-workflow-lib';
@@ -52,8 +52,8 @@ export class WorkflowSpecListComponent implements OnInit {
   selectedCat: WorkflowSpecCategory;
   workflowSpecsByCategory: WorkflowSpecCategoryGroup[] = [];
   categories: WorkflowSpecCategory[];
-  moveUp = moveArrayElementUp;
-  moveDown = moveArrayElementDown;
+  // moveUp = moveArrayElementUp;
+  // moveDown = moveArrayElementDown;
   searchField: FormControl;
 
   constructor(
@@ -222,12 +222,9 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  editCategoryDisplayOrder(cat: WorkflowSpecCategoryGroup, catId: number, direction: string) {
+  editCategoryDisplayOrder(catId: number, direction: string) {
     this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
-      console.log('wfsbcat: ', this.workflowSpecsByCategory);
-      console.log('this.categories', this.categories);
-      console.log('changed is ', cat_change);
-      // this.workflowSpecsByCategory = cat_change;
+      this.workflowSpecsByCategory = cat_change;
     });
   }
 
