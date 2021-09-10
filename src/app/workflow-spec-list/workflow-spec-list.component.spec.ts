@@ -15,7 +15,7 @@ import {of} from 'rxjs';
 import {
   ApiErrorsComponent,
   ApiService,
-  MockEnvironment,
+  MockEnvironment, mockWorkflowMeta1,
   mockWorkflowSpec0,
   mockWorkflowSpec1,
   mockWorkflowSpec2,
@@ -36,7 +36,7 @@ import {
 } from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {FileListComponent} from '../file-list/file-list.component';
-import {WorkflowSpecListComponent} from './workflow-spec-list.component';
+import {WorkflowSpecCategoryGroup, WorkflowSpecListComponent} from './workflow-spec-list.component';
 
 
 export class MdDialogMock {
@@ -476,33 +476,25 @@ describe('WorkflowSpecListComponent', () => {
   });
    */
 
-  it('should update all category display orders', () => {
-    const editCategoryDisplayOrderSpy = spyOn((component as any), 'editCategoryDisplayOrder').and.stub();
-
-    mockWorkflowSpecCategories.forEach((cat, i) => {
-      let results = { param: 'direction', value: 'down' };
-      const req = httpMock.expectOne(`apiRoot/workflow-specification-category/${cat.id}/reorder?${results.param}=${results.value}`);
-      expect(req.request.method).toEqual('PUT');
-      req.flush(mockWorkflowSpecCategories[i]);
-    });
-
-    expect(editCategoryDisplayOrderSpy).toHaveBeenCalled();
+  it('should update a single category display order', () => {
+    mockWorkflowSpecCategory1.id = 5;
+    (component as any).editCategoryDisplayOrder(mockWorkflowSpecCategory1.id, 'down');
+    let results = { param: 'direction', value: 'down' };
+    const req = httpMock.expectOne(`apiRoot/workflow-specification-category/${mockWorkflowSpecCategory1.id}/reorder?${results.param}=${results.value}`);
+    expect(req.request.method).toEqual('PUT');
+    req.flush(mockWorkflowSpecCategory1);
   });
-  /**
 
-  it('should update all spec display orders', () => {
-    const _loadWorkflowSpecCategoriesSpy = spyOn((component as any), '_loadWorkflowSpecCategories').and.stub();
-
-    mockWorkflowSpecs.forEach((spec, i) => {
-      const req = httpMock.expectOne(`apiRoot/workflow-specification/${spec.id}`);
-      expect(req.request.method).toEqual('PUT');
-      req.flush(mockWorkflowSpecs[i]);
-    });
-
-    expect(_loadWorkflowSpecCategoriesSpy).toHaveBeenCalled();
+  it('should update a single spec display order', () => {
+    let wfs_group: WorkflowSpecCategoryGroup[] = [];
+    mockWorkflowSpecCategory1.workflows.push(mockWorkflowMeta1);
+    wfs_group.push(mockWorkflowSpecCategory1);
+    (component as any).editSpecDisplayOrder(wfs_group[0], mockWorkflowSpec1.id, 'down');
+    let results = { param: 'direction', value: 'down' };
+    const req = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec1.id}/reorder?${results.param}=${results.value}`);
+    expect(req.request.method).toEqual('PUT');
+    req.flush(mockWorkflowSpecCategory1);
   });
-   */
-
 
 
   it('should load master workflow spec', () => {
