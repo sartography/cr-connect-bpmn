@@ -224,6 +224,8 @@ export class WorkflowSpecListComponent implements OnInit {
 
   editCategoryDisplayOrder(catId: number, direction: string) {
     this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
+      console.log('old wfsbycat is: ', this.workflowSpecsByCategory);
+      console.log('new wfsbycat is: ', cat_change);
       this.workflowSpecsByCategory = cat_change;
     });
   }
@@ -242,6 +244,9 @@ export class WorkflowSpecListComponent implements OnInit {
       this.categories = cats;
 
       // Add a container for specs without a category
+      /**
+       * Deprecated - no more 'None'
+       *
       this.workflowSpecsByCategory = [{
         id: null,
         name: 'none',
@@ -249,10 +254,11 @@ export class WorkflowSpecListComponent implements OnInit {
         workflow_specs: [],
         display_order: -1, // Display it at the top
       }];
+       */
 
       this.categories.forEach((cat, i) => {
         this.workflowSpecsByCategory.push(cat);
-        this.workflowSpecsByCategory[i + 1].workflow_specs = [];
+        this.workflowSpecsByCategory[i].workflow_specs = [];
       });
       this._loadWorkflowSpecs(selectedSpecName);
       this._loadWorkflowLibraries();
