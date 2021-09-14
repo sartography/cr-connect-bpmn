@@ -137,7 +137,6 @@ export class WorkflowSpecListComponent implements OnInit {
       library: selectedSpec ? selectedSpec.library : null,
     };
 
-
     // Open new filename/workflow spec dialog
     const dialogRef = this.dialog.open(WorkflowSpecDialogComponent, {
       height: '65vh',
@@ -148,9 +147,6 @@ export class WorkflowSpecListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
       if (data && data.id && data.name && data.display_name && data.description) {
         if (this.canSaveWorkflowSpec(data)) {
-          // data.display_order = this.categories.filter(function (entry) {
-          //   return entry.id === data.category_id;
-          // }).length;
           this._upsertWorkflowSpecification(selectedSpec == null, data);
         }
       }
@@ -223,10 +219,14 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   editCategoryDisplayOrder(catId: number, direction: string) {
+    console.log('new wfsbycat is: ', this.workflowSpecsByCategory);
     this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
-      console.log('old wfsbycat is: ', this.workflowSpecsByCategory);
-      console.log('new wfsbycat is: ', cat_change);
-      this.workflowSpecsByCategory = cat_change;
+      this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
+        let new_cat = cat_change.find(i2 => i2.id === cat.id);
+        cat.display_order = new_cat.display_order;
+        return cat;
+      });
+      this.workflowSpecsByCategory.sort((x,y) => x.display_order - y.display_order);
     });
   }
 
@@ -236,25 +236,9 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  // sortByDisplayOrder = (a, b) => (a.display_order < b.display_order) ? -1 : 1;
-
   private _loadWorkflowSpecCategories(selectedSpecName: string = null) {
     this.api.getWorkflowSpecCategoryList().subscribe(cats => {
-      // this.categories = cats.sort(this.sortByDisplayOrder);
       this.categories = cats;
-
-      // Add a container for specs without a category
-      /**
-       * Deprecated - no more 'None'
-       *
-      this.workflowSpecsByCategory = [{
-        id: null,
-        name: 'none',
-        display_name: 'No category',
-        workflow_specs: [],
-        display_order: -1, // Display it at the top
-      }];
-       */
 
       this.categories.forEach((cat, i) => {
         this.workflowSpecsByCategory.push(cat);
@@ -289,7 +273,7 @@ export class WorkflowSpecListComponent implements OnInit {
               }
             }
           })
-          // .sort(this.sortByDisplayOrder);
+        cat.workflow_specs.sort((x,y) => x.display_order - y.display_order);
       });
 
       // Set the selected workflow to something sensible.
