@@ -110,7 +110,7 @@
                 <mat-icon>edit</mat-icon>
               </button>
               <button
-                *ngIf="j!==1"
+                *ngIf="j!==0"
                 mat-mini-fab
                 title="Move up"
                 color="primary"
@@ -119,7 +119,7 @@
                 <mat-icon>arrow_upward</mat-icon>
               </button>
               <button
-                *ngIf="j!== cat[workflowSpecsByCategory.length-1]"
+                *ngIf="j!== workflowSpecsByCategory.length-1"
                 mat-mini-fab
                 title="Move down"
                 color="primary"
