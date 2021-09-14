@@ -7,8 +7,8 @@ import {
   ApiErrorsComponent,
   ApiService,
   isNumberDefined,
-  moveArrayElementDown,
-  moveArrayElementUp,
+  // moveArrayElementDown,
+  // moveArrayElementUp,
   WorkflowSpec,
   WorkflowSpecCategory,
 } from 'sartography-workflow-lib';
@@ -52,8 +52,8 @@ export class WorkflowSpecListComponent implements OnInit {
   selectedCat: WorkflowSpecCategory;
   workflowSpecsByCategory: WorkflowSpecCategoryGroup[] = [];
   categories: WorkflowSpecCategory[];
-  moveUp = moveArrayElementUp;
-  moveDown = moveArrayElementDown;
+  // moveUp = moveArrayElementUp;
+  // moveDown = moveArrayElementDown;
   searchField: FormControl;
 
   constructor(
@@ -137,7 +137,6 @@ export class WorkflowSpecListComponent implements OnInit {
       library: selectedSpec ? selectedSpec.library : null,
     };
 
-
     // Open new filename/workflow spec dialog
     const dialogRef = this.dialog.open(WorkflowSpecDialogComponent, {
       height: '65vh',
@@ -148,9 +147,6 @@ export class WorkflowSpecListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
       if (data && data.id && data.name && data.display_name && data.description) {
         if (this.canSaveWorkflowSpec(data)) {
-          data.display_order = this.categories.filter(function (entry) {
-            return entry.id === data.category_id;
-          }).length;
           this._upsertWorkflowSpecification(selectedSpec == null, data);
         }
       }
@@ -222,34 +218,31 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  editCategoryDisplayOrder(catId: number, direction: number, cats: WorkflowSpecCategoryGroup[]) {
-    const reorderedCats = this._reorder(catId, direction, cats) as WorkflowSpecCategoryGroup[];
-    this._updateCatDisplayOrders(reorderedCats);
+  editCategoryDisplayOrder(catId: number, direction: string) {
+    console.log('new wfsbycat is: ', this.workflowSpecsByCategory);
+    this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
+      this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
+        let new_cat = cat_change.find(i2 => i2.id === cat.id);
+        cat.display_order = new_cat.display_order;
+        return cat;
+      });
+      this.workflowSpecsByCategory.sort((x,y) => x.display_order - y.display_order);
+    });
   }
 
-  editSpecDisplayOrder(specId: string, direction: number, specs: WorkflowSpec[]) {
-    const reorderedSpecs = this._reorder(specId, direction, specs) as WorkflowSpec[];
-    this._updateSpecDisplayOrders(reorderedSpecs);
+  editSpecDisplayOrder(cat: WorkflowSpecCategoryGroup, specId: string, direction: string) {
+    this.api.reorderWorkflowSpecification(specId, direction).subscribe(wfs => {
+      cat.workflow_specs= wfs;
+    });
   }
-
-  sortByDisplayOrder = (a, b) => (a.display_order < b.display_order) ? -1 : 1;
 
   private _loadWorkflowSpecCategories(selectedSpecName: string = null) {
     this.api.getWorkflowSpecCategoryList().subscribe(cats => {
-      this.categories = cats.sort(this.sortByDisplayOrder);
-
-      // Add a container for specs without a category
-      this.workflowSpecsByCategory = [{
-        id: null,
-        name: 'none',
-        display_name: 'No category',
-        workflow_specs: [],
-        display_order: -1, // Display it at the top
-      }];
+      this.categories = cats;
 
       this.categories.forEach((cat, i) => {
         this.workflowSpecsByCategory.push(cat);
-        this.workflowSpecsByCategory[i + 1].workflow_specs = [];
+        this.workflowSpecsByCategory[i].workflow_specs = [];
       });
       this._loadWorkflowSpecs(selectedSpecName);
       this._loadWorkflowLibraries();
@@ -257,12 +250,10 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   private _loadWorkflowLibraries() {
-
     this.api.getWorkflowSpecificationLibraries().subscribe(wfs => {
       this.workflowLibraries = wfs;
     });
   }
-
 
   private _loadWorkflowSpecs(selectedSpecName: string = null, searchSpecName: string = null) {
 
@@ -271,6 +262,7 @@ export class WorkflowSpecListComponent implements OnInit {
       this.workflowSpecsByCategory.forEach(cat => {
         cat.workflow_specs = this.workflowSpecs
           .filter(wf => {
+            // Find and set master spec
             if (wf.is_master_spec) {
               this.masterStatusSpec = wf;
             } else {
@@ -281,7 +273,7 @@ export class WorkflowSpecListComponent implements OnInit {
               }
             }
           })
-          .sort(this.sortByDisplayOrder);
+        cat.workflow_specs.sort((x,y) => x.display_order - y.display_order);
       });
 
       // Set the selected workflow to something sensible.
@@ -309,10 +301,11 @@ export class WorkflowSpecListComponent implements OnInit {
         display_name: data.display_name,
         description: data.description,
         category_id: data.category_id,
-        display_order: data.display_order,
+        // display_order: data.display_order,
         standalone: data.standalone,
         library: data.library,
       };
+      console.log('DO: ', data.display_order);
 
       if (isNew) {
         this._addWorkflowSpec(newSpec);
@@ -391,6 +384,9 @@ export class WorkflowSpecListComponent implements OnInit {
     this.snackBar.open(message, 'Ok', {duration: 3000});
   }
 
+  /**
+   *  Deprecated - backend now reorders
+   *
   private _reorder(
     id: number | string, direction: number,
     list: Array<WorkflowSpecCategoryGroup | WorkflowSpec>,
@@ -411,7 +407,11 @@ export class WorkflowSpecListComponent implements OnInit {
       return [];
     }
   }
+   **/
 
+  /**
+   * Deprecated - backend updates display_order
+   *
   private _updateCatDisplayOrders(cats: WorkflowSpecCategory[]) {
     let numUpdated = 0;
     cats.forEach((cat, j) => {
@@ -429,6 +429,7 @@ export class WorkflowSpecListComponent implements OnInit {
       }
     });
   }
+
 
   private _updateSpecDisplayOrders(specs: WorkflowSpec[]) {
     if (this.selectedCat && this.selectedSpec.category) {
@@ -448,7 +449,7 @@ export class WorkflowSpecListComponent implements OnInit {
       });
     });
   }
-
+   */
 
 }
 
