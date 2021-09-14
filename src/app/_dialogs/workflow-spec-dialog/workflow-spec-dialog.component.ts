@@ -91,22 +91,20 @@ export class WorkflowSpecDialogComponent {
         {
           key: 'standalone',
           type: 'checkbox',
-          defaultValue: this.data.standalone,
+          defaultValue: this.data.standalone ? this.data.standalone : false,
           templateOptions: {
             label: 'Standalone',
             description: 'Is this a standalone workflow?',
-            required: true,
             indeterminate: false,
           },
         },
         {
           key: 'library',
           type: 'checkbox',
-          defaultValue: this.data.library,
+          defaultValue: this.data.library ? this.data.library : false,
           templateOptions: {
             label: 'Library',
             description: 'Is this a library workflow?',
-            required: true,
             indeterminate: false,
           },
         },
@@ -115,6 +113,7 @@ export class WorkflowSpecDialogComponent {
   }
 
   onNoClick() {
+    console.log('form model : ', this.model);
     this.dialogRef.close();
   }
 
