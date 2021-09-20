@@ -3,11 +3,11 @@
   <div class="buttons" fxLayout="row" fxLayoutGap="10px">
     <button id="add_spec" mat-flat-button color="primary" (click)="editWorkflowSpec()" fxLayoutAlign="stretch">
       <mat-icon>library_add</mat-icon>
-      Add new workflow specification
+      Add Library Spec
     </button>
-    <button id="add_category" mat-flat-button color="accent" (click)="editWorkflowSpecCategory()"  fxLayoutAlign="stretch">
-      <mat-icon>post_add</mat-icon>
-      Add category
+    <button id="add_library" mat-flat-button color="primary" (click)="editWorkflowSpec()" fxLayoutAlign="stretch">
+      <mat-icon>library_add</mat-icon>
+      Add Study Spec
     </button>
       <mat-form-field class="search-field">
         <label><input matInput type="search" placeholder="Search Workflows" class="form-control" [formControl]="searchField"></label>
@@ -33,7 +33,7 @@
             <mat-expansion-panel>
             <mat-expansion-panel-header>
               <mat-panel-title>
-              <h4>Libraries</h4>
+              <h4>Library Specs</h4>
               </mat-panel-title>
             </mat-expansion-panel-header>
               <mat-list>
@@ -53,8 +53,12 @@
       <mat-divider></mat-divider>
 
       <ng-container>
-        <div class="category">
-          <h4>Categories</h4>
+        <div class="category" fxLayout="row">
+          <h4>Study Specs</h4>
+          <button id="add_category" mat-flat-button color="accent" (click)="editWorkflowSpecCategory()"  fxLayoutAlign="stretch">
+          <mat-icon>post_add</mat-icon>
+            Add category
+        </button>
         </div>
         <mat-divider></mat-divider>
 
