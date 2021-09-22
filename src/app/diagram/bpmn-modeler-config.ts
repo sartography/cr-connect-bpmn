@@ -7,8 +7,8 @@ import {ModelerConfig} from '../_interfaces/modeler-config';
 
 export const bpmnModelerConfig: ModelerConfig = {
   additionalModules: [
-    propertiesProviderModule,
-    propertiesPanelModule,
+     propertiesProviderModule,
+     propertiesPanelModule,
     minimapModule,
     codeModule,
   ],
