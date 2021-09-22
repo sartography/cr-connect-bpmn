@@ -48,7 +48,7 @@
     "camunda-bpmn-moddle": "^5.1.2",
     "camunda-dmn-moddle": "^1.1.0",
     "diagram-js": "^7.3.0",
-    "diagram-js-code-editor": "^1.1.8",
+    "diagram-js-code-editor": "^1.1.85",
     "diagram-js-minimap": "^2.0.4",
     "dmn-js": "^11.0.1",
     "dmn-js-properties-panel": "^0.6.1",
@@ -63,7 +63,7 @@
     "ngx-markdown": "^12.0.1",
     "protractor": "^7.0.0",
     "rxjs": "^6.5.3",
-    "sartography-workflow-lib": "0.0.559",
+    "sartography-workflow-lib": "^0.0.561",
     "tslib": "^2.3.0",
     "uuid": "^8.3.2",
     "zone.js": "^0.11.4"
