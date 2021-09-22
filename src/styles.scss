@@ -1,5 +1,7 @@
 /* bpmn-js */
 @import '../node_modules/bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css';
+@import '../node_modules/diagram-js-minimap/assets/diagram-js-minimap.css';
+@import '../node_modules/diagram-js-code-editor/assets/diagram-js-code-editor.css';
 @import '../node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css';
 @import '../node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
 @import '../node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn.css';
@@ -16,6 +18,7 @@
 @import '../node_modules/dmn-js/dist/assets/dmn-js-drd.css';
 @import '../node_modules/dmn-js/dist/assets/dmn-js-literal-expression.css';
 @import '../node_modules/dmn-js/dist/assets/dmn-js-shared.css';
+
 
 /* Angular Material */
 @import './material-theme.scss';
