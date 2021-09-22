@@ -99,7 +99,7 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   isSelected(cat: WorkflowSpecCategory) {
-    return this.selectedCat && this.selectedCat === cat;
+    return this.selectedCat && this.selectedCat.id === cat.id;
   }
 
   selectSpec(selectedSpec?: WorkflowSpec) {
@@ -284,6 +284,7 @@ export class WorkflowSpecListComponent implements OnInit {
         this.workflowSpecs.forEach(ws => {
           if (selectedSpecName && selectedSpecName === ws.name) {
             this.selectedSpec = ws;
+            this.selectedCat = this.selectedSpec.category;
           }
         });
       } else {
