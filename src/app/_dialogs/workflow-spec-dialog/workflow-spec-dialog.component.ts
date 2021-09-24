@@ -64,6 +64,7 @@ export class WorkflowSpecDialogComponent {
             required: true,
             options: this.categories
           },
+          hideExpression: this.data.library,
         },
         {
           key: 'display_name',

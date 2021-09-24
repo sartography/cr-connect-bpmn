@@ -16,6 +16,29 @@
   min-height: 600px;
 }
 
+.category-top {
+  padding: 0 1rem 1rem 0;
+
+  h4 {
+    margin: 1rem 1rem 0 0;
+  }
+
+  .category-actions {
+    opacity: 0;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &:hover {
+    .category-actions {
+      opacity: 1;
+    }
+  }
+
+}
+
 .category {
   padding: 2rem 1rem 1rem 0;
 
@@ -75,6 +98,12 @@
     .spec-actions {
       opacity: 1;
     }
+  }
+}
+
+.search-field  {
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+    padding: .5em;
   }
 }
 

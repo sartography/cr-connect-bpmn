@@ -112,6 +112,7 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   canSaveWorkflowSpec(proposed: WorkflowSpecDialogData){
+    console.log('prop', proposed);
     if ((this.selectedSpec.parents.length > 0) && (!proposed.library)){
       this.snackBar.open('This Workflow Specification is still being used as a Library. Please remove references first!', 'Ok', { duration: 5000 });
       return false;
@@ -123,7 +124,7 @@ export class WorkflowSpecListComponent implements OnInit {
     return true;
   }
 
-  editWorkflowSpec(selectedSpec?: WorkflowSpec) {
+  editWorkflowSpec(state: String, selectedSpec?: WorkflowSpec) {
 
     const hasDisplayOrder = selectedSpec && isNumberDefined(selectedSpec.display_order);
     const dialogData: WorkflowSpecDialogData = {
@@ -136,6 +137,9 @@ export class WorkflowSpecListComponent implements OnInit {
       standalone: selectedSpec ? selectedSpec.standalone : null,
       library: selectedSpec ? selectedSpec.library : null,
     };
+    if (state === 'library') {
+      dialogData.library = true;
+    }
 
     // Open new filename/workflow spec dialog
     const dialogRef = this.dialog.open(WorkflowSpecDialogComponent, {
