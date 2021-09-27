@@ -79,7 +79,6 @@ export class WorkflowSpecListComponent implements OnInit {
     this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe(value => {
       this._loadWorkflowSpecs(null, value);
-      console.log(value);
     });
   }
 
@@ -220,7 +219,6 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   editCategoryDisplayOrder(catId: number, direction: string) {
-    console.log('new wfsbycat is: ', this.workflowSpecsByCategory);
     this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
       this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
         let new_cat = cat_change.find(i2 => i2.id === cat.id);
@@ -305,7 +303,6 @@ export class WorkflowSpecListComponent implements OnInit {
         standalone: data.standalone,
         library: data.library,
       };
-      console.log('DO: ', data.display_order);
 
       if (isNew) {
         this._addWorkflowSpec(newSpec);

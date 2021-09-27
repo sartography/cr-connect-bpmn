@@ -26,6 +26,14 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
+One way to check for coverage:
+
+Install lcov (in ubuntu: sudo apt-get install lcov)
+
+run `ng test --no-watch --code-coverage` to generate a coverage directory, with an lcov file in it
+
+run `genhtml coverage/lcov.info -o coverage/html` to generate an html doc that looks at coverage (index.html)
+
 ## Further help 
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
