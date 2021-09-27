@@ -98,7 +98,7 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   isSelected(cat: WorkflowSpecCategory) {
-    return this.selectedCat && this.selectedCat === cat;
+    return this.selectedCat && this.selectedCat.id === cat.id;
   }
 
   selectSpec(selectedSpec?: WorkflowSpec) {
@@ -220,12 +220,14 @@ export class WorkflowSpecListComponent implements OnInit {
 
   editCategoryDisplayOrder(catId: number, direction: string) {
     this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
-      this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
-        let new_cat = cat_change.find(i2 => i2.id === cat.id);
-        cat.display_order = new_cat.display_order;
-        return cat;
-      });
-      this.workflowSpecsByCategory.sort((x,y) => x.display_order - y.display_order);
+      if(cat_change) {
+        this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
+          let new_cat = cat_change.find(i2 => i2.id === cat.id);
+          cat.display_order = new_cat.display_order;
+          return cat;
+        });
+        this.workflowSpecsByCategory.sort((x,y) => x.display_order - y.display_order);
+      }
     });
   }
 
@@ -283,6 +285,7 @@ export class WorkflowSpecListComponent implements OnInit {
         this.workflowSpecs.forEach(ws => {
           if (selectedSpecName && selectedSpecName === ws.name) {
             this.selectedSpec = ws;
+            this.selectedCat = this.selectedSpec.category;
           }
         });
       } else {

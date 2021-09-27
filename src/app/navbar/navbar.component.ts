@@ -52,13 +52,13 @@ export class NavbarComponent {
   }
 
   private _loadNavLinks() {
-    const displayName = this.user.display_name || this.user.first_name || this.user.last_name;
+    const displayName = this.user.ldap_info.display_name;
     this.navLinks = [
       {path: '/home', id: 'nav_home', label: 'Configurator'},
       {path: '/reffiles', id: 'nav_reffiles', label: 'Reference Files'},
       {path: '/settings', id: 'settings', label: 'Settings'},
       {
-        id: 'nav_account', label: `${displayName} (${this.user.email_address})`,
+        id: 'nav_account', label: `${displayName} (${this.user.ldap_info.email_address})`,
         icon: 'account_circle'
       }
     ];
