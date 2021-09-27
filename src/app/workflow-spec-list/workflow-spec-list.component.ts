@@ -135,7 +135,7 @@ export class WorkflowSpecListComponent implements OnInit {
       category_id: selectedSpec ? selectedSpec.category_id : null,
       display_order: hasDisplayOrder ? selectedSpec.display_order : 0,
       standalone: selectedSpec ? selectedSpec.standalone : null,
-      library: selectedSpec ? selectedSpec.library : (state === 'library'),
+      library: selectedSpec ? selectedSpec.library : null,
     };
 
     // Open new filename/workflow spec dialog
