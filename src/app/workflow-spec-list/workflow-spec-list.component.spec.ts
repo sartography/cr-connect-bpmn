@@ -169,12 +169,12 @@ describe('WorkflowSpecListComponent', () => {
     component.selectedSpec = mockWorkflowSpec1;
     component.selectedSpec.parents = [];
     component.selectedSpec.libraries = [];
-    component.editWorkflowSpec();
+    component.editWorkflowSpec('study');
     expect(openDialogSpy).toHaveBeenCalled();
     expect(_upsertWorkflowSpecificationSpy).not.toHaveBeenCalled();
 
     mockSpecData = mockWorkflowSpec0 as WorkflowSpecDialogData;
-    component.editWorkflowSpec(mockWorkflowSpec0);
+    component.editWorkflowSpec('study', mockWorkflowSpec0);
     expect(openDialogSpy).toHaveBeenCalled();
     expect(_upsertWorkflowSpecificationSpy).toHaveBeenCalled();
   });
