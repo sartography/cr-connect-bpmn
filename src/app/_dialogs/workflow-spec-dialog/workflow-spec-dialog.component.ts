@@ -89,6 +89,16 @@ export class WorkflowSpecDialogComponent {
             required: true,
           },
         },
+         {
+          key: 'standalone',
+          defaultValue: this.data.standalone ? this.data.standalone : false,
+           hideExpression: true,
+        },
+        {
+          key: 'library',
+          defaultValue: this.data.library ? this.data.library : false,
+          hideExpression: true,
+        },
       ];
     });
   }
