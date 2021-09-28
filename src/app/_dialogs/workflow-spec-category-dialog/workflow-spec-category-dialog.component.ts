@@ -50,6 +50,16 @@ export class WorkflowSpecCategoryDialogComponent {
         required: true,
       },
     },
+    {
+      key: 'admin',
+      type: 'checkbox',
+      defaultValue: this.data.admin ? this.data.admin : false,
+      templateOptions: {
+        label: 'Admin Category',
+        description: 'Should this category only be shown to Admins?',
+        indeterminate: false,
+      }
+    }
   ];
 
   constructor(
@@ -63,6 +73,7 @@ export class WorkflowSpecCategoryDialogComponent {
   }
 
   onSubmit() {
+    console.log('data is ', this.model);
     this.model.name = toSnakeCase(this.model.name);
     this.dialogRef.close(this.model);
   }

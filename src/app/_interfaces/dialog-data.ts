@@ -34,6 +34,7 @@ export interface WorkflowSpecCategoryDialogData {
   name: string;
   display_name: string;
   display_order?: number;
+  admin: boolean;
 }
 
 export interface DeleteFileDialogData {
