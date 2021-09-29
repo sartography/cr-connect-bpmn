@@ -247,6 +247,8 @@ export class WorkflowSpecListComponent implements OnInit {
   private _loadWorkflowSpecCategories(selectedSpecName: string = null) {
     this.api.getWorkflowSpecCategoryList().subscribe(cats => {
       this.categories = cats;
+      // Clear out this object before re-filling it
+      this.workflowSpecsByCategory = [];
 
       this.categories.forEach((cat, i) => {
         this.workflowSpecsByCategory.push(cat);
