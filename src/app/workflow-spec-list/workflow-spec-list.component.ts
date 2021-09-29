@@ -221,13 +221,22 @@ export class WorkflowSpecListComponent implements OnInit {
   editCategoryDisplayOrder(catId: number, direction: string) {
     this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
         this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
-          let new_cat = cat_change.find(i2 => i2.id === cat.id);
+          let new_cat = this.ensure(cat_change.find(i2 => i2.id === cat.id));
           cat.display_order = new_cat.display_order;
           return cat;
         });
         this.workflowSpecsByCategory.sort((x,y) => x.display_order - y.display_order);
     });
   }
+
+  // ensure that in array.find, we find what we are expecting. (Ensures TS type safety)
+  ensure<T>(argument: T | undefined | null, message: string = 'Spec not found!'): T {
+    if (argument === undefined || argument === null) {
+      throw new TypeError(message);
+    }
+    return argument;
+  }
+
 
   editSpecDisplayOrder(cat: WorkflowSpecCategoryGroup, specId: string, direction: string) {
     this.api.reorderWorkflowSpecification(specId, direction).subscribe(wfs => {
