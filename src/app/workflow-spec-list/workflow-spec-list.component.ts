@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { cloneDeep } from 'lodash';
+
 import {
   ApiErrorsComponent,
   ApiService,
@@ -17,6 +17,7 @@ import {
 } from '../_dialogs/delete-workflow-spec-category-dialog/delete-workflow-spec-category-dialog.component';
 import { DeleteWorkflowSpecDialogComponent } from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
 import { WorkflowSpecCategoryDialogComponent } from '../_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
+import { CreateGitCheckpointDialogComponent } from '../_dialogs/create-git-checkpoint-dialog/create-git-checkpoint-dialog.component';
 import { WorkflowSpecDialogComponent } from '../_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
 import {
   DeleteWorkflowSpecCategoryDialogData,
@@ -29,6 +30,7 @@ import { Location } from '@angular/common';
 import { environment } from '../../environments/environment.runtime';
 import { FormControl } from '@angular/forms';
 import { SettingsService } from '../settings.service';
+import {BehaviorSubject} from 'rxjs';
 
 
 export interface WorkflowSpecCategoryGroup {
@@ -54,6 +56,10 @@ export class WorkflowSpecListComponent implements OnInit {
   categories: WorkflowSpecCategory[];
   // moveUp = moveArrayElementUp;
   // moveDown = moveArrayElementDown;
+  private githubButtonEnabled = new BehaviorSubject<boolean>(false);
+  public githubButtonEnabled$ = this.githubButtonEnabled.asObservable();
+
+
   searchField: FormControl;
 
   constructor(
@@ -74,8 +80,9 @@ export class WorkflowSpecListComponent implements OnInit {
       } else {
         this._loadWorkflowSpecCategories();
       }
-    });
 
+    });
+    this.api.needsPublishToGithub().subscribe(x=>this.githubButtonEnabled.next(x));
     this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe(value => {
       this._loadWorkflowSpecs(null, value);
@@ -453,5 +460,17 @@ export class WorkflowSpecListComponent implements OnInit {
   }
    */
 
+  createGitCheckpoint() {
+    const dialogRef = this.dialog.open(CreateGitCheckpointDialogComponent);
+
+    dialogRef.afterClosed().subscribe(data => {
+      if (data && data.commit_message ) {
+        this.api.publishToGithub(data.commit_message).subscribe(()=> {this._displayMessage('Publish Done')})
+        this.githubButtonEnabled.next(false);
+        console.log('hey we got a commit message')
+        console.log(data.commit_message)
+      }
+    });
+  }
 }
 

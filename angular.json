@@ -62,6 +62,21 @@
               "sourceMap": true,
               "namedChunks": true
             },
+            "altdevelopment": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.runtime.ts",
+                  "with": "src/environments/environment.runtime.alt.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+
 
             "production": {
               "optimization": {
@@ -157,6 +172,10 @@
             },
             "development": {
               "browserTarget": "cr-connect-bpmn:build:development"
+            },
+            "altdevelopment": {
+              "port": 7002,
+              "browserTarget": "cr-connect-bpmn:build:altdevelopment"
             }
 
           }

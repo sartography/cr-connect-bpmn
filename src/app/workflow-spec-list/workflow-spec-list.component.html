@@ -9,7 +9,12 @@
       <mat-icon>post_add</mat-icon>
       Add category
     </button>
-      <mat-form-field class="search-field">
+    <button id="make_checkpoint" mat-flat-button color="accent" [disabled]="(githubButtonEnabled$|async)!==true" (click)="createGitCheckpoint()"  fxLayoutAlign="stretch">
+      <mat-icon>settings_system_daydream</mat-icon>
+      Create Git Checkpoint
+    </button>
+
+    <mat-form-field class="search-field">
         <label><input matInput type="search" placeholder="Search Workflows" class="form-control" [formControl]="searchField"></label>
       </mat-form-field>
   </div>

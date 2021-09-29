@@ -58,6 +58,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { MatSelectModule } from '@angular/material/select';
 import { LibraryListComponent } from './library-list/library-list.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { CreateGitCheckpointDialogComponent } from './_dialogs/create-git-checkpoint-dialog/create-git-checkpoint-dialog.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -107,6 +108,7 @@ export const getBaseHref = (platformLocation: PlatformLocation): string => platf
     ReferenceFilesComponent,
     ConfirmDialogComponent,
     SettingsComponent,
+    CreateGitCheckpointDialogComponent,
   ],
   imports: [
     BrowserAnimationsModule,
