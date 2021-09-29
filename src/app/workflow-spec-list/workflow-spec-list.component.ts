@@ -220,14 +220,12 @@ export class WorkflowSpecListComponent implements OnInit {
 
   editCategoryDisplayOrder(catId: number, direction: string) {
     this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
-      if(cat_change) {
         this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
           let new_cat = cat_change.find(i2 => i2.id === cat.id);
           cat.display_order = new_cat.display_order;
           return cat;
         });
         this.workflowSpecsByCategory.sort((x,y) => x.display_order - y.display_order);
-      }
     });
   }
 
