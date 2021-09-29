@@ -68,9 +68,14 @@
               <mat-panel-title>
                 {{cat.display_name}}
               </mat-panel-title>
-              <mat-panel-description>
-                ({{cat.name}})
-              </mat-panel-description>
+                <mat-panel-description>
+                  <div *ngIf="cat.admin" style="color: darkorange">
+                    ({{cat.name}})
+                  </div>
+                  <div *ngIf="!cat.admin">
+                    ({{cat.name}})
+                  </div>
+                </mat-panel-description>
               <button mat-mini-fab color="primary" style="box-shadow: none">
                 {{cat.workflow_specs.length}}
               </button>
