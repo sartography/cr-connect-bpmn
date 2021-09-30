@@ -37,6 +37,7 @@ export interface WorkflowSpecCategoryGroup {
   display_name: string;
   workflow_specs?: WorkflowSpec[];
   display_order: number;
+  admin: boolean,
 }
 
 @Component({
@@ -165,9 +166,9 @@ export class WorkflowSpecListComponent implements OnInit {
         name: this.selectedCat ? this.selectedCat.name || this.selectedCat.id : '',
         display_name: this.selectedCat ? this.selectedCat.display_name : '',
         display_order: this.selectedCat ? this.selectedCat.display_order : null,
+        admin: this.selectedCat ? this.selectedCat.admin : null,
       },
     });
-
     dialogRef.afterClosed().subscribe((data: WorkflowSpecCategoryDialogData) => {
       if (data && isNumberDefined(data.id) && data.name && data.display_name) {
         this._upsertWorkflowSpecCategory(data);
@@ -312,11 +313,9 @@ export class WorkflowSpecListComponent implements OnInit {
         display_name: data.display_name,
         description: data.description,
         category_id: data.category_id,
-        // display_order: data.display_order,
         standalone: data.standalone,
         library: data.library,
       };
-      console.log('DO: ', data.display_order);
 
       if (isNew) {
         this._addWorkflowSpec(newSpec);
@@ -338,6 +337,7 @@ export class WorkflowSpecListComponent implements OnInit {
         name: data.name,
         display_name: data.display_name,
         display_order: data.display_order,
+        admin: data.admin,
       };
 
       if (isNumberDefined(catId)) {

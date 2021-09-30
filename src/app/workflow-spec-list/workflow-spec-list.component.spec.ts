@@ -263,6 +263,7 @@ describe('WorkflowSpecListComponent', () => {
       id: null,
       name: '',
       display_name: '',
+      admin: null,
     };
 
     const _upsertWorkflowSpecCategorySpy = spyOn((component as any), '_upsertWorkflowSpecCategory')
