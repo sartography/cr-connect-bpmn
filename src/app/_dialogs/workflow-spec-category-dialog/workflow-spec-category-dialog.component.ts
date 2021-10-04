@@ -25,6 +25,7 @@ export class WorkflowSpecCategoryDialogComponent {
         placeholder: 'ID of workflow spec category',
         required: true,
       },
+      hideExpression: true,
     },
     {
       key: 'name',

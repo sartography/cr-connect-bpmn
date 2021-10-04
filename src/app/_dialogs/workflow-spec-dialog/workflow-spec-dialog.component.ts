@@ -41,6 +41,7 @@ export class WorkflowSpecDialogComponent {
             required: true,
             disabled: true,
           },
+          hideExpression: true,
         },
         {
           key: 'name',
