@@ -33,7 +33,7 @@ export class WorkflowSpecDialogComponent {
         {
           key: 'id',
           type: 'input',
-          defaultValue: this.data.id || uuidv4(),
+          defaultValue: this.data.id,
           templateOptions: {
             label: 'ID',
             placeholder: 'UUID of workflow specification',
