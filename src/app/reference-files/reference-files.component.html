@@ -1,5 +1,10 @@
 <div class="container" fxLayout="column" fxLayoutGap="40px">
-  <h1>Reference Files</h1>
+  <div class="top-bar" fxLayout="row" fxLayoutGap="75px">
+    <h1>Reference Files</h1>
+    <button mat-button color="accent" (click)="addNewReferenceFile()">
+      <mat-icon>file_upload</mat-icon> Add new Reference File
+    </button>
+  </div>
 
   <div *ngFor="let refFile of referenceFiles" fxLayout="row" fxLayoutGap="40px">
     <mat-card class="mat-elevation-z0">
