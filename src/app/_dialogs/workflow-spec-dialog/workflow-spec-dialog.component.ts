@@ -33,8 +33,8 @@ export class WorkflowSpecDialogComponent {
           label: c.display_name,
         }));
 
-    this.api.getWorkflowSpecList().subscribe(wfs => {
-      this.specs = wfs.map(w => w.id);
+      this.api.getWorkflowSpecList().subscribe(wfs => {
+        this.specs = wfs.map(w => w.id);
 
       this.fields = [
         {

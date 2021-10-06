@@ -32,7 +32,7 @@ import { SettingsService } from '../settings.service';
 
 
 export interface WorkflowSpecCategoryGroup {
-  id: number;
+  id?: number;
   display_name: string;
   workflow_specs?: WorkflowSpec[];
   display_order: number;
@@ -173,7 +173,7 @@ export class WorkflowSpecListComponent implements OnInit {
       },
     });
     dialogRef.afterClosed().subscribe((data: WorkflowSpecCategoryDialogData) => {
-      if (data && isNumberDefined(data.id)  && data.display_name) {
+      if (data && data.display_name) {
         this._upsertWorkflowSpecCategory(data);
       }
     });
@@ -329,21 +329,21 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   private _upsertWorkflowSpecCategory(data: WorkflowSpecCategoryDialogData) {
-    if (isNumberDefined(data.id) && data.display_name) {
-
-      // Save old workflow spec id, in case it's changed
-      const catId = this.selectedCat ? this.selectedCat.id : undefined;
-
-      const newCat: WorkflowSpecCategory = {
-        id: data.id,
-        display_name: data.display_name,
-        display_order: data.display_order,
-        admin: data.admin,
+    if (data.display_name) {
+      if (isNumberDefined(data.id)) {
+        const newCat: WorkflowSpecCategory = {
+          id: data.id,
+          display_name: data.display_name,
+          display_order: data.display_order,
+          admin: data.admin,
       };
-
-      if (isNumberDefined(catId)) {
-        this._updateWorkflowSpecCategory(catId, newCat);
+        this._updateWorkflowSpecCategory(data.id, newCat);
       } else {
+        const newCat: WorkflowSpecCategory = {
+          display_name: data.display_name,
+          display_order: data.display_order,
+          admin: data.admin,
+      };
         this._addWorkflowSpecCategory(newCat);
       }
     }
