@@ -28,18 +28,6 @@ export class WorkflowSpecCategoryDialogComponent {
       hideExpression: true,
     },
     {
-      key: 'name',
-      type: 'input',
-      defaultValue: this.data.name,
-      templateOptions: {
-        label: 'Name',
-        placeholder: 'Name of workflow spec category',
-        description: 'Enter a name, in lowercase letters, separated by underscores, that is easy for you to remember.' +
-          'It will be converted to all_lowercase_with_underscores when you save.',
-        required: true,
-      },
-    },
-    {
       key: 'display_name',
       type: 'input',
       defaultValue: this.data.display_name,

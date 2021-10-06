@@ -53,7 +53,6 @@ export class MdDialogMock {
 
 const librarySpec0: WorkflowSpec = {
   id: 'one_thing',
-  name: 'one_thing',
   display_name: 'One thing',
   description: 'Do just one thing',
   category_id: 2,
@@ -153,7 +152,6 @@ describe('WorkflowSpecListComponent', () => {
   it('should show a metadata dialog when editing a workflow spec', () => {
     let mockSpecData: WorkflowSpecDialogData = {
       id: '',
-      name: '',
       display_name: '',
       description: '',
       category_id: 0,
@@ -261,7 +259,6 @@ describe('WorkflowSpecListComponent', () => {
   it('should show a metadata dialog when editing a workflow spec category', () => {
     let mockCatData: WorkflowSpecCategoryDialogData = {
       id: null,
-      name: '',
       display_name: '',
       admin: null,
     };
@@ -501,7 +498,6 @@ describe('WorkflowSpecListComponent', () => {
   it('should load master workflow spec', () => {
     const mockMasterSpec: WorkflowSpec = {
       id: 'master_status_spec',
-      name: 'master_status_spec',
       display_name: 'master_status_spec',
       description: 'master_status_spec',
       is_master_spec: true,
@@ -537,7 +533,6 @@ describe('WorkflowSpecListComponent', () => {
   it('should disallow deselecting library if being used as library', () => {
     let mockSpecData: WorkflowSpecDialogData = {
       id: '25',
-      name: 'name1',
       display_name: 'displayname',
       description: 'descr',
       category_id: 0,
@@ -556,7 +551,6 @@ describe('WorkflowSpecListComponent', () => {
     localSelectedSpec.parents = [
       { id: 1234,
         display_name: 'test parent',
-        name: 'parent1'
       }]
     component.selectedSpec = localSelectedSpec;
     component.editWorkflowSpec(localSelectedSpec);
@@ -571,7 +565,6 @@ describe('WorkflowSpecListComponent', () => {
     // that fails prior to saving if any of these are blank
     let mockSpecData: WorkflowSpecDialogData = {
       id: '25',
-      name: 'name1',
       display_name: 'displayname',
       description: 'descr',
       category_id: 0,
@@ -590,7 +583,6 @@ describe('WorkflowSpecListComponent', () => {
     localSelectedSpec.parents = [
       { id: 1234,
         display_name: 'test parent',
-        name: 'parent1'
       }]
     component.selectedSpec = localSelectedSpec;
     component.editWorkflowSpec(localSelectedSpec);
@@ -606,7 +598,6 @@ describe('WorkflowSpecListComponent', () => {
     badWorkflowSpec.parents=[
       { id: 1234,
         display_name: 'test parent',
-        name: 'parent1'
       }]
     badWorkflowSpec.library=true;
     const mockConfirmDeleteData: DeleteWorkflowSpecDialogData = {
