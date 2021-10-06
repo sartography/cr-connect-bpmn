@@ -65,15 +65,12 @@
         <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
           <mat-expansion-panel hideToggle (opened)="selectCat(cat)" [expanded]="isSelected(cat)">
             <mat-expansion-panel-header>
-              <mat-panel-title>
-                {{cat.display_name}}
-              </mat-panel-title>
                 <mat-panel-description>
                   <div *ngIf="cat.admin" style="color: darkorange">
-                    ({{cat.name}})
+                    {{cat.display_name}}
                   </div>
                   <div *ngIf="!cat.admin">
-                    ({{cat.name}})
+                    {{cat.display_name}}
                   </div>
                 </mat-panel-description>
               <button mat-mini-fab color="primary" style="box-shadow: none">
