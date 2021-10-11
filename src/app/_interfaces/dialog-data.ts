@@ -20,7 +20,6 @@ export interface OpenFileDialogData {
 
 export interface WorkflowSpecDialogData {
   id: string;
-  name: string;
   display_name: string;
   description: string;
   category_id: number;
@@ -31,7 +30,6 @@ export interface WorkflowSpecDialogData {
 
 export interface WorkflowSpecCategoryDialogData {
   id: number;
-  name: string;
   display_name: string;
   display_order?: number;
   admin: boolean;
