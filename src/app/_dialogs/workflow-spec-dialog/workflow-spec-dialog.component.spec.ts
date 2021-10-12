@@ -11,7 +11,13 @@ import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import {FormlyModule} from '@ngx-formly/core';
 import {FormlyMaterialModule} from '@ngx-formly/material';
-import {ApiService, MockEnvironment, mockWorkflowSpec0, mockWorkflowSpecCategories} from 'sartography-workflow-lib';
+import {
+  ApiService,
+  MockEnvironment,
+  mockWorkflowSpec0,
+  mockWorkflowSpecCategories,
+  mockWorkflowSpecs
+} from 'sartography-workflow-lib';
 import {WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
 
 import {WorkflowSpecDialogComponent} from './workflow-spec-dialog.component';
@@ -74,6 +80,12 @@ describe('WorkflowSpecDialogComponent', () => {
     expect(catReq.request.method).toEqual('GET');
     catReq.flush(mockWorkflowSpecCategories);
     expect(component.categories.length).toBeGreaterThan(0);
+
+    const specReq = httpMock.expectOne('apiRoot/workflow-specification');
+    expect(specReq.request.method).toEqual('GET');
+    specReq.flush(mockWorkflowSpecs);
+    expect(component.specs.length).toBeGreaterThan(0);
+
   });
 
   afterEach(() => {

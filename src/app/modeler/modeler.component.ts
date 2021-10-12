@@ -178,11 +178,11 @@ export class ModelerComponent implements AfterViewInit {
       });
       dialogRef.afterClosed().subscribe(dialogResult => {
         if (dialogResult) {
-          this.router.navigate(['/home', this.workflowSpec.name]);
+          this.router.navigate(['/home', this.workflowSpec.id]);
         }
       });
     } else {
-      this.router.navigate(['/home', this.workflowSpec.name]);
+      this.router.navigate(['/home', this.workflowSpec.id]);
     }
   }
 
@@ -404,7 +404,7 @@ export class ModelerComponent implements AfterViewInit {
         // Add new file meta
         this.api.addFile({workflow_spec_id: this.workflowSpec.id}, this.diagramFileMeta, this.diagramFile).subscribe(fileMeta => {
           this.router.navigate(['/modeler', this.workflowSpec.id, fileMeta.id]);
-          this.snackBar.open(`Saved new file ${fileMeta.name} to workflow spec ${this.workflowSpec.name}.`, 'Ok', {duration: 5000});
+          this.snackBar.open(`Saved new file ${fileMeta.name} to workflow spec ${this.workflowSpec.display_name}.`, 'Ok', {duration: 5000});
         }, () => {
           // if this fails, we make sure that the file is treated as still new,
           // and we make the user re-enter the file details as they weren't actually saved.
