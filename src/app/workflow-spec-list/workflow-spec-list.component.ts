@@ -144,10 +144,12 @@ export class WorkflowSpecListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
-      data.id = this.toLowercaseId(data.id);
-      if (data && data.id && data.display_name && data.description) {
-        if (this.canSaveWorkflowSpec(data)) {
-          this._upsertWorkflowSpecification(selectedSpec == null, data);
+      if (data.id) {
+        data.id = this.toLowercaseId(data.id);
+        if (data && data.id && data.display_name && data.description) {
+          if (this.canSaveWorkflowSpec(data)) {
+            this._upsertWorkflowSpecification(selectedSpec == null, data);
+          }
         }
       }
     });
@@ -359,6 +361,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _addWorkflowSpec(newSpec: WorkflowSpec) {
     this.api.addWorkflowSpecification(newSpec).subscribe(_ => {
+      this._loadWorkflowLibraries();
       this._loadWorkflowSpecs(newSpec.id);
       this._displayMessage('Saved new workflow spec.');
     });
@@ -367,6 +370,7 @@ export class WorkflowSpecListComponent implements OnInit {
   private _deleteWorkflowSpec(workflowSpec: WorkflowSpec) {
     this.api.deleteWorkflowSpecification(workflowSpec.id).subscribe(() => {
       this._loadWorkflowSpecs();
+      this._loadWorkflowLibraries();
       this._displayMessage(`Deleted workflow spec ${workflowSpec.id}.`);
     });
   }
@@ -394,6 +398,10 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _displayMessage(message: string) {
     this.snackBar.open(message, 'Ok', {duration: 3000});
+  }
+
+  private _reloadAllSpecs(){
+
   }
 
   /**
