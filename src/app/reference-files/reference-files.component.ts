@@ -69,19 +69,23 @@ export class ReferenceFilesComponent {
     dialogRef.afterClosed().subscribe((data: OpenFileDialogData) => {
       if (data && data.file) {
         const newFileMeta: FileMeta = {
-          id: data.fileMetaId,
           content_type: data.file.type,
           name: data.file.name,
           type: getFileType(data.file),
           is_reference: true,
         };
-        const fileParams = {};
-        this.apiService.addFile(fileParams, newFileMeta, data.file).subscribe(refs => {
-          this.snackBar.open(`Added new file ${fm.name}.`, 'Ok', {duration: 3000});
+          this.apiService.addReferenceFile(newFileMeta, data.file).subscribe(refs => {
+            this.snackBar.open(`Added new file ${newFileMeta.name}.`, 'Ok', {duration: 3000});
             this._loadReferenceFiles();
-          }
-        )
+          });
       }
+    });
+  }
+
+  deleteFile(id: number, name: string) {
+    this.apiService.deleteFileMeta(id).subscribe(f => {
+      this.snackBar.open(`Deleted reference file ${name}.`, 'Ok', {duration: 3000});
+      this._loadReferenceFiles();
     });
   }
 }
