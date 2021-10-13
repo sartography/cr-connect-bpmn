@@ -1,15 +1,25 @@
 <div class="container" fxLayout="column" fxLayoutGap="40px">
-  <h1>Reference Files</h1>
+  <div class="top-bar" fxLayout="row" fxLayoutGap="75px">
+    <h1>Reference Files</h1>
+    <button mat-button color="accent" (click)="addNewReferenceFile()">
+      <mat-icon>file_upload</mat-icon> Add new Reference File
+    </button>
+  </div>
 
   <div *ngFor="let refFile of referenceFiles" fxLayout="row" fxLayoutGap="40px">
     <mat-card class="mat-elevation-z0">
-      <mat-card-header>
+      <mat-card-header fxLayout="row" fxLayoutAlign="space-between center">
         <mat-card-title>
           <h2>
             <mat-icon>{{refFile.type | getIconCode}}</mat-icon>
-            {{refFile.name}}
+              {{refFile.name}}
           </h2>
         </mat-card-title>
+        <div class="trashcan" *ngIf="(refFile.name !== 'documents.xlsx') && (refFile.name !== 'investigators.xlsx')">
+            <button mat-button (click)="deleteFile(refFile.id, refFile.name)" matTooltip="Delete reference file '{{ refFile.name }}'">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
       </mat-card-header>
       <mat-card-content>
         <div>Last Modified: {{refFile.last_modified | date:'medium'}}</div>
