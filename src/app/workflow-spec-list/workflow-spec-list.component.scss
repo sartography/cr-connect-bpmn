@@ -16,8 +16,31 @@
   min-height: 600px;
 }
 
+.category-top {
+  padding: 0 1rem 1rem 0;
+
+  h4 {
+    margin: 1rem 1rem 0 0;
+  }
+
+  .category-actions {
+    opacity: 0;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &:hover {
+    .category-actions {
+      opacity: 1;
+    }
+  }
+
+}
+
 .category {
-  padding: 1rem 1rem 0 0;
+  padding: 2rem 1rem 1rem 0;
 
   h4 {
     margin: 1rem 1rem 0 0;

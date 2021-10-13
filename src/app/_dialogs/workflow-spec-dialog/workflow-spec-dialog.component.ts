@@ -68,6 +68,7 @@ export class WorkflowSpecDialogComponent {
             required: true,
             options: this.categories
           },
+          hideExpression: this.data.library,
         },
         {
           key: 'display_name',
@@ -92,25 +93,15 @@ export class WorkflowSpecDialogComponent {
             required: true,
           },
         },
-        {
+         {
           key: 'standalone',
-          type: 'checkbox',
           defaultValue: this.data.standalone ? this.data.standalone : false,
-          templateOptions: {
-            label: 'Standalone',
-            description: 'Is this a standalone workflow?',
-            indeterminate: false,
-          },
+           hideExpression: true,
         },
         {
           key: 'library',
-          type: 'checkbox',
           defaultValue: this.data.library ? this.data.library : false,
-          templateOptions: {
-            label: 'Library',
-            description: 'Is this a library workflow?',
-            indeterminate: false,
-          },
+          hideExpression: true,
         },
       ];
     });

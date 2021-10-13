@@ -1,22 +1,16 @@
 <div class="workflow-specs" fxLayout="column" fxLayoutGap="10px">
-  <h1>Workflow Specifications</h1>
-  <div class="buttons" fxLayout="row" fxLayoutGap="10px">
-    <button id="add_spec" mat-flat-button color="primary" (click)="editWorkflowSpec()" fxLayoutAlign="stretch">
-      <mat-icon>library_add</mat-icon>
-      Add new workflow specification
-    </button>
-    <button id="add_category" mat-flat-button color="accent" (click)="editWorkflowSpecCategory()"  fxLayoutAlign="stretch">
-      <mat-icon>post_add</mat-icon>
-      Add category
-    </button>
+  <div class="buttons" fxLayout="row" fxLayoutGap="20px">
+    <div>
+      <h1 style="margin-top: 16px">Workflow Specifications</h1>
+    </div>
       <mat-form-field class="search-field">
-        <label><input matInput type="search" placeholder="Search Workflows" class="form-control" [formControl]="searchField"></label>
+        <label><input matInput type="search" placeholder="Search Workflows" fxLayoutAlign="start" style="margin-top: 0;" class="form-control" [formControl]="searchField"></label>
       </mat-form-field>
   </div>
   <mat-drawer-container class="example-container" autosize>
     <mat-drawer #drawer class="example-sidenav" mode="side" opened="true">
       <ng-container *ngIf="masterStatusSpec">
-        <div class="category">
+        <div class="category-top">
           <h4>Master Specification</h4>
           <mat-list>
             <mat-list-item class="workflow-spec" fxLayout="row">
@@ -27,13 +21,20 @@
       </ng-container>
       <mat-divider></mat-divider>
 
+      <mat-divider></mat-divider>
       <ng-container>
-        <div class="category">
-          <mat-accordion class="example-headers-align">
+        <div class="category" fxLayout="row">
+          <h4 style="margin-top: 5px">Library Specs</h4>
+          <button id="add_spec" title="Add new Library" mat-flat-button color="primary" (click)="editWorkflowSpec('library')" fxLayoutAlign="auto">
+            <mat-icon>library_add</mat-icon>
+          </button>
+        </div>
+        <mat-divider></mat-divider>
+        <mat-accordion class="example-headers-align">
             <mat-expansion-panel>
             <mat-expansion-panel-header>
               <mat-panel-title>
-              <h4>Libraries</h4>
+              <h4>All Libraries</h4>
               </mat-panel-title>
             </mat-expansion-panel-header>
               <mat-list>
@@ -45,16 +46,21 @@
               </mat-list>
             </mat-expansion-panel>
           </mat-accordion>
-
-        </div>
       </ng-container>
-
 
       <mat-divider></mat-divider>
 
       <ng-container>
-        <div class="category">
-          <h4>Categories</h4>
+        <div class="category" fxLayout="row">
+          <h4 style="margin-top: 5px">Study Specs</h4>
+          <button id="add_category" title="Add new Category" mat-flat-button color="accent" (click)="editWorkflowSpecCategory()"  fxLayoutAlign="stretch">
+            <mat-icon>post_add</mat-icon>
+
+          </button>
+          <button id="add_library" title="Add new Study Spec" mat-flat-button color="primary" (click)="editWorkflowSpec('study')" fxLayoutAlign="start">
+            <mat-icon>library_add</mat-icon>
+
+          </button>
         </div>
         <mat-divider></mat-divider>
 
@@ -162,7 +168,7 @@
                 (click)="validateWorkflowSpec(wfs)">
           <mat-icon>verified_user</mat-icon>
         </button>
-        <button mat-mini-fab title="Edit this workflow specification" color="primary" (click)="editWorkflowSpec(wfs)">
+        <button mat-mini-fab title="Edit this workflow specification" color="primary" (click)="editWorkflowSpec(this.selectedSpec.library ? 'library' : 'study', wfs)">
           <mat-icon>edit</mat-icon>
         </button>
         <button mat-icon-button title="Delete this workflow specification" color="warn"
