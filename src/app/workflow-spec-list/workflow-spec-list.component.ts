@@ -392,7 +392,7 @@ export class WorkflowSpecListComponent implements OnInit {
   private _deleteWorkflowSpecCategory(workflowSpecCategory: WorkflowSpecCategory) {
     this.api.deleteWorkflowSpecCategory(workflowSpecCategory.id).subscribe(() => {
       this._loadWorkflowSpecCategories();
-      this._displayMessage(`Deleted workflow spec category ${workflowSpecCategory.id}.`);
+      this._displayMessage(`Deleted workflow spec category ${workflowSpecCategory.display_name}.`);
     });
   }
 

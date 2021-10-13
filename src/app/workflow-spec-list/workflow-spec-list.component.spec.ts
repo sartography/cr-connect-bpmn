@@ -199,6 +199,7 @@ describe('WorkflowSpecListComponent', () => {
 
   it('should add a workflow spec', () => {
     const _loadWorkflowSpecsSpy = spyOn((component as any), '_loadWorkflowSpecs').and.stub();
+    const _loadWorkflowLibrariesSpy = spyOn((component as any), '_loadWorkflowLibraries').and.stub();
     const _displayMessageSpy = spyOn((component as any), '_displayMessage').and.stub();
     (component as any)._addWorkflowSpec(mockWorkflowSpec0);
     const wfsReq = httpMock.expectOne(`apiRoot/workflow-specification`);
@@ -206,6 +207,7 @@ describe('WorkflowSpecListComponent', () => {
     wfsReq.flush(mockWorkflowSpec0);
 
     expect(_loadWorkflowSpecsSpy).toHaveBeenCalled();
+    expect(_loadWorkflowLibrariesSpy).toHaveBeenCalled();
     expect(_displayMessageSpy).toHaveBeenCalled();
   });
 
@@ -248,12 +250,14 @@ describe('WorkflowSpecListComponent', () => {
 
   it('should delete a workflow spec', () => {
     const loadWorkflowSpecsSpy = spyOn((component as any), '_loadWorkflowSpecs').and.stub();
+    const _loadWorkflowLibrariesSpy = spyOn((component as any), '_loadWorkflowLibraries').and.stub();
     (component as any)._deleteWorkflowSpec(mockWorkflowSpec0);
     const wfsReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}`);
     expect(wfsReq.request.method).toEqual('DELETE');
     wfsReq.flush(null);
 
     expect(loadWorkflowSpecsSpy).toHaveBeenCalled();
+    expect(_loadWorkflowLibrariesSpy).toHaveBeenCalled();
   });
 
   it('should show a metadata dialog when editing a workflow spec category', () => {

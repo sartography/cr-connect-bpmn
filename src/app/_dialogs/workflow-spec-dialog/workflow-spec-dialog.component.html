@@ -1,5 +1,9 @@
-<div mat-dialog-title>
+<div *ngIf="!this.data.library" mat-dialog-title>
   <h1>Workflow Specification</h1>
+</div>
+
+<div *ngIf="this.data.library" mat-dialog-title>
+  <h1>Library Specification</h1>
 </div>
 
 <div mat-dialog-content>

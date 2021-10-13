@@ -4,7 +4,7 @@
       <h1 style="margin-top: 16px">Workflow Specifications</h1>
     </div>
       <mat-form-field class="search-field">
-        <label><input matInput type="search" placeholder="Search Workflows" fxLayoutAlign="start" class="form-control" [formControl]="searchField"></label>
+        <label><input matInput type="search" placeholder="Search Workflows" fxLayoutAlign="start" style="margin-top: 0;" class="form-control" [formControl]="searchField"></label>
       </mat-form-field>
   </div>
   <mat-drawer-container class="example-container" autosize>
@@ -27,7 +27,6 @@
           <h4 style="margin-top: 5px">Library Specs</h4>
           <button id="add_spec" title="Add new Library" mat-flat-button color="primary" (click)="editWorkflowSpec('library')" fxLayoutAlign="auto">
             <mat-icon>library_add</mat-icon>
-
           </button>
         </div>
         <mat-divider></mat-divider>
