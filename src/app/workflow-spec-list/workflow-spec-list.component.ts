@@ -400,9 +400,6 @@ export class WorkflowSpecListComponent implements OnInit {
     this.snackBar.open(message, 'Ok', {duration: 3000});
   }
 
-  private _reloadAllSpecs(){
-
-  }
 
   /**
    *  Deprecated - backend now reorders
