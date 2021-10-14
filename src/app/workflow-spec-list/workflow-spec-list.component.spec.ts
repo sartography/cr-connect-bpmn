@@ -53,7 +53,6 @@ export class MdDialogMock {
 
 const librarySpec0: WorkflowSpec = {
   id: 'one_thing',
-  name: 'one_thing',
   display_name: 'One thing',
   description: 'Do just one thing',
   category_id: 2,
@@ -153,7 +152,6 @@ describe('WorkflowSpecListComponent', () => {
   it('should show a metadata dialog when editing a workflow spec', () => {
     let mockSpecData: WorkflowSpecDialogData = {
       id: '',
-      name: '',
       display_name: '',
       description: '',
       category_id: 0,
@@ -169,12 +167,12 @@ describe('WorkflowSpecListComponent', () => {
     component.selectedSpec = mockWorkflowSpec1;
     component.selectedSpec.parents = [];
     component.selectedSpec.libraries = [];
-    component.editWorkflowSpec();
+    component.editWorkflowSpec('study');
     expect(openDialogSpy).toHaveBeenCalled();
     expect(_upsertWorkflowSpecificationSpy).not.toHaveBeenCalled();
 
     mockSpecData = mockWorkflowSpec0 as WorkflowSpecDialogData;
-    component.editWorkflowSpec(mockWorkflowSpec0);
+    component.editWorkflowSpec('study', mockWorkflowSpec0);
     expect(openDialogSpy).toHaveBeenCalled();
     expect(_upsertWorkflowSpecificationSpy).toHaveBeenCalled();
   });
@@ -201,6 +199,7 @@ describe('WorkflowSpecListComponent', () => {
 
   it('should add a workflow spec', () => {
     const _loadWorkflowSpecsSpy = spyOn((component as any), '_loadWorkflowSpecs').and.stub();
+    const _loadWorkflowLibrariesSpy = spyOn((component as any), '_loadWorkflowLibraries').and.stub();
     const _displayMessageSpy = spyOn((component as any), '_displayMessage').and.stub();
     (component as any)._addWorkflowSpec(mockWorkflowSpec0);
     const wfsReq = httpMock.expectOne(`apiRoot/workflow-specification`);
@@ -208,6 +207,7 @@ describe('WorkflowSpecListComponent', () => {
     wfsReq.flush(mockWorkflowSpec0);
 
     expect(_loadWorkflowSpecsSpy).toHaveBeenCalled();
+    expect(_loadWorkflowLibrariesSpy).toHaveBeenCalled();
     expect(_displayMessageSpy).toHaveBeenCalled();
   });
 
@@ -250,19 +250,21 @@ describe('WorkflowSpecListComponent', () => {
 
   it('should delete a workflow spec', () => {
     const loadWorkflowSpecsSpy = spyOn((component as any), '_loadWorkflowSpecs').and.stub();
+    const _loadWorkflowLibrariesSpy = spyOn((component as any), '_loadWorkflowLibraries').and.stub();
     (component as any)._deleteWorkflowSpec(mockWorkflowSpec0);
     const wfsReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}`);
     expect(wfsReq.request.method).toEqual('DELETE');
     wfsReq.flush(null);
 
     expect(loadWorkflowSpecsSpy).toHaveBeenCalled();
+    expect(_loadWorkflowLibrariesSpy).toHaveBeenCalled();
   });
 
   it('should show a metadata dialog when editing a workflow spec category', () => {
     let mockCatData: WorkflowSpecCategoryDialogData = {
       id: null,
-      name: '',
       display_name: '',
+      admin: null,
     };
 
     const _upsertWorkflowSpecCategorySpy = spyOn((component as any), '_upsertWorkflowSpecCategory')
@@ -285,6 +287,7 @@ describe('WorkflowSpecListComponent', () => {
     const _updateWorkflowSpecCategorySpy = spyOn((component as any), '_updateWorkflowSpecCategory').and.stub();
 
     component.selectedCat = undefined;
+    mockWorkflowSpecCategory1.id = null;
     (component as any)._upsertWorkflowSpecCategory(mockWorkflowSpecCategory1 as WorkflowSpecCategoryDialogData);
     expect(_addWorkflowSpecCategorySpy).toHaveBeenCalled();
     expect(_updateWorkflowSpecCategorySpy).not.toHaveBeenCalled();
@@ -500,7 +503,6 @@ describe('WorkflowSpecListComponent', () => {
   it('should load master workflow spec', () => {
     const mockMasterSpec: WorkflowSpec = {
       id: 'master_status_spec',
-      name: 'master_status_spec',
       display_name: 'master_status_spec',
       description: 'master_status_spec',
       is_master_spec: true,
@@ -536,7 +538,6 @@ describe('WorkflowSpecListComponent', () => {
   it('should disallow deselecting library if being used as library', () => {
     let mockSpecData: WorkflowSpecDialogData = {
       id: '25',
-      name: 'name1',
       display_name: 'displayname',
       description: 'descr',
       category_id: 0,
@@ -555,7 +556,6 @@ describe('WorkflowSpecListComponent', () => {
     localSelectedSpec.parents = [
       { id: 1234,
         display_name: 'test parent',
-        name: 'parent1'
       }]
     component.selectedSpec = localSelectedSpec;
     component.editWorkflowSpec(localSelectedSpec);
@@ -570,7 +570,6 @@ describe('WorkflowSpecListComponent', () => {
     // that fails prior to saving if any of these are blank
     let mockSpecData: WorkflowSpecDialogData = {
       id: '25',
-      name: 'name1',
       display_name: 'displayname',
       description: 'descr',
       category_id: 0,
@@ -589,7 +588,6 @@ describe('WorkflowSpecListComponent', () => {
     localSelectedSpec.parents = [
       { id: 1234,
         display_name: 'test parent',
-        name: 'parent1'
       }]
     component.selectedSpec = localSelectedSpec;
     component.editWorkflowSpec(localSelectedSpec);
@@ -605,7 +603,6 @@ describe('WorkflowSpecListComponent', () => {
     badWorkflowSpec.parents=[
       { id: 1234,
         display_name: 'test parent',
-        name: 'parent1'
       }]
     badWorkflowSpec.library=true;
     const mockConfirmDeleteData: DeleteWorkflowSpecDialogData = {

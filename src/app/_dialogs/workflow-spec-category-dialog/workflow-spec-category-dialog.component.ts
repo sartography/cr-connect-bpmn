@@ -25,18 +25,7 @@ export class WorkflowSpecCategoryDialogComponent {
         placeholder: 'ID of workflow spec category',
         required: true,
       },
-    },
-    {
-      key: 'name',
-      type: 'input',
-      defaultValue: this.data.name,
-      templateOptions: {
-        label: 'Name',
-        placeholder: 'Name of workflow spec category',
-        description: 'Enter a name, in lowercase letters, separated by underscores, that is easy for you to remember.' +
-          'It will be converted to all_lowercase_with_underscores when you save.',
-        required: true,
-      },
+      hideExpression: true,
     },
     {
       key: 'display_name',
@@ -50,6 +39,16 @@ export class WorkflowSpecCategoryDialogComponent {
         required: true,
       },
     },
+    {
+      key: 'admin',
+      type: 'checkbox',
+      defaultValue: this.data.admin ? this.data.admin : false,
+      templateOptions: {
+        label: 'Admin Category',
+        description: 'Should this category only be shown to Admins?',
+        indeterminate: false,
+      }
+    }
   ];
 
   constructor(
@@ -63,6 +62,7 @@ export class WorkflowSpecCategoryDialogComponent {
   }
 
   onSubmit() {
+    console.log('data is ', this.model);
     this.model.name = toSnakeCase(this.model.name);
     this.dialogRef.close(this.model);
   }

@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import * as fileSaver from 'file-saver';
-import {ApiService, FileMeta, FileType} from 'sartography-workflow-lib';
+import {ApiService, FileMeta, FileParams, FileType, getFileType, isNumberDefined} from 'sartography-workflow-lib';
 import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
 import {OpenFileDialogData} from '../_interfaces/dialog-data';
 
@@ -54,6 +54,38 @@ export class ReferenceFilesComponent {
     this.apiService.getReferenceFile(fm.name).subscribe(response => {
       const blob = new Blob([response.body], {type: fm.content_type});
       fileSaver.saveAs(blob, fm.name);
+    });
+  }
+
+  addNewReferenceFile(fm?: FileMeta, file?: File) {
+    const dialogData: OpenFileDialogData = {
+      fileMetaId: fm ? fm.id : undefined,
+      file,
+      mode: 'reference',
+      fileTypes: [FileType.DOC, FileType.DOCX, FileType.XLSX, FileType.XLS],
+    };
+    const dialogRef = this.dialog.open(OpenFileDialogComponent, {data: dialogData});
+
+    dialogRef.afterClosed().subscribe((data: OpenFileDialogData) => {
+      if (data && data.file) {
+        const newFileMeta: FileMeta = {
+          content_type: data.file.type,
+          name: data.file.name,
+          type: getFileType(data.file),
+          is_reference: true,
+        };
+          this.apiService.addReferenceFile(newFileMeta, data.file).subscribe(refs => {
+            this.snackBar.open(`Added new file ${newFileMeta.name}.`, 'Ok', {duration: 3000});
+            this._loadReferenceFiles();
+          });
+      }
+    });
+  }
+
+  deleteFile(id: number, name: string) {
+    this.apiService.deleteFileMeta(id).subscribe(f => {
+      this.snackBar.open(`Deleted reference file ${name}.`, 'Ok', {duration: 3000});
+      this._loadReferenceFiles();
     });
   }
 }
