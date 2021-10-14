@@ -227,20 +227,12 @@ export class WorkflowSpecListComponent implements OnInit {
   editCategoryDisplayOrder(catId: number, direction: string) {
     this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
         this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
-          let new_cat = this.ensure(cat_change.find(i2 => i2.id === cat.id));
+          let new_cat = (cat_change.find(i2 => i2.id === cat.id));
           cat.display_order = new_cat.display_order;
           return cat;
         });
         this.workflowSpecsByCategory.sort((x,y) => x.display_order - y.display_order);
     });
-  }
-
-  // ensure that in array.find, we find what we are expecting. (Ensures TS type safety)
-  ensure<T>(argument: T | undefined | null, message: string = 'Spec not found!'): T {
-    if (argument === undefined || argument === null) {
-      throw new TypeError(message);
-    }
-    return argument;
   }
 
 
@@ -261,13 +253,24 @@ export class WorkflowSpecListComponent implements OnInit {
         this.workflowSpecsByCategory[i].workflow_specs = [];
       });
       this._loadWorkflowSpecs(selectedSpecName);
-      this._loadWorkflowLibraries();
+      this._loadWorkflowLibraries(selectedSpecName);
     });
   }
 
-  private _loadWorkflowLibraries() {
+  private _loadWorkflowLibraries(selectedSpecName: string = null) {
     this.api.getWorkflowSpecificationLibraries().subscribe(wfs => {
       this.workflowLibraries = wfs;
+
+      // If selected spec is a library, set it.
+      if (selectedSpecName) {
+        wfs.forEach(ws => {
+          if (selectedSpecName && selectedSpecName === ws.id) {
+            this.selectedSpec = ws;
+          }
+        });
+      } else {
+        this.selectedSpec = this.masterStatusSpec;
+      }
     });
   }
 
@@ -275,21 +278,24 @@ export class WorkflowSpecListComponent implements OnInit {
 
     this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
+      // Populate categories with their specs
       this.workflowSpecsByCategory.forEach(cat => {
         cat.workflow_specs = this.workflowSpecs
           .filter(wf => {
-            // Find and set master spec
-            if (wf.is_master_spec) {
-              this.masterStatusSpec = wf;
+            if (searchSpecName) {
+              return (wf.category_id === cat.id) && wf.display_name.toLowerCase().includes(searchSpecName.toLowerCase());
             } else {
-              if (searchSpecName) {
-                return (wf.category_id === cat.id) && wf.display_name.toLowerCase().includes(searchSpecName.toLowerCase());
-              } else {
-                return wf.category_id === cat.id;
-              }
+              return wf.category_id === cat.id;
             }
           })
         cat.workflow_specs.sort((x,y) => x.display_order - y.display_order);
+      });
+
+      // Set master spec
+      wfs.forEach(wf => {
+        if (wf.is_master_spec){
+          this.masterStatusSpec = wf;
+        }
       });
 
       // Set the selected workflow to something sensible.
@@ -303,8 +309,6 @@ export class WorkflowSpecListComponent implements OnInit {
             this.selectedCat = this.selectedSpec.category;
           }
         });
-      } else {
-        this.selectedSpec = this.masterStatusSpec;
       }
     });
   }
@@ -361,7 +365,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _addWorkflowSpec(newSpec: WorkflowSpec) {
     this.api.addWorkflowSpecification(newSpec).subscribe(_ => {
-      this._loadWorkflowLibraries();
+      this._loadWorkflowLibraries(newSpec.id);
       this._loadWorkflowSpecs(newSpec.id);
       this._displayMessage('Saved new workflow spec.');
     });
