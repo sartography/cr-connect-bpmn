@@ -3,7 +3,7 @@
     <div>
       <h1 style="margin-top: 16px">Workflow Specifications</h1>
     </div>
-      <mat-form-field class="search-field">
+      <mat-form-field appearance="outline" style="padding:0">
         <label><input matInput type="search" placeholder="Search Workflows" fxLayoutAlign="start" style="margin-top: 0;" class="form-control" [formControl]="searchField"></label>
       </mat-form-field>
   </div>
@@ -24,9 +24,9 @@
       <mat-divider></mat-divider>
       <ng-container>
         <div class="category" fxLayout="row">
-          <h4 style="margin-top: 5px">Library Specs</h4>
-          <button id="add_spec" title="Add new Library" mat-flat-button color="primary" (click)="editWorkflowSpec('library')" fxLayoutAlign="auto">
-            <mat-icon>library_add</mat-icon>
+          <h4>Library Specs</h4>
+          <button mat-fab class="custom-fab" id="add_spec" title="Add new Library" color="primary" (click)="editWorkflowSpec('library')" fxLayoutAlign="auto">
+            <mat-icon class="custom-icon">library_add</mat-icon>
           </button>
         </div>
         <mat-divider></mat-divider>
@@ -52,15 +52,15 @@
 
       <ng-container>
         <div class="category" fxLayout="row">
-          <h4 style="margin-top: 5px">Study Specs</h4>
-          <button id="add_category" title="Add new Category" mat-flat-button color="accent" (click)="editWorkflowSpecCategory()"  fxLayoutAlign="stretch">
-            <mat-icon>post_add</mat-icon>
-
-          </button>
-          <button id="add_library" title="Add new Study Spec" mat-flat-button color="primary" (click)="editWorkflowSpec('study')" fxLayoutAlign="start">
-            <mat-icon>library_add</mat-icon>
-
-          </button>
+          <h4 style="margin-right: 25px">Study Specs</h4>
+          <div fxLayout="row" fxLayoutGap="5px">
+            <button id="add_category" title="Add new Category" mat-fab class="custom-fab" color="accent" (click)="editWorkflowSpecCategory()"  fxLayoutAlign="stretch">
+              <mat-icon class="custom-icon">post_add</mat-icon>
+            </button>
+            <button id="add_library" title="Add new Study Spec" mat-fab class="custom-fab" color="primary" (click)="editWorkflowSpec('study')" fxLayoutAlign="start">
+              <mat-icon class="custom-icon">library_add</mat-icon>
+            </button>
+            </div>
         </div>
         <mat-divider></mat-divider>
 
