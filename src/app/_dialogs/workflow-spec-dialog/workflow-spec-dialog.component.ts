@@ -6,7 +6,7 @@ import {ApiService, toSnakeCase} from 'sartography-workflow-lib';
 import {v4 as uuidv4} from 'uuid';
 import {WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
 import {of} from "rxjs";
-
+import {updateValidity} from "@ngx-formly/core/lib/extensions/field-form/utils";
 
 @Component({
   selector: 'app-workflow-spec-dialog',
@@ -38,24 +38,67 @@ export class WorkflowSpecDialogComponent {
 
       this.fields = [
         {
+          key: 'display_name',
+          type: 'input',
+          defaultValue: this.data.display_name,
+          templateOptions: {
+            label: 'Display Name',
+            placeholder: 'Title of the workflow specification',
+            description: 'This is a human-readable title for the workflow specification,' +
+              'which should be easy for others to read and remember.',
+            required: true,
+            modelOptions:
+              {
+                updateOn: 'blur',
+              }
+          },
+        },
+        {
           key: 'id',
           type: 'input',
           defaultValue: this.data.id,
           templateOptions: {
-            label: 'id',
+            label: 'ID',
             placeholder: 'Name of workflow specification',
             description: 'Enter a name to identify this spec. It cannot be changed later.' +
               'It will be converted to all_lowercase_with_underscores when you save.',
             required: true,
             disabled: this.data.id !== '',
+            help: 'This must be in a universal format for XML standards. ' +
+              'It can only contain letters, numbers, and underscores. ' +
+              'It should not start with a digit.',
+            modelOptions:
+              {
+                updateOn: 'focus',
+              }
+          },
+          expressionProperties: {
+            'model.id': (m, formState, field) => {
+              if (!m.id && field.focus) {
+                // field.formControl.markAsDirty();
+                m.id = m.display_name.replace(/ /g,"_").toLowerCase();
+                // field.formControl.setErrors(null);
+                // field.formControl.updateValueAndValidity();
+                return m.id;
+              } else {
+                return m.id;
+              }
+            },
           },
           asyncValidators: {
             uniqueID: {
               expression: (control: FormControl) => {
+
                 return of(this.specs.indexOf(control.value) === -1);
               },
               message: 'This ID name is already taken.',
             },
+          },
+          validators: {
+             formatter: {
+               expression: (c) => !c.value || /^[A-Za-z_][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$/.test(c.value),
+               message: (error, field: FormlyFieldConfig) => `"${field.formControl.value}" is not in a valid format.`,
+              },
           },
         },
         {
@@ -69,18 +112,6 @@ export class WorkflowSpecDialogComponent {
             options: this.categories
           },
           hideExpression: this.data.library,
-        },
-        {
-          key: 'display_name',
-          type: 'input',
-          defaultValue: this.data.display_name,
-          templateOptions: {
-            label: 'Display Name',
-            placeholder: 'Title of the workflow specification',
-            description: 'This is a human-readable title for the workflow specification,' +
-              'which should be easy for others to read and remember.',
-            required: true,
-          },
         },
         {
           key: 'description',
