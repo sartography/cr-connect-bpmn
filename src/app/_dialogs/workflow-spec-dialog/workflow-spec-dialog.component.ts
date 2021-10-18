@@ -3,10 +3,8 @@ import {FormControl, FormGroup, ValidationErrors} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormlyFieldConfig, FormlyFormOptions, FormlyTemplateOptions} from '@ngx-formly/core';
 import {ApiService, toSnakeCase} from 'sartography-workflow-lib';
-import {v4 as uuidv4} from 'uuid';
 import {WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
 import {of} from "rxjs";
-import {updateValidity} from "@ngx-formly/core/lib/extensions/field-form/utils";
 
 @Component({
   selector: 'app-workflow-spec-dialog',
@@ -75,13 +73,16 @@ export class WorkflowSpecDialogComponent {
           expressionProperties: {
             'model.id': (m, formState, field) => {
               if (!m.id && field.focus) {
-                // field.formControl.markAsDirty();
                 m.id = m.display_name.replace(/ /g,"_").toLowerCase();
-                // field.formControl.setErrors(null);
-                // field.formControl.updateValueAndValidity();
+                field.formControl.markAsDirty();
                 return m.id;
               } else {
                 return m.id;
+              }
+            },
+            'templateOptions.change': (m, formState, field)=> {
+              if (field.focus) {
+                field.formControl.updateValueAndValidity();
               }
             },
           },
