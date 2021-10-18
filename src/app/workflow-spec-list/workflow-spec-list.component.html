@@ -31,7 +31,7 @@
         </div>
         <mat-divider></mat-divider>
         <mat-accordion class="example-headers-align">
-            <mat-expansion-panel>
+            <mat-expansion-panel [expanded]="selectedSpec && selectedSpec.library === true">
             <mat-expansion-panel-header>
               <mat-panel-title>
               <h4>All Libraries</h4>
