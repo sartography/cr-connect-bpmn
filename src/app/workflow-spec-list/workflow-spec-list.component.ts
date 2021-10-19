@@ -106,23 +106,6 @@ export class WorkflowSpecListComponent implements OnInit {
     this.location.replaceState(environment.homeRoute + '/' + selectedSpec.id);
   }
 
-  categoryExpanded(cat: WorkflowSpecCategory) {
-    return this.selectedSpec != null && this.selectedSpec.category_id === cat.id;
-  }
-
-  canSaveWorkflowSpec(proposed: WorkflowSpecDialogData){
-    // Can possibly remove or bypass this method alltogether
-    if ((this.selectedSpec.parents.length > 0) && (!proposed.library)){
-      this.snackBar.open('This Workflow Specification is still being used as a Library. Please remove references first!', 'Ok', { duration: 5000 });
-      return false;
-    }
-    if (proposed.standalone && proposed.library){
-      this.snackBar.open('A workflow spec cannot be both a standalone and a library!', 'Ok', { duration: 5000 });
-      return false;
-    }
-    return true;
-  }
-
   editWorkflowSpec(state: String, selectedSpec?: WorkflowSpec) {
 
     const hasDisplayOrder = selectedSpec && isNumberDefined(selectedSpec.display_order);
@@ -147,9 +130,7 @@ export class WorkflowSpecListComponent implements OnInit {
       if (data.id) {
         data.id = this.toLowercaseId(data.id);
         if (data && data.id && data.display_name && data.description) {
-          if (this.canSaveWorkflowSpec(data)) {
-            this._upsertWorkflowSpecification(selectedSpec == null, data);
-          }
+          this._upsertWorkflowSpecification(selectedSpec == null, data);
         }
       }
     });
@@ -199,7 +180,13 @@ export class WorkflowSpecListComponent implements OnInit {
 
   canDeleteWorkflowSpec(wfs){
     if ((wfs.parents.length > 0) && (wfs.library)){
-      this.snackBar.open('This Workflow Specification is still being used as a Library. Please remove references first!', 'Ok', { duration: 5000 });
+      let message = '';
+      for (let p of wfs.parents) {
+        message += p.display_name + ', ';
+      }
+      message = message.replace(/,\s*$/, "");
+      this.snackBar.open('The Library ' + '\'' + wfs.display_name + '\'' +
+        ' is still being referenced by these workflows: ' + message, 'Ok');
       return false;
     }
     return true;
