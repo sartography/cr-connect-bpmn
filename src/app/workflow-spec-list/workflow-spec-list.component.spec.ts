@@ -402,93 +402,27 @@ describe('WorkflowSpecListComponent', () => {
 
   });
 
-  /**
-   *  Deprecated - removed reorder and ability to directly edit display order
-   *
-  it('should edit category display order', () => {
-    // const _reorderSpy = spyOn((component as any), '_reorder').and.stub();
-    const _updateCatDisplayOrdersSpy = spyOn((component as any), '_updateCatDisplayOrders').and.stub();
-
-    component.editCategoryDisplayOrder(2, -1, mockWorkflowSpecCategories);
-    // expect(_reorderSpy).toHaveBeenCalled();
-    expect(_updateCatDisplayOrdersSpy).toHaveBeenCalled();
-  });
-
-
-  it('should edit workflow spec display order', () => {
-    // const _reorderSpy = spyOn((component as any), '_reorder').and.stub();
-    const _updateSpecDisplayOrdersSpy = spyOn((component as any), '_updateSpecDisplayOrders').and.stub();
-
-    component.editSpecDisplayOrder('few_things', -1, mockWorkflowSpecs);
-    // expect(_reorderSpy).toHaveBeenCalled();
-    expect(_updateSpecDisplayOrdersSpy).toHaveBeenCalled();
-  });
-
-
-  it('should reorder categories', () => {
-    const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
-    const moveUpSpy = spyOn(component, 'moveUp').and.callThrough();
-    const moveDownSpy = spyOn(component, 'moveDown').and.callThrough();
-    const expectedCatsAfter = [mockWorkflowSpecCategory1, mockWorkflowSpecCategory0, mockWorkflowSpecCategory2];
-
-    expect((component as any)._reorder(99, 1, mockWorkflowSpecCategories)).toEqual([]);
-    expect(snackBarSpy).toHaveBeenCalled();
-    expect(moveUpSpy).not.toHaveBeenCalled();
-    expect(moveDownSpy).not.toHaveBeenCalled();
-
-    snackBarSpy.calls.reset();
-    moveUpSpy.calls.reset();
-    moveDownSpy.calls.reset();
-    expect((component as any)._reorder(1, -1, mockWorkflowSpecCategories)).toEqual(expectedCatsAfter);
-    expect(snackBarSpy).not.toHaveBeenCalled();
-    expect(moveUpSpy).toHaveBeenCalled();
-    expect(moveDownSpy).not.toHaveBeenCalled();
-
-    snackBarSpy.calls.reset();
-    moveUpSpy.calls.reset();
-    moveDownSpy.calls.reset();
-    expect((component as any)._reorder(0, 1, mockWorkflowSpecCategories)).toEqual(expectedCatsAfter);
-    expect(snackBarSpy).not.toHaveBeenCalled();
-    expect(moveUpSpy).not.toHaveBeenCalled();
-    expect(moveDownSpy).toHaveBeenCalled();
-  });
-
-
-  it('should reorder specs', () => {
-    const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
-    const moveUpSpy = spyOn(component, 'moveUp').and.callThrough();
-    const moveDownSpy = spyOn(component, 'moveDown').and.callThrough();
-    const specsAfter = [
-      mockWorkflowSpec1,
-      mockWorkflowSpec0,
-      mockWorkflowSpec2,
-    ];
-
-    expect((component as any)._reorder('nonexistent_id', 1, mockWorkflowSpecs)).toEqual([]);
-    expect(snackBarSpy).toHaveBeenCalled();
-    expect(moveUpSpy).not.toHaveBeenCalled();
-    expect(moveDownSpy).not.toHaveBeenCalled();
-
-    snackBarSpy.calls.reset();
-    moveUpSpy.calls.reset();
-    moveDownSpy.calls.reset();
-    expect((component as any)._reorder(mockWorkflowSpec1.id, -1, mockWorkflowSpecs)).toEqual(specsAfter);
-    expect(snackBarSpy).not.toHaveBeenCalled();
-    expect(moveUpSpy).toHaveBeenCalled();
-    expect(moveDownSpy).not.toHaveBeenCalled();
-
-    snackBarSpy.calls.reset();
-    moveUpSpy.calls.reset();
-    moveDownSpy.calls.reset();
-    expect((component as any)._reorder(mockWorkflowSpec0.id, 1, mockWorkflowSpecs)).toEqual(specsAfter);
-    expect(snackBarSpy).not.toHaveBeenCalled();
-    expect(moveUpSpy).not.toHaveBeenCalled();
-    expect(moveDownSpy).toHaveBeenCalled();
-  });
-   */
-
   it('should update a single category display order', () => {
     mockWorkflowSpecCategory1.id = 5;
+
+    // Intermittently, Jasmine does not find the array prototype function, causing errors.
+    // This defines the 'find' function in case it doesn't find it.
+    if (typeof Array.prototype.find !== 'function') {
+        Array.prototype.find = function(iterator) {
+            let list = Object(this);
+            let length = list.length >>> 0;
+            let thisArg = arguments[1];
+            let value;
+
+            for (let i = 0; i < length; i++) {
+                value = list[i];
+                if (iterator.call(thisArg, value, i, list)) {
+                    return value;
+                }
+            }
+            return undefined;
+        };
+    }
     (component as any).editCategoryDisplayOrder(mockWorkflowSpecCategory1.id, 'down');
     let results = { param: 'direction', value: 'down' };
     const req = httpMock.expectOne(`apiRoot/workflow-specification-category/${mockWorkflowSpecCategory1.id}/reorder?${results.param}=${results.value}`);
