@@ -4,12 +4,23 @@
   margin: 0;
   max-height: 40px;
 }
+
 .workflow-specs {
   padding: 3rem;
 }
 
 .buttons {
   height: 60px;
+}
+
+.custom-fab {
+  width: 45px;
+  height: 45px;
+}
+
+.custom-icon {
+  margin-left: 10px;
+  margin-top: -15px;
 }
 
 .content {
@@ -40,10 +51,10 @@
 }
 
 .category {
-  padding: 2rem 1rem 1rem 0;
+  padding: 2rem 1rem .75rem 0;
 
   h4 {
-    margin: 1rem 1rem 0 0;
+    margin: 5px 1rem 0 0;
   }
 
   .category-actions {
