@@ -18,7 +18,7 @@ import {
   MockEnvironment, mockWorkflowMeta1,
   mockWorkflowSpec0,
   mockWorkflowSpec1,
-  mockWorkflowSpec2,
+  mockWorkflowSpec2, mockWorkflowSpec3,
   mockWorkflowSpecCategories,
   mockWorkflowSpecCategory0,
   mockWorkflowSpecCategory1,
@@ -259,6 +259,14 @@ describe('WorkflowSpecListComponent', () => {
     expect(loadWorkflowSpecsSpy).toHaveBeenCalled();
     expect(_loadWorkflowLibrariesSpy).toHaveBeenCalled();
   });
+
+  it('should set a library spec as the selected spec', () => {
+    const _loadWorkflowLibrariesSpy = spyOn((component as any), '_loadWorkflowLibraries').and.stub();
+    (component as any)._loadWorkflowLibraries(mockWorkflowSpec3)
+    component.selectedSpec = mockWorkflowSpec3;
+    expect(_loadWorkflowLibrariesSpy).toHaveBeenCalled()
+    expect(component.selectedSpec).toEqual(mockWorkflowSpec3)
+  })
 
   it('should show a metadata dialog when editing a workflow spec category', () => {
     let mockCatData: WorkflowSpecCategoryDialogData = {
@@ -519,9 +527,6 @@ describe('WorkflowSpecListComponent', () => {
 
     expect(component.workflowSpecs).toEqual(allSpecs);
     expect(component.workflowSpecsByCategory).toBeTruthy();
-    component.workflowSpecsByCategory.forEach(cat => {
-      expect(cat.workflow_specs).not.toContain(mockMasterSpec);
-    });
     expect(component.masterStatusSpec).toEqual(mockMasterSpec);
   });
 
