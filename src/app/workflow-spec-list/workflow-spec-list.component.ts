@@ -52,9 +52,8 @@ export class WorkflowSpecListComponent implements OnInit {
   selectedCat: WorkflowSpecCategory;
   workflowSpecsByCategory: WorkflowSpecCategoryGroup[] = [];
   categories: WorkflowSpecCategory[];
-  // moveUp = moveArrayElementUp;
-  // moveDown = moveArrayElementDown;
   searchField: FormControl;
+  library_toggle: boolean;
 
   constructor(
     private api: ApiService,
@@ -99,6 +98,10 @@ export class WorkflowSpecListComponent implements OnInit {
 
   isSelected(cat: WorkflowSpecCategoryGroup) {
     return this.selectedCat && this.selectedCat.id === cat.id;
+  }
+
+  libraryToggle(t: boolean) {
+    this.library_toggle = t;
   }
 
   selectSpec(selectedSpec?: WorkflowSpec) {
@@ -253,6 +256,7 @@ export class WorkflowSpecListComponent implements OnInit {
         wfs.forEach(ws => {
           if (selectedSpecName && selectedSpecName === ws.id) {
             this.selectedSpec = ws;
+            this.library_toggle = true;
           }
         });
       } else {
