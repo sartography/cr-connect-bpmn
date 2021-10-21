@@ -127,12 +127,10 @@ export class WorkflowSpecListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
-      if (data.id) {
-        data.id = this.toLowercaseId(data.id);
         if (data && data.id && data.display_name && data.description) {
+          data.id = this.toLowercaseId(data.id);
           this._upsertWorkflowSpecification(selectedSpec == null, data);
         }
-      }
     });
   }
 
