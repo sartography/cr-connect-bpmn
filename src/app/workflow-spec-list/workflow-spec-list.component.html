@@ -31,7 +31,7 @@
         </div>
         <mat-divider></mat-divider>
         <mat-accordion class="example-headers-align">
-            <mat-expansion-panel [expanded]="selectedSpec && selectedSpec.library === true">
+            <mat-expansion-panel [expanded]="library_toggle" (opened)="libraryToggle(true)">
             <mat-expansion-panel-header>
               <mat-panel-title>
               <h4>All Libraries</h4>
@@ -69,7 +69,7 @@
 
         <div *ngIf="!(searchField.value && cat.workflow_specs.length === 0)">
         <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
-          <mat-expansion-panel hideToggle (opened)="selectCat(cat)" [expanded]="isSelected(cat)">
+          <mat-expansion-panel hideToggle (opened)="selectCat(cat); libraryToggle(false)" [expanded]="isSelected(cat) && !library_toggle" >
             <mat-expansion-panel-header>
                 <mat-panel-description>
                   <div *ngIf="cat.admin" style="color: darkorange">
