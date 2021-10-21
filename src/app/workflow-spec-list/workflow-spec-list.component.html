@@ -1,21 +1,4 @@
 <div class="workflow-specs" fxLayout="column" fxLayoutGap="10px">
-  <h1>Workflow Specifications</h1>
-  <div class="buttons" fxLayout="row" fxLayoutGap="10px">
-    <button id="add_spec" mat-flat-button color="primary" (click)="editWorkflowSpec()" fxLayoutAlign="stretch">
-      <mat-icon>library_add</mat-icon>
-      Add new workflow specification
-    </button>
-    <button id="add_category" mat-flat-button color="accent" (click)="editWorkflowSpecCategory()"  fxLayoutAlign="stretch">
-      <mat-icon>post_add</mat-icon>
-      Add category
-    </button>
-    <button id="make_checkpoint" mat-flat-button color="accent" [disabled]="(githubButtonEnabled$|async)!==true" (click)="createGitCheckpoint()"  fxLayoutAlign="stretch">
-      <mat-icon>settings_system_daydream</mat-icon>
-      Push to Git
-    </button>
-
-    <mat-form-field class="search-field">
-        <label><input matInput type="search" placeholder="Search Workflows" class="form-control" [formControl]="searchField"></label>
   <div class="buttons" fxLayout="row" fxLayoutGap="20px">
     <div>
       <h1 style="margin-top: 16px">Workflow Specifications</h1>
@@ -23,6 +6,11 @@
       <mat-form-field class="search-field">
         <label><input matInput type="search" placeholder="Search Workflows" fxLayoutAlign="start" style="margin-top: 0;" class="form-control" [formControl]="searchField"></label>
       </mat-form-field>
+    <button id="make_checkpoint" mat-flat-button color="accent" [disabled]="(githubButtonEnabled$|async)!==true" (click)="createGitCheckpoint()"  fxLayoutAlign="stretch">
+      <mat-icon>settings_system_daydream</mat-icon>
+      Push to Git
+    </button>
+
   </div>
   <mat-drawer-container class="example-container" autosize>
     <mat-drawer #drawer class="example-sidenav" mode="side" opened="true">
