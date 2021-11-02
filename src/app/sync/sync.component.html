@@ -1,0 +1,40 @@
+<div class="sync-list" fxLayout="column" fxLayoutGap="10px">
+  <div class="buttons" fxLayout="row" fxLayoutGap="20px">
+    <div>
+      <h1 style="margin-top: 16px">Sync Sources</h1>
+    </div>
+  </div>
+  <mat-drawer-container class="sync-container" autosize>
+    <mat-drawer #drawer class="sync-sidenav" mode="side" opened="true">
+      <mat-list-item *ngFor="let source of sources$ | async">
+        <h2  (click)="setSource(source)" class="{{currentSourceClass(source)}}">{{source.name}}</h2>
+      </mat-list-item>
+    </mat-drawer>
+
+    <div class="content">
+      <div *ngIf="uploading" class="spinner">
+        <mat-spinner></mat-spinner>
+      </div>
+      <div *ngIf="!uploading">
+      <h3>Differences</h3>
+      <ul>
+        <li *ngFor="let workflow of changes$ | async">
+          <h4>
+            {{workflow.category}}
+          </h4>
+          <ul>
+            <li *ngFor="let wf of workflow.workflows">
+              <h5>{{wf.name}} - <span class="{{wf.status}}">{{statusColor(wf.status)}}</span></h5>
+              <ul>
+                <li *ngFor="let file of wf.files">
+                  <h6>{{file.filename}} - <span class="{{file.status}}">{{statusColor(file.status)}}</span></h6>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      </div>
+    </div>
+  </mat-drawer-container>
+
+</div>

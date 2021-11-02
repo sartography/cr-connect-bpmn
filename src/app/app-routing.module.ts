@@ -8,6 +8,7 @@ import {ModelerComponent} from './modeler/modeler.component';
 import {ReferenceFilesComponent} from './reference-files/reference-files.component';
 import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
 import {SettingsComponent} from './settings/settings.component';
+import {SyncComponent} from './sync/sync.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -38,6 +39,11 @@ const routes: Routes = [
     path: 'reffiles',
     component: ReferenceFilesComponent
   },
+  {
+    path: 'sync',
+    component: SyncComponent
+  },
+
   {
     path: 'modeler/:workflowSpecId',
     component: ModelerComponent

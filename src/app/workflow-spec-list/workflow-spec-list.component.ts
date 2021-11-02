@@ -474,7 +474,6 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
    */
-
   createGitCheckpoint() {
     const dialogRef = this.dialog.open(CreateGitCheckpointDialogComponent);
 
