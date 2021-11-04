@@ -10,7 +10,7 @@
       <mat-icon>settings_system_daydream</mat-icon>
       Push to Git
     </button>
-   <a class="sync" routerLink="/sync"> <button id="sync" mat-flat-button color="accent"  fxLayoutAlign="stretch">
+   <a class="sync" routerLink="/sync"> <button [disabled]="(githubButtonEnabled$|async)===true" id="sync" mat-flat-button color="accent"  fxLayoutAlign="stretch">
       <mat-icon>sync</mat-icon>
       Sync Tool
    </button></a>

@@ -1,7 +1,10 @@
 <div class="sync-list" fxLayout="column" fxLayoutGap="10px">
   <div class="buttons" fxLayout="row" fxLayoutGap="20px">
-    <div>
+    <div class="sync-row" fxLayout="row">
       <h1 style="margin-top: 16px">Sync Sources</h1>
+      <mat-checkbox class="sync-cb" (change)="toggleKeepLocal($event)" [checked]="keepLocal">Keep Local Workflows</mat-checkbox>
+      <textarea (change)="changeGithubComment($event)" class="sync-text" id="gitcomment">{{githubComment$ | async}}</textarea>
+      <button mat-flat-button color="accent" (click)="doSync()" [disabled]="(syncAvailable$ | async)!==true">Do Sync</button>
     </div>
   </div>
   <mat-drawer-container class="sync-container" autosize>
