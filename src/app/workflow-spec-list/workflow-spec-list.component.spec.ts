@@ -18,7 +18,6 @@ import {
   MockEnvironment, mockWorkflowMeta1,
   mockWorkflowSpec0,
   mockWorkflowSpec1,
-  mockWorkflowSpec2,
   mockWorkflowSpecCategories,
   mockWorkflowSpecCategory0,
   mockWorkflowSpecCategory1,
@@ -126,6 +125,10 @@ describe('WorkflowSpecListComponent', () => {
     expect(catReq.request.method).toEqual('GET');
     catReq.flush(mockWorkflowSpecCategories);
     expect(component.categories.length).toBeGreaterThan(0);
+    const pubReq = httpMock.expectOne('apiRoot/workflow_sync/need_publish');
+    expect(pubReq.request.method).toEqual('GET');
+    pubReq.flush(false);
+
 
     const specReq2 =  httpMock.expectOne('apiRoot/workflow-specification?libraries=true');
     expect(specReq2.request.method).toEqual('GET');
@@ -512,7 +515,6 @@ describe('WorkflowSpecListComponent', () => {
     (component as any)._loadWorkflowSpecs();
     const allSpecs = cloneDeep(mockWorkflowSpecs);
     allSpecs.push(mockMasterSpec);
-
     const req = httpMock.expectOne(`apiRoot/workflow-specification`);
     expect(req.request.method).toEqual('GET');
     req.flush(allSpecs);

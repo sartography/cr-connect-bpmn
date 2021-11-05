@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ApiService, SyncCategoryItem, SyncSource} from '../../../../sartography-libraries/dist/sartography-workflow-lib';
+import {ApiService, SyncCategoryItem, SyncSource} from 'sartography-workflow-lib'
 import {BehaviorSubject} from 'rxjs';
 
 @Component({
