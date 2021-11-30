@@ -109,7 +109,7 @@ export class FileListComponent implements OnInit, OnChanges {
       fileMetaId: fm ? fm.id : undefined,
       file,
       mode: 'local',
-      fileTypes: [FileType.DOC, FileType.DOCX, FileType.XLSX, FileType.XLS],
+      fileTypes: [FileType.DOC, FileType.DOCX, FileType.XLSX],
     };
     const dialogRef = this.dialog.open(OpenFileDialogComponent, {data: dialogData});
 
