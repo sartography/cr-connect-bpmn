@@ -1,15 +1,18 @@
 ### STAGE 1: Build ###
-FROM sartography/cr-connect-angular-base AS builder
-
+FROM quay.io/sartography/node:latest AS builder
+RUN mkdir /app
+WORKDIR /app
+ADD package.json /app/
+ADD package-lock.json /app/
 COPY . /app/
-
 ARG build_config=prod
 RUN npm install && \
     npm run build:$build_config
 
+
 ### STAGE 2: Run ###
-FROM nginx:alpine
-RUN set -x && apk add --update --no-cache bash libintl gettext curl
+FROM quay.io/sartography/nginx:alpine
+RUN set -x && apk add --update --no-cache bash libintl gettext curl``
 
 COPY --from=builder /app/dist/* /etc/nginx/html/
 COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf

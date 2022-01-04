@@ -1,12 +1,13 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {Injectable, NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {ExtraOptions, RouterModule, Routes} from '@angular/router';
 import {AppEnvironment, SessionRedirectComponent} from 'sartography-workflow-lib';
 import {environment} from '../environments/environment.runtime';
 import {HomeComponent} from './home/home.component';
 import {ModelerComponent} from './modeler/modeler.component';
-import {ProtocolBuilderComponent} from './protocol-builder/protocol-builder.component';
 import {ReferenceFilesComponent} from './reference-files/reference-files.component';
+import {WorkflowSpecListComponent} from './workflow-spec-list/workflow-spec-list.component';
+import {SettingsComponent} from './settings/settings.component';
 
 @Injectable()
 export class ThisEnvironment implements AppEnvironment {
@@ -30,8 +31,8 @@ const routes: Routes = [
     component: HomeComponent
   },
   {
-    path: 'pb',
-    component: ProtocolBuilderComponent
+    path: 'home/:spec',
+    component: WorkflowSpecListComponent
   },
   {
     path: 'reffiles',
@@ -48,6 +49,10 @@ const routes: Routes = [
   {
     path: 'session',
     component: SessionRedirectComponent
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent
   }
 ];
 
@@ -55,10 +60,11 @@ const routes: Routes = [
   declarations: [],
   imports: [
     RouterModule.forRoot(routes, {
-      scrollPositionRestoration: 'enabled',
-      anchorScrolling: 'enabled',
-      scrollOffset: [0, 84],
-    })
+    scrollPositionRestoration: 'enabled',
+    anchorScrolling: 'enabled',
+    scrollOffset: [0, 84],
+    relativeLinkResolution: 'legacy'
+})
   ],
   exports: [RouterModule],
   providers: [

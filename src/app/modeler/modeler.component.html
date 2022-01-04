@@ -1,11 +1,11 @@
 <mat-toolbar [ngClass]="{'expanded': expandToolbar}">
   <mat-toolbar-row *ngIf="workflowSpec">
-    <a mat-button [routerLink]="['/']">
+    <a mat-button (click)="checkSaved()">
       <mat-icon>arrow_back</mat-icon>
       Back
     </a>
     {{workflowSpec.display_name}}
-    ({{workflowSpec.name}})
+    ({{workflowSpec.id}})
   </mat-toolbar-row>
   <mat-toolbar-row>
     <button #newMenuTrigger="matMenuTrigger" mat-button [matMenuTriggerFor]="newMenu" title="Open diagram">
@@ -28,15 +28,20 @@
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
     <mat-menu #importMenu="matMenu">
-      <button mat-menu-item (click)="openMethod = 'db'" [matMenuTriggerFor]="dbMenu" title="Open diagram from database">
+      <button
+              mat-menu-item
+              [disabled]="bpmnFilesNoSelf.length === 0"
+              (click)="openMethod = 'db'"
+              [matMenuTriggerFor]="dbMenu"
+              title="Open diagram from database">
         <mat-icon>cloud</mat-icon>
-        Open previously saved...
+        Open related BPMN/DMN File ...
       </button>
       <mat-menu #dbMenu="matMenu">
         <a
           mat-menu-item
-          *ngFor="let bf of bpmnFiles"
-          [routerLink]="['/modeler', workflowSpec.id, bf.id]"
+          *ngFor="let bf of bpmnFilesNoSelf"
+          (click)="checkChangeBPMN(bf)"
           [matTooltip]="getFileMetaTooltipText(bf)"
           matTooltipClass="tooltip-text"
           matTooltipPosition="right"
@@ -45,18 +50,15 @@
         </a>
       </mat-menu>
 
-      <button mat-menu-item (click)="openMethod = 'file'; expandToolbar = true">
+      <button mat-menu-item (click)="fileInput.click()">
         <mat-icon>code</mat-icon>
         Open from XML File
-      </button>
-      <button mat-menu-item (click)="openMethod = 'url'; expandToolbar = true">
-        <mat-icon>link</mat-icon>
-        Open from URL
       </button>
     </mat-menu>
 
     <button mat-button (click)="saveChanges()" [disabled]="!hasChanged()"><mat-icon>save</mat-icon></button>
 
+    <button mat-button (click)="validate()" [disabled]="hasChanged()"><mat-icon>verified_user</mat-icon></button>
     <button mat-button [matMenuTriggerFor]="downloadMenu" title="Download diagram">
       <mat-icon>save_alt</mat-icon>
       <mat-icon>arrow_drop_down</mat-icon>
@@ -71,40 +73,11 @@
       {{getFileName()}}
     </button>
   </mat-toolbar-row>
-  <mat-toolbar-row *ngIf="expandToolbar">
-    <ng-container *ngIf="!openMethod">
-      <mat-form-field>
-        <input matInput [(ngModel)]="fileName" placeholder="File name" type="text">
-      </mat-form-field>
-    </ng-container>
-
-    <ng-container *ngIf="openMethod === 'file'">
-      <mat-form-field (click)="fileInput.click()">
-        <span matPrefix><mat-icon>folder_open</mat-icon> &nbsp;</span>
-        <input matInput disabled [value]="getFileName()" type="text">
-      </mat-form-field>
-      <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.dmn,.xml,application/xml,text/xml">
-    </ng-container>
-    <ng-container *ngIf="openMethod === 'url'">
-      <mat-form-field>
-        <span matPrefix><mat-icon>link</mat-icon> &nbsp;</span>
-        <input name="diagramUrl" [(ngModel)]="diagramUrl" matInput placeholder="Open diagram from URL" type="text">
-      </mat-form-field>
-    </ng-container>
-    <button
-      mat-flat-button
-      (click)="onSubmitFileToOpen()"
-      [disabled]="!diagramFile"
-      color="primary"
-      id="open_file_button"
-    >Open file <mat-icon>arrow_forward</mat-icon></button>
-    <span fxFlex></span>
-    <button mat-icon-button (click)="expandToolbar = false"><mat-icon>close</mat-icon></button>
-  </mat-toolbar-row>
 </mat-toolbar>
+
 <div fxLayout="column">
   <div class="diagram-parent">
-    <app-diagram #diagram (importDone)="handleImported($event)" [fileName]="getFileName()"></app-diagram>
+    <app-diagram #diagram (importDone)="handleImported($event)" [fileName]="getFileName()" [validation_state]="validationState" [validation_data]="validationData" (validationStart)="partially_validate($event)" ></app-diagram>
 
     <div *ngIf="importError" class="import-error">
       <strong>Failed to render diagram: </strong>
@@ -113,3 +86,4 @@
   </div>
 </div>
 
+<input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept=".bpmn,.dmn,.xml,.xlsx,application/xml,text/xml">

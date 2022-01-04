@@ -1,6 +1,15 @@
 @import "../../config";
 
+.top-bar {
+  padding-top: 1em;
+  margin-bottom: 1em;
+}
+
 mat-card {
   padding: 2em;
   border: 1px solid $brand-gray;
+}
+
+.trashcan {
+  color: darkorange;
 }

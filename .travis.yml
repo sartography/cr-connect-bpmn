@@ -5,15 +5,19 @@ dist: bionic
 language: node_js
 
 node_js:
-  - 12
+  - 14
 
 services:
   - docker
   - xvfb
 
 before_install:
+  - dpkg --compare-versions `npm -v` ge 7.10 || npm i -g npm@^7.10
+  - npm --version
   - |
-    if [[ $TRAVIS_BRANCH =~ ^(dev|testing|demo|training|staging|rrt\/.*)$ ]]; then
+    if [[ $TRAVIS_BRANCH =~ ^(feature\/.*)$ ]]; then
+      export E2E_TAG="dev"
+    elif [[ $TRAVIS_BRANCH =~ ^(dev|testing|demo|training|staging|rrt\/.*)$ ]]; then
       export E2E_TAG="${TRAVIS_BRANCH//\//_}"
     else
       export E2E_TAG="latest"
@@ -37,13 +41,6 @@ env:
     - PRODUCTION=false
 script:
   - npm run ci
-
-deploy:
-  provider: script
-  script: bash ./deploy.sh sartography/cr-connect-bpmn
-  on:
-    all_branches: true
-    condition: $TRAVIS_BRANCH =~ ^(dev|testing|demo|training|staging|master|rrt\/.*)$
 
 notifications:
   email:

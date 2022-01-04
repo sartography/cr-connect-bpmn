@@ -15,14 +15,19 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <dl gdAreas="field value" gdColumns="8ch auto">
-      <dt>ID</dt><dd>{{workflowSpec.id}}</dd>
-      <dt>Name</dt><dd>{{workflowSpec.name}}</dd>
+    <dl gdAreas="field value" gdColumns="10ch auto">
+      <dt>Name</dt><dd>{{workflowSpec.id}}</dd>
       <dt>Description</dt><dd>{{workflowSpec.description}}</dd>
     </dl>
-
     <h4>Workflow Spec Files</h4>
     <app-file-list [workflowSpec]="workflowSpec"></app-file-list>
+    <div *ngIf="!workflowSpec.library">
+      <h4 class="library-list">
+        <mat-icon (click)="expandToggle()" class="expand" *ngIf="!showAll">chevron_right</mat-icon>
+        <mat-icon (click)="expandToggle()" class="expand" *ngIf="showAll">expand_more</mat-icon>
+        Included Libraries</h4>
+      <app-library-list [showAll]="showAll"   [workflowSpecId]="workflowSpec.id"></app-library-list>
+    </div>
   </mat-card-content>
   <mat-card-actions>
   </mat-card-actions>

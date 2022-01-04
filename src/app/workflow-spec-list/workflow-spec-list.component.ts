@@ -1,84 +1,125 @@
-import {Component, OnInit} from '@angular/core';
-import {MatBottomSheet} from '@angular/material/bottom-sheet';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import createClone from 'rfdc';
+import { Component, OnInit } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { cloneDeep } from 'lodash';
 import {
+  ApiErrorsComponent,
   ApiService,
   isNumberDefined,
-  moveArrayElementDown,
-  moveArrayElementUp,
+  // moveArrayElementDown,
+  // moveArrayElementUp,
   WorkflowSpec,
-  WorkflowSpecCategory
+  WorkflowSpecCategory,
 } from 'sartography-workflow-lib';
-import {DeleteWorkflowSpecCategoryDialogComponent} from '../_dialogs/delete-workflow-spec-category-dialog/delete-workflow-spec-category-dialog.component';
-import {DeleteWorkflowSpecDialogComponent} from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
-import {WorkflowSpecCategoryDialogComponent} from '../_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
-import {WorkflowSpecDialogComponent} from '../_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
+import {
+  DeleteWorkflowSpecCategoryDialogComponent
+} from '../_dialogs/delete-workflow-spec-category-dialog/delete-workflow-spec-category-dialog.component';
+import { DeleteWorkflowSpecDialogComponent } from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
+import { WorkflowSpecCategoryDialogComponent } from '../_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
+import { WorkflowSpecDialogComponent } from '../_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
 import {
   DeleteWorkflowSpecCategoryDialogData,
   DeleteWorkflowSpecDialogData,
   WorkflowSpecCategoryDialogData,
-  WorkflowSpecDialogData
+  WorkflowSpecDialogData,
 } from '../_interfaces/dialog-data';
-import {ApiErrorsComponent} from 'sartography-workflow-lib';
+import { ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
+import { environment } from '../../environments/environment.runtime';
+import { FormControl } from '@angular/forms';
+import { SettingsService } from '../settings.service';
 
 
 export interface WorkflowSpecCategoryGroup {
-  id: number;
-  name: string;
+  id?: number;
   display_name: string;
   workflow_specs?: WorkflowSpec[];
   display_order: number;
+  admin: boolean,
 }
 
 @Component({
   selector: 'app-workflow-spec-list',
   templateUrl: './workflow-spec-list.component.html',
-  styleUrls: ['./workflow-spec-list.component.scss']
+  styleUrls: ['./workflow-spec-list.component.scss'],
 })
 export class WorkflowSpecListComponent implements OnInit {
   workflowSpecs: WorkflowSpec[] = [];
+  workflowLibraries: WorkflowSpec[] = [];
   selectedSpec: WorkflowSpec;
   masterStatusSpec: WorkflowSpec;
   selectedCat: WorkflowSpecCategory;
   workflowSpecsByCategory: WorkflowSpecCategoryGroup[] = [];
   categories: WorkflowSpecCategory[];
-  moveUp = moveArrayElementUp;
-  moveDown = moveArrayElementDown;
+  searchField: FormControl;
+  library_toggle: boolean;
 
   constructor(
     private api: ApiService,
     private snackBar: MatSnackBar,
     private bottomSheet: MatBottomSheet,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private route: ActivatedRoute,
+    private location: Location,
+    private settingsService: SettingsService,
   ) {
-    this._loadWorkflowSpecCategories();
   }
 
   ngOnInit() {
+    this.route.paramMap.subscribe(paramMap => {
+      if (paramMap.has('spec')) {
+        this._loadWorkflowSpecCategories(paramMap.get('spec'));
+      } else {
+        this._loadWorkflowSpecCategories();
+      }
+    });
+
+    this.searchField = new FormControl();
+    this.searchField.valueChanges.subscribe(value => {
+      this._loadWorkflowSpecs(null, value);
+    });
   }
 
   validateWorkflowSpec(wfs: WorkflowSpec) {
-    this.api.validateWorkflowSpecification(wfs.id).subscribe(apiErrors => {
+    const studyId = this.settingsService.getStudyIdForValidation();
+    this.api.validateWorkflowSpecification(wfs.id, '', studyId).subscribe(apiErrors => {
       if (apiErrors && apiErrors.length > 0) {
-        this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors: apiErrors}});
+        this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors}});
       } else {
         this.snackBar.open('Workflow specification is valid!', 'Ok', {duration: 5000});
       }
     });
   }
 
-  editWorkflowSpec(selectedSpec?: WorkflowSpec) {
+  selectCat(selectedCat?: WorkflowSpecCategoryGroup) {
+    this.selectedCat = selectedCat;
+  }
+
+  isSelected(cat: WorkflowSpecCategoryGroup) {
+    return this.selectedCat && this.selectedCat.id === cat.id;
+  }
+
+  libraryToggle(t: boolean) {
+    this.library_toggle = t;
+  }
+
+  selectSpec(selectedSpec?: WorkflowSpec) {
     this.selectedSpec = selectedSpec;
-    const hasDisplayOrder = this.selectedSpec && isNumberDefined(this.selectedSpec.display_order);
+    this.location.replaceState(environment.homeRoute + '/' + selectedSpec.id);
+  }
+
+  editWorkflowSpec(state: String, selectedSpec?: WorkflowSpec) {
+
+    const hasDisplayOrder = selectedSpec && isNumberDefined(selectedSpec.display_order);
     const dialogData: WorkflowSpecDialogData = {
-      id: this.selectedSpec ? this.selectedSpec.id : '',
-      name: this.selectedSpec ? this.selectedSpec.name || this.selectedSpec.id : '',
-      display_name: this.selectedSpec ? this.selectedSpec.display_name : '',
-      description: this.selectedSpec ? this.selectedSpec.description : '',
-      category_id: this.selectedSpec ? this.selectedSpec.category_id : null,
-      display_order: hasDisplayOrder ? this.selectedSpec.display_order : 0,
+      id: selectedSpec ? selectedSpec.id : '',
+      display_name: selectedSpec ? selectedSpec.display_name : '',
+      description: selectedSpec ? selectedSpec.description : '',
+      category_id: selectedSpec ? selectedSpec.category_id : null,
+      display_order: hasDisplayOrder ? selectedSpec.display_order : 0,
+      standalone: selectedSpec ? selectedSpec.standalone : null,
+      library: selectedSpec ? selectedSpec.library : (state === 'library' ? true : null),
     };
 
     // Open new filename/workflow spec dialog
@@ -89,10 +130,16 @@ export class WorkflowSpecListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((data: WorkflowSpecDialogData) => {
-      if (data && data.id && data.name && data.display_name && data.description) {
-        this._upsertWorkflowSpecification(data);
-      }
+        if (data && data.id && data.display_name && data.description) {
+          data.id = this.toLowercaseId(data.id);
+          this._upsertWorkflowSpecification(selectedSpec == null, data);
+        }
     });
+  }
+
+  // Helper function to convert strings to valid ID's.
+  toLowercaseId(id: String) {
+    return id.replace(/ /g,"_").toLowerCase();
   }
 
   editWorkflowSpecCategory(selectedCat?: WorkflowSpecCategoryGroup) {
@@ -104,25 +151,24 @@ export class WorkflowSpecListComponent implements OnInit {
       width: '50vw',
       data: {
         id: this.selectedCat ? this.selectedCat.id : null,
-        name: this.selectedCat ? this.selectedCat.name || this.selectedCat.id : '',
         display_name: this.selectedCat ? this.selectedCat.display_name : '',
         display_order: this.selectedCat ? this.selectedCat.display_order : null,
+        admin: this.selectedCat ? this.selectedCat.admin : null,
       },
     });
-
     dialogRef.afterClosed().subscribe((data: WorkflowSpecCategoryDialogData) => {
-      if (data && isNumberDefined(data.id) && data.name && data.display_name) {
+      if (data && data.display_name) {
         this._upsertWorkflowSpecCategory(data);
       }
     });
   }
 
-  confirmDeleteWorkflowSpecCategory(cat: WorkflowSpecCategory) {
+  confirmDeleteWorkflowSpecCategory(cat: WorkflowSpecCategoryGroup) {
     const dialogRef = this.dialog.open(DeleteWorkflowSpecCategoryDialogComponent, {
       data: {
         confirm: false,
         category: cat,
-      }
+      },
     });
 
     dialogRef.afterClosed().subscribe((data: DeleteWorkflowSpecCategoryDialogData) => {
@@ -132,111 +178,167 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
+
+  canDeleteWorkflowSpec(wfs){
+    if ((wfs.parents.length > 0) && (wfs.library)){
+      let message = '';
+      for (let p of wfs.parents) {
+        message += p.display_name + ', ';
+      }
+      message = message.replace(/,\s*$/, "");
+      this.snackBar.open('The Library ' + '\'' + wfs.display_name + '\'' +
+        ' is still being referenced by these workflows: ' + message, 'Ok');
+      return false;
+    }
+    return true;
+  }
+
+
   confirmDeleteWorkflowSpec(wfs: WorkflowSpec) {
     const dialogRef = this.dialog.open(DeleteWorkflowSpecDialogComponent, {
       data: {
         confirm: false,
         workflowSpec: wfs,
-      }
+      },
     });
 
     dialogRef.afterClosed().subscribe((data: DeleteWorkflowSpecDialogData) => {
-      if (data && data.confirm && data.workflowSpec) {
+      if (data && data.confirm && data.workflowSpec && this.canDeleteWorkflowSpec(data.workflowSpec)) {
         this._deleteWorkflowSpec(data.workflowSpec);
+        if (typeof this.masterStatusSpec !== 'undefined') {
+          this.selectSpec(this.masterStatusSpec);
+        }
       }
     });
   }
 
-  editCategoryDisplayOrder(catId: number, direction: number, cats: WorkflowSpecCategoryGroup[]) {
-    const reorderedCats = this._reorder(catId, direction, cats) as WorkflowSpecCategoryGroup[];
-    this._updateCatDisplayOrders(reorderedCats);
-  }
-
-  editSpecDisplayOrder(specId: string, direction: number, specs: WorkflowSpec[]) {
-    const reorderedSpecs = this._reorder(specId, direction, specs) as WorkflowSpec[];
-    this._updateSpecDisplayOrders(reorderedSpecs);
-  }
-
-  sortByDisplayOrder = (a, b) => (a.display_order < b.display_order) ? -1 : 1;
-
-  private _loadWorkflowSpecCategories() {
-    this.api.getWorkflowSpecCategoryList().subscribe(cats => {
-      this.categories = cats.sort(this.sortByDisplayOrder);
-
-      // Add a container for specs without a category
-      this.workflowSpecsByCategory = [{
-        id: null,
-        name: 'none',
-        display_name: 'No category',
-        workflow_specs: [],
-        display_order: -1, // Display it at the top
-      }];
-
-      this.categories.forEach((cat, i) => {
-        this.workflowSpecsByCategory.push(cat);
-        this.workflowSpecsByCategory[i + 1].workflow_specs = [];
-      });
-
-      this._loadWorkflowSpecs();
+  editCategoryDisplayOrder(catId: number, direction: string) {
+    this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
+        this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
+          let new_cat = (cat_change.find(i2 => i2.id === cat.id));
+          cat.display_order = new_cat.display_order;
+          return cat;
+        });
+        this.workflowSpecsByCategory.sort((x,y) => x.display_order - y.display_order);
     });
   }
 
-  private _loadWorkflowSpecs() {
+
+  editSpecDisplayOrder(cat: WorkflowSpecCategoryGroup, specId: string, direction: string) {
+    this.api.reorderWorkflowSpecification(specId, direction).subscribe(wfs => {
+      cat.workflow_specs= wfs;
+    });
+  }
+
+  private _loadWorkflowSpecCategories(selectedSpecName: string = null) {
+    this.api.getWorkflowSpecCategoryList().subscribe(cats => {
+      this.categories = cats;
+      // Clear out this object before re-filling it
+      this.workflowSpecsByCategory = [];
+
+      this.categories.forEach((cat, i) => {
+        this.workflowSpecsByCategory.push(cat);
+        this.workflowSpecsByCategory[i].workflow_specs = [];
+      });
+      this._loadWorkflowSpecs(selectedSpecName);
+      this._loadWorkflowLibraries(selectedSpecName);
+    });
+  }
+
+  private _loadWorkflowLibraries(selectedSpecName: string = null) {
+    this.api.getWorkflowSpecificationLibraries().subscribe(wfs => {
+      this.workflowLibraries = wfs;
+
+      // If selected spec is a library, set it.
+      if (selectedSpecName) {
+        wfs.forEach(ws => {
+          if (selectedSpecName && selectedSpecName === ws.id) {
+            this.selectedSpec = ws;
+            this.library_toggle = true;
+          }
+        });
+      } else {
+        this.selectedSpec = this.masterStatusSpec;
+      }
+    });
+  }
+
+  private _loadWorkflowSpecs(selectedSpecName: string = null, searchSpecName: string = null) {
+
     this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
+      // Populate categories with their specs
       this.workflowSpecsByCategory.forEach(cat => {
         cat.workflow_specs = this.workflowSpecs
           .filter(wf => {
-            if (wf.is_master_spec) {
-              this.masterStatusSpec = wf;
+            if (searchSpecName) {
+              return (wf.category_id === cat.id) && wf.display_name.toLowerCase().includes(searchSpecName.toLowerCase());
             } else {
               return wf.category_id === cat.id;
             }
           })
-          .sort(this.sortByDisplayOrder);
+        cat.workflow_specs.sort((x,y) => x.display_order - y.display_order);
       });
+
+      // Set master spec
+      wfs.forEach(wf => {
+        if (wf.is_master_spec){
+          this.masterStatusSpec = wf;
+        }
+      });
+
+      // Set the selected workflow to something sensible.
+      if (!selectedSpecName && this.selectedSpec) {
+        selectedSpecName = this.selectedSpec.id;
+      }
+      if (selectedSpecName) {
+        this.workflowSpecs.forEach(ws => {
+          if (selectedSpecName && selectedSpecName === ws.id) {
+            this.selectedSpec = ws;
+            this.selectedCat = this.selectedSpec.category;
+          }
+        });
+      }
     });
   }
 
-  private _upsertWorkflowSpecification(data: WorkflowSpecDialogData) {
-    if (data.id && data.name && data.display_name && data.description) {
-
-      // Save old workflow spec id, in case it's changed
-      const specId = this.selectedSpec ? this.selectedSpec.id : undefined;
+  private _upsertWorkflowSpecification(isNew: boolean, data: WorkflowSpecDialogData) {
+    if (data.id && data.display_name && data.description) {
 
       const newSpec: WorkflowSpec = {
         id: data.id,
-        name: data.name,
         display_name: data.display_name,
         description: data.description,
         category_id: data.category_id,
-        display_order: data.display_order,
+        standalone: data.standalone,
+        library: data.library,
       };
 
-      if (specId) {
-        this._updateWorkflowSpec(specId, newSpec);
-      } else {
+      if (isNew) {
         this._addWorkflowSpec(newSpec);
+        this.selectSpec(newSpec);
+      } else {
+        this._updateWorkflowSpec(data.id, newSpec);
       }
     }
   }
 
   private _upsertWorkflowSpecCategory(data: WorkflowSpecCategoryDialogData) {
-    if (isNumberDefined(data.id) && data.name && data.display_name) {
-
-      // Save old workflow spec id, in case it's changed
-      const catId = this.selectedCat ? this.selectedCat.id : undefined;
-
-      const newCat: WorkflowSpecCategory = {
-        id: data.id,
-        name: data.name,
-        display_name: data.display_name,
-        display_order: data.display_order,
+    if (data.display_name) {
+      if (isNumberDefined(data.id)) {
+        const newCat: WorkflowSpecCategory = {
+          id: data.id,
+          display_name: data.display_name,
+          display_order: data.display_order,
+          admin: data.admin,
       };
-
-      if (isNumberDefined(catId)) {
-        this._updateWorkflowSpecCategory(catId, newCat);
+        this._updateWorkflowSpecCategory(data.id, newCat);
       } else {
+        const newCat: WorkflowSpecCategory = {
+          display_name: data.display_name,
+          display_order: data.display_order,
+          admin: data.admin,
+      };
         this._addWorkflowSpecCategory(newCat);
       }
     }
@@ -244,6 +346,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _updateWorkflowSpec(specId: string, newSpec: WorkflowSpec) {
     this.api.updateWorkflowSpecification(specId, newSpec).subscribe(_ => {
+      this._loadWorkflowLibraries();
       this._loadWorkflowSpecs();
       this._displayMessage('Saved changes to workflow spec.');
     });
@@ -251,7 +354,8 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _addWorkflowSpec(newSpec: WorkflowSpec) {
     this.api.addWorkflowSpecification(newSpec).subscribe(_ => {
-      this._loadWorkflowSpecs();
+      this._loadWorkflowLibraries(newSpec.id);
+      this._loadWorkflowSpecs(newSpec.id);
       this._displayMessage('Saved new workflow spec.');
     });
   }
@@ -259,7 +363,8 @@ export class WorkflowSpecListComponent implements OnInit {
   private _deleteWorkflowSpec(workflowSpec: WorkflowSpec) {
     this.api.deleteWorkflowSpecification(workflowSpec.id).subscribe(() => {
       this._loadWorkflowSpecs();
-      this._displayMessage(`Deleted workflow spec ${workflowSpec.name}.`);
+      this._loadWorkflowLibraries();
+      this._displayMessage(`Deleted workflow spec ${workflowSpec.id}.`);
     });
   }
 
@@ -280,7 +385,7 @@ export class WorkflowSpecListComponent implements OnInit {
   private _deleteWorkflowSpecCategory(workflowSpecCategory: WorkflowSpecCategory) {
     this.api.deleteWorkflowSpecCategory(workflowSpecCategory.id).subscribe(() => {
       this._loadWorkflowSpecCategories();
-      this._displayMessage(`Deleted workflow spec category ${workflowSpecCategory.name}.`);
+      this._displayMessage(`Deleted workflow spec category ${workflowSpecCategory.display_name}.`);
     });
   }
 
@@ -288,57 +393,5 @@ export class WorkflowSpecListComponent implements OnInit {
     this.snackBar.open(message, 'Ok', {duration: 3000});
   }
 
-  private _reorder(
-    id: number|string, direction: number,
-    list: Array<WorkflowSpecCategoryGroup|WorkflowSpec>
-  ): Array<WorkflowSpecCategoryGroup|WorkflowSpec> {
-    const listClone = createClone({circles: true})(list);
-    const reorderedList = listClone.filter(item => item.id !== null && item.id !== undefined);
-    const i = reorderedList.findIndex(spec => spec.id === id);
-    if (i !== -1) {
-      if (direction === 1) {
-        this.moveDown(reorderedList, i);
-      } else if (direction === -1) {
-        this.moveUp(reorderedList, i);
-      }
-
-      return reorderedList;
-    } else {
-      this.snackBar.open('Item not found. Reload the page and try again.');
-      return [];
-    }
-  }
-
-  private _updateCatDisplayOrders(cats: WorkflowSpecCategory[]) {
-    let numUpdated = 0;
-    cats.forEach((cat, j) => {
-      if (isNumberDefined(cat.id)) {
-        const newCat: WorkflowSpecCategoryGroup = createClone({circles: true})(cat);
-        delete newCat.workflow_specs;
-
-        newCat.display_order = j;
-        this.api.updateWorkflowSpecCategory(cat.id, newCat as WorkflowSpecCategory).subscribe(updatedCat => {
-          numUpdated++;
-          if (numUpdated === cats.length) {
-            this._loadWorkflowSpecCategories();
-          }
-        });
-      }
-    });
-  }
-
-  private _updateSpecDisplayOrders(specs: WorkflowSpec[]) {
-    let numUpdated = 0;
-    specs.forEach((spec, j) => {
-      const newSpec = createClone({circles: true})(spec);
-      newSpec.display_order = j;
-      this.api.updateWorkflowSpecification(newSpec.id, newSpec).subscribe(() => {
-        numUpdated++;
-        if (numUpdated === specs.length) {
-          this._loadWorkflowSpecCategories();
-        }
-      });
-    });
-  }
 }
 

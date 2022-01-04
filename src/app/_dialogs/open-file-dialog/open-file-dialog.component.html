@@ -2,6 +2,7 @@
   <ng-container *ngIf="!mode">Where is your file?</ng-container>
   <ng-container *ngIf="mode === 'local'">Upload a local {{fileTypesString()}} file</ng-container>
   <ng-container *ngIf="mode === 'remote'">Open a {{fileTypesString()}} file from URL</ng-container>
+  <ng-container *ngIf="mode === 'reference'">Upload a new reference file ({{fileTypes}})</ng-container>
   <span fxFlex></span>
   <button mat-icon-button mat-dialog-close=""><mat-icon>close</mat-icon></button>
 </div>
@@ -18,6 +19,17 @@
   </div>
 
   <div *ngIf="mode === 'local'">
+    <mat-form-field (click)="fileInput.click()">
+      <span matPrefix><mat-icon>folder_open</mat-icon> &nbsp;</span>
+      <input [value]="getFileName()" disabled matInput type="text">
+    </mat-form-field>
+    <input #fileInput (change)="onFileSelected($event)" accept="{{fileExtensions()}}" hidden id="file"
+           type="file">
+    <button (click)="onSubmit()" [disabled]="!data.file" color="primary" mat-flat-button>Upload File</button>
+    <button (click)="cancel()" mat-flat-button>Cancel</button>
+  </div>
+
+  <div *ngIf="mode === 'reference'">
     <mat-form-field (click)="fileInput.click()">
       <span matPrefix><mat-icon>folder_open</mat-icon> &nbsp;</span>
       <input [value]="getFileName()" disabled matInput type="text">

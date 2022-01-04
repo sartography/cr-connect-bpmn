@@ -1,39 +1,55 @@
-import {formatDate} from '@angular/common';
-import {HttpErrorResponse} from '@angular/common/http';
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, NgZone, Output, ViewChild} from '@angular/core';
-import {ControlValueAccessor} from '@angular/forms';
+import { formatDate } from '@angular/common';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  NgZone,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
+import { ControlValueAccessor } from '@angular/forms';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import DmnModeler from 'dmn-js/lib/Modeler';
 import * as fileSaver from 'file-saver';
 import {
   ApiService,
   BPMN_DIAGRAM_DEFAULT,
+  CameltoSnakeCase,
   DMN_DIAGRAM_DEFAULT,
   FileType,
-  getDiagramTypeFromXml
 } from 'sartography-workflow-lib';
-import {v4 as uuidv4} from 'uuid';
-import {BpmnWarning} from '../_interfaces/bpmn-warning';
-import {ImportEvent} from '../_interfaces/import-event';
-import {bpmnModelerConfig} from './bpmn-modeler-config';
-import {dmnModelerConfig} from './dmn-modeler-config';
+import { v4 as uuidv4 } from 'uuid';
+import { BpmnError, BpmnWarning } from '../_interfaces/bpmn-warning';
+import { ImportEvent } from '../_interfaces/import-event';
+import { bpmnModelerConfig } from './bpmn-modeler-config';
+import { dmnModelerConfig } from './dmn-modeler-config';
+import { getDiagramTypeFromXml } from '../_util/diagram-type';
+import isEqual from 'lodash.isequal';
+import { migrateDiagram } from '@bpmn-io/dmn-migrate';
 
 @Component({
   selector: 'app-diagram',
   templateUrl: 'diagram.component.html',
   styleUrls: ['diagram.component.scss'],
 })
-export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
-  @Input() fileName: string;
+export class DiagramComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
   @ViewChild('containerRef', {static: true}) containerRef: ElementRef;
   @ViewChild('propertiesRef', {static: true}) propertiesRef: ElementRef;
-  @Output() private importDone: EventEmitter<ImportEvent> = new EventEmitter();
+  @Input() fileName: string;
+  @Input() validation_data: { [key: string]: any } = {};
+  @Input() validation_state: string;
+  @Output() validationStart: EventEmitter<string> = new EventEmitter();
+  @Output() importDone: EventEmitter<ImportEvent> = new EventEmitter();
+  public eventBus;
   private diagramType: FileType;
   private modeler: BpmnModeler | DmnModeler;
   private xml = '';
   private svg;
   private disabled = false;
-
   // Hack so we can spy on this function
   private _formatDate = formatDate;
 
@@ -57,19 +73,41 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   }
 
   onChange(newValue: string, svgValue: string) {
-    console.log('DiagramComponent default onChange');
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.validation_data) {
+      this.validation_data = changes.validation_data.currentValue;
+      if (this.modeler) {
+        if (this.validation_data.task_data) {
+          this.modeler.get('eventBus').fire('editor.objects.response', {objects: this.validation_data.task_data});
+        }
+      }
+    }
+    if (changes.validation_state) {
+      this.validation_state = changes.validation_state.currentValue;
+      if (this.modeler) {
+        const resp = {
+          state: this.validation_state, line_number: undefined,
+        };
+        if (this.validation_data.line_number) {
+          resp.line_number = this.validation_data.line_number;
+        }
+        this.modeler.get('eventBus').fire('editor.validation.response', resp);
+      }
+    }
   }
 
   onTouched() {
   }
 
-  initializeModeler(diagramType: FileType) {
+  initializeModeler(diagramType: FileType): DmnModeler | BpmnModeler {
     this.clearElements();
 
     if (diagramType === FileType.DMN) {
-      this.initializeDMNModeler();
+      return this.initializeDMNModeler() as DmnModeler;
     } else {
-      this.initializeBPMNModeler();
+      return this.initializeBPMNModeler() as BpmnModeler;
     }
   }
 
@@ -103,54 +141,88 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
   openDiagram(xml?: string, diagramType?: FileType) {
     this.diagramType = diagramType || getDiagramTypeFromXml(xml);
     this.xml = xml;
-    this.initializeModeler(diagramType);
+    const modeler = this.initializeModeler(diagramType);
 
-    return this.zone.run(() => {
+    return this.zone.run(async () => {
+      const isDMN = diagramType === FileType.DMN;
+
       if (!xml) {
-        const defaultXml = diagramType === FileType.DMN ? DMN_DIAGRAM_DEFAULT : BPMN_DIAGRAM_DEFAULT;
-        xml = defaultXml.replace(/REPLACE_ME/gi, () => this.getRandomString(7));
+        const defaultXml = isDMN ? DMN_DIAGRAM_DEFAULT : BPMN_DIAGRAM_DEFAULT;
+        const randomString = this.getRandomString(7);
+        xml = defaultXml.replace(/REPLACE_ME/gi, () => randomString);
       }
 
-      this.modeler.importXML(xml, (e, w) => this.onImport(e, w));
+      // Convert any DMN 1.1 or 1.2 DMN to v1.3
+      const convertedXML = isDMN ? await this.convertDMN(xml) : xml;
+      this.modeler.importXML(convertedXML).then(
+        (e, w) => this.onImport(e, w || e && e.warnings),
+        e => this.onImport(e, e && e.warnings),
+      );
     });
   }
 
-  saveSVG() {
-    this.saveDiagram();
-    this.modeler.saveSVG((err, svg) => {
-      const blob = new Blob([svg], {type: 'image/svg+xml'});
-      fileSaver.saveAs(blob, `${this.diagramType.toString().toUpperCase()} Diagram - ${new Date().toISOString()}.svg`);
-    });
+  async saveSVG() {
+    await this.saveDiagram();
+    const {svg} = await this.modeler.saveSVG();
+    const blob = new Blob([svg], {type: 'image/svg+xml'});
+    fileSaver.saveAs(blob, this.insertDateIntoFileName());
   }
 
-  saveDiagram() {
+  async saveDiagram() {
     if (this.modeler && this.modeler.saveSVG) {
-      this.modeler.saveSVG((svgErr, svg) => {
-        this.svg = svg;
-        this.modeler.saveXML({format: true}, (xmlErr, xml) => {
-          this.xml = xml;
-          this.writeValue(xml);
-        });
-      });
-    } else {
-      this.modeler.saveXML({format: true}, (xmlErr, xml) => {
-        this.xml = xml;
-        this.writeValue(xml);
-      });
+      const {svg} = await this.modeler.saveSVG();
+      this.svg = svg;
     }
+
+    const {xml} = await this.modeler.saveXML({format: true});
+    this.xml = xml;
+    this.writeValue(xml);
   }
 
-  saveXML() {
-    this.saveDiagram();
-    this.modeler.saveXML({format: true}, (err, xml) => {
-      const blob = new Blob([xml], {type: 'text/xml'});
-      fileSaver.saveAs(blob, this.insertDateIntoFileName());
-    });
+  async saveXML() {
+    await this.saveDiagram();
+    const {xml} = await this.modeler.saveXML({format: true});
+    const blob = new Blob([xml], {type: 'text/xml'});
+    fileSaver.saveAs(blob, this.insertDateIntoFileName());
   }
 
-  onImport(err?: HttpErrorResponse, warnings?: BpmnWarning[]) {
-    if (err) {
-      this._handleErrors(err);
+  onImport(err?: Error | BpmnError, warnings?: BpmnWarning[]) {
+    warnings = warnings || [];
+
+    // SUCCESS (no errors or warnings)
+    // -----------------------------------------
+    // err = {warnings: []}
+    // warnings = []
+    // -----------------------------------------
+    // err = undefined
+    // warnings = []
+    // -----------------------------------------
+
+    // ERROR
+    // -----------------------------------------
+    // err = {warnings: [{message: '...', error: {stack '...', message: '...'}}]}
+    // warnings = [{message: '...', error: {stack '...', message: '...'}}]
+    // -----------------------------------------
+
+    // SUCCESS WITH WARNINGS
+    // -----------------------------------------
+    // err = {warnings: [{message: '...', error: {}}]
+    // warnings = [{message: '...', error: {}}]
+    // -----------------------------------------
+    // err = undefined
+    // warnings = [{message: '...', error: {}}]
+    // -----------------------------------------
+    const isSuccess = (!err || isEqual(err, {warnings: []})) && isEqual(warnings, []);
+    const isError = !isSuccess && err && (
+      err instanceof Error ||
+      err.warnings && err.warnings.some(w => w.error && !isEqual(w.error, {}))
+    );
+
+    if (isSuccess && !isError) {
+      this._handleSuccess();
+    } else if (isError) {
+      const errors = err || warnings.filter(w => !!w.error);
+      this._handleErrors(errors);
     } else {
       this._handleWarnings(warnings);
     }
@@ -160,27 +232,38 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
    * Load diagram from URL and emit completion event
    */
   loadUrl(url: string) {
-    this.api.getStringFromUrl(url).subscribe(xml => {
-      const diagramType = getDiagramTypeFromXml(xml);
-      this.openDiagram(xml, diagramType);
-    }, error => this._handleErrors(error));
+    this.api.getStringFromUrl(url).subscribe(
+      xml => {
+        const diagramType = getDiagramTypeFromXml(xml);
+        this.openDiagram(xml, diagramType);
+      },
+      error => this._handleErrors(error),
+    );
+  }
+
+  private _handleSuccess() {
+    this.importDone.emit({
+      type: 'success',
+      warnings: [],
+    });
   }
 
   private _handleWarnings(warnings: BpmnWarning[]) {
     this.importDone.emit({
       type: 'success',
-      warnings: warnings
+      warnings: warnings || [],
     });
   }
 
   private _handleErrors(err) {
     this.importDone.emit({
       type: 'error',
-      error: err
+      error: err,
     });
   }
 
-  private initializeBPMNModeler() {
+  private initializeBPMNModeler(): BpmnModeler {
+    this.diagramType = FileType.BPMN;
     this.modeler = new BpmnModeler({
       container: this.containerRef.nativeElement,
       propertiesPanel: {
@@ -202,9 +285,27 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
         });
       }
     });
+    const eventBus = this.modeler.get('eventBus');
+
+    eventBus.on('editor.scripts.request', () => {
+      this.api.listScripts().subscribe((data) => {
+        data.forEach(element => {
+          element.name = CameltoSnakeCase(element.name);
+        });
+        this.modeler.get('eventBus').fire('editor.scripts.response', {scripts: data});
+      });
+    });
+
+    eventBus.on('editor.validation.request', (request) => {
+      this.validationStart.emit(request.task_name);
+    });
+
+    return this.modeler as BpmnModeler;
   }
 
-  private initializeDMNModeler() {
+
+  private initializeDMNModeler(): DmnModeler {
+    this.diagramType = FileType.DMN;
     this.modeler = new DmnModeler({
       container: this.containerRef.nativeElement,
       drd: {
@@ -244,6 +345,8 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
         });
       }
     });
+
+    return this.modeler as DmnModeler;
   }
 
   private clearElements() {
@@ -270,5 +373,9 @@ export class DiagramComponent implements ControlValueAccessor, AfterViewInit {
       // No extension in file name yet. Add it, based on the diagram type.
       return `${this.fileName}_${dateString}.${this.diagramType}`;
     }
+  }
+
+  private async convertDMN(xml: string) {
+    return await migrateDiagram(xml);
   }
 }

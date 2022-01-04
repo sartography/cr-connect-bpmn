@@ -17,7 +17,9 @@
         </button>
       </ng-container>
       <h4 (click)="editFile(fm)" mat-line>{{fm.name}}</h4>
-      <p (click)="editFile(fm)" mat-line>{{fm.last_updated | date}}</p>
+      <p (click)="editFile(fm)" mat-line> Updated on {{fm.last_modified | date:'medium'}}
+      <span *ngIf="fm.user_uid"> by {{fm.user_uid}}</span>
+      </p>
       <button (click)="downloadFile(fm)" class="mat-elevation-z0" color="primary" mat-icon-button>
         <mat-icon>save_alt</mat-icon>
       </button>

@@ -1,7 +1,7 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {HttpClient} from '@angular/common/http';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {MatIconModule} from '@angular/material/icon';
 import {FakeMatIconRegistry} from '@angular/material/icon/testing';
 import {MatMenuModule} from '@angular/material/menu';
@@ -17,7 +17,7 @@ describe('AppComponent', () => {
   const mockEnvironment = new MockEnvironment();
   const mockTitle = `'Once,' said the Mock Title at last, with a deep sigh, 'I was a real Title.'`;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         AppComponent,

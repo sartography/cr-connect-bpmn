@@ -1,27 +1,28 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {ActivatedRoute, Router} from '@angular/router';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   ApiService,
   FileMeta,
   FileParams,
   FileType,
   getFileType,
-  isNumberDefined, newFileFromResponse,
-  WorkflowSpec
+  isNumberDefined,
+  newFileFromResponse,
+  WorkflowSpec,
 } from 'sartography-workflow-lib';
-import {DeleteFileDialogComponent} from '../_dialogs/delete-file-dialog/delete-file-dialog.component';
-import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
-import {DeleteFileDialogData, OpenFileDialogData} from '../_interfaces/dialog-data';
+import { DeleteFileDialogComponent } from '../_dialogs/delete-file-dialog/delete-file-dialog.component';
+import { OpenFileDialogComponent } from '../_dialogs/open-file-dialog/open-file-dialog.component';
+import { DeleteFileDialogData, OpenFileDialogData } from '../_interfaces/dialog-data';
 import * as fileSaver from 'file-saver';
 
 @Component({
   selector: 'app-file-list',
   templateUrl: './file-list.component.html',
-  styleUrls: ['./file-list.component.scss']
+  styleUrls: ['./file-list.component.scss'],
 })
-export class FileListComponent implements OnInit {
+export class FileListComponent implements OnInit, OnChanges {
   @Input() workflowSpec: WorkflowSpec;
   fileMetas: FileMeta[];
   fileType = FileType;
@@ -36,6 +37,10 @@ export class FileListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this._loadFileMetas();
+  }
+
+  ngOnChanges() {
     this._loadFileMetas();
   }
 
@@ -64,7 +69,7 @@ export class FileListComponent implements OnInit {
       data: {
         confirm: false,
         fileMeta: fm,
-      }
+      },
     });
 
     dialogRef.afterClosed().subscribe((data: DeleteFileDialogData) => {
@@ -77,6 +82,7 @@ export class FileListComponent implements OnInit {
   makePrimary(fmPrimary: FileMeta) {
     if (fmPrimary.type === FileType.BPMN) {
       let numUpdated = 0;
+      // Fixme: This buisness rule does not belong here.
       this.fileMetas.forEach(fm => {
         fm.primary = (fmPrimary.id === fm.id);
         this.api.updateFileMeta(fm).subscribe(() => {
@@ -91,12 +97,19 @@ export class FileListComponent implements OnInit {
     }
   }
 
+  downloadFile(fm: FileMeta) {
+    this.api.getFileData(fm.id).subscribe(response => {
+      const blob = new Blob([response.body], {type: fm.content_type});
+      fileSaver.saveAs(blob, fm.name);
+    });
+  }
+
   private _openFileDialog(fm?: FileMeta, file?: File) {
     const dialogData: OpenFileDialogData = {
       fileMetaId: fm ? fm.id : undefined,
-      file: file,
+      file,
       mode: 'local',
-      fileTypes: [FileType.DOC, FileType.DOCX, FileType.XLSX, FileType.XLS],
+      fileTypes: [FileType.DOC, FileType.DOCX, FileType.XLSX],
     };
     const dialogRef = this.dialog.open(OpenFileDialogComponent, {data: dialogData});
 
@@ -107,13 +120,12 @@ export class FileListComponent implements OnInit {
           content_type: data.file.type,
           name: data.file.name,
           type: getFileType(data.file),
-          file: data.file,
           workflow_spec_id: this.workflowSpec.id,
         };
 
         if (isNumberDefined(data.fileMetaId)) {
           // Update existing file
-          this.api.updateFileData(newFileMeta).subscribe(() => {
+          this.api.updateFileData(newFileMeta, data.file).subscribe(() => {
             this._loadFileMetas();
           });
         } else {
@@ -122,13 +134,12 @@ export class FileListComponent implements OnInit {
             workflow_spec_id: this.workflowSpec.id,
           };
 
-          this.api.addFileMeta(fileParams, newFileMeta).subscribe(dbFm => {
+          this.api.addFile(fileParams, newFileMeta, data.file).subscribe(dbFm => {
             this._loadFileMetas();
           });
         }
       }
     });
-
   }
 
   private _deleteFile(fileMeta: FileMeta) {
@@ -141,22 +152,6 @@ export class FileListComponent implements OnInit {
   private _loadFileMetas() {
     this.api.getFileMetas({workflow_spec_id: this.workflowSpec.id}).subscribe(fms => {
       this.fileMetas = fms.sort((a, b) => (a.name > b.name) ? 1 : -1);
-      this._loadFileData();
-    });
-  }
-
-  private _loadFileData() {
-    this.fileMetas.forEach(fm => {
-      this.api.getFileData(fm.id).subscribe(response => {
-        fm.file = newFileFromResponse(fm, response);
-      });
-    });
-  }
-
-  downloadFile(fm: FileMeta) {
-    this.api.getFileData(fm.id).subscribe(response => {
-      const blob = new Blob([response.body], {type: fm.content_type});
-      fileSaver.saveAs(blob, fm.name);
     });
   }
 }

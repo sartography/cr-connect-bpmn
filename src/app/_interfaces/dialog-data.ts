@@ -20,24 +20,32 @@ export interface OpenFileDialogData {
 
 export interface WorkflowSpecDialogData {
   id: string;
-  name: string;
   display_name: string;
   description: string;
   category_id: number;
   display_order: number;
+  standalone: boolean;
+  library: boolean;
 }
 
 export interface WorkflowSpecCategoryDialogData {
   id: number;
-  name: string;
   display_name: string;
   display_order?: number;
+  admin: boolean;
 }
 
 export interface DeleteFileDialogData {
   confirm: boolean;
   fileMeta: FileMeta;
 }
+
+export interface ConfirmDialogData {
+    title: string;
+    message: string;
+}
+
+
 
 export interface DeleteWorkflowSpecDialogData {
   confirm: boolean;

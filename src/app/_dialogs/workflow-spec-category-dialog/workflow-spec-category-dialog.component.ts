@@ -3,7 +3,7 @@ import {FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {toSnakeCase} from 'sartography-workflow-lib';
-import {WorkflowSpecCategoryDialogData, WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
+import {WorkflowSpecCategoryDialogData} from '../../_interfaces/dialog-data';
 
 @Component({
   selector: 'app-workflow-spec-category-dialog',
@@ -25,18 +25,7 @@ export class WorkflowSpecCategoryDialogComponent {
         placeholder: 'ID of workflow spec category',
         required: true,
       },
-    },
-    {
-      key: 'name',
-      type: 'input',
-      defaultValue: this.data.name,
-      templateOptions: {
-        label: 'Name',
-        placeholder: 'Name of workflow spec category',
-        description: 'Enter a name, in lowercase letters, separated by underscores, that is easy for you to remember.' +
-          'It will be converted to all_lowercase_with_underscores when you save.',
-        required: true,
-      },
+      hideExpression: true,
     },
     {
       key: 'display_name',
@@ -51,17 +40,15 @@ export class WorkflowSpecCategoryDialogComponent {
       },
     },
     {
-      key: 'display_order',
-      type: 'input',
-      defaultValue: this.data.display_order,
+      key: 'admin',
+      type: 'checkbox',
+      defaultValue: this.data.admin ? this.data.admin : false,
       templateOptions: {
-        type: 'number',
-        label: 'Display Order',
-        placeholder: 'Order in which category will be displayed',
-        description: 'Sort order that the category should appear in. Lower numbers will appear first.',
-        required: true,
-      },
-    },
+        label: 'Admin Category',
+        description: 'Should this category only be shown to Admins?',
+        indeterminate: false,
+      }
+    }
   ];
 
   constructor(
@@ -75,6 +62,7 @@ export class WorkflowSpecCategoryDialogComponent {
   }
 
   onSubmit() {
+    console.log('data is ', this.model);
     this.model.name = toSnakeCase(this.model.name);
     this.dialogRef.close(this.model);
   }

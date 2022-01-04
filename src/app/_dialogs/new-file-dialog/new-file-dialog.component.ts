@@ -22,7 +22,7 @@ export class NewFileDialogComponent {
   }
 
   onSubmit(fileType: FileType) {
-    const data: NewFileDialogData = {fileType: fileType};
+    const data: NewFileDialogData = {fileType};
     this.dialogRef.close(data);
   }
 

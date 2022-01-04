@@ -16,25 +16,62 @@
             "customWebpackConfig": {
               "path": "./webpack.config.js"
             },
+            "allowedCommonJsDependencies": [
+              "lodash",
+              "ids",
+              "bpmn-js-properties-panel",
+              "diagram-js-code-editor"
+            ],
             "outputPath": "dist/cr-connect-bpmn",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
+            "preserveSymlinks": true,
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "node_modules/bpmn-js/dist/assets/diagram-js.css",
+              "node_modules/bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css",
+              "node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css",
+              "node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css",
               "node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn.css",
+              "node_modules/bpmn-js/dist/assets/diagram-js.css",
+              "node_modules/dmn-js-properties-panel/dist/assets/dmn-js-properties-panel.css",
+              "node_modules/diagram-js-minimap/assets/diagram-js-minimap.css",
+              "node_modules/dmn-js/dist/assets/diagram-js.css",
+              "node_modules/dmn-js/dist/assets/dmn-font/css/dmn-codes.css",
+              "node_modules/dmn-js/dist/assets/dmn-font/css/dmn-embedded.css",
+              "node_modules/dmn-js/dist/assets/dmn-font/css/dmn.css",
+              "node_modules/dmn-js/dist/assets/dmn-js-decision-table-controls.css",
+              "node_modules/dmn-js/dist/assets/dmn-js-decision-table.css",
+              "node_modules/dmn-js/dist/assets/dmn-js-drd.css",
+              "node_modules/dmn-js/dist/assets/dmn-js-literal-expression.css",
+              "node_modules/dmn-js/dist/assets/dmn-js-shared.css",
               "src/styles.scss"
             ],
             "scripts": []
           },
           "configurations": {
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+
             "production": {
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
@@ -52,7 +89,14 @@
               ]
             },
             "staging": {
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
@@ -70,7 +114,14 @@
               ]
             },
             "test": {
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
@@ -98,15 +149,16 @@
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
             "port": 5002,
-            "customWebpackConfig": {
-              "path": "./webpack.config.js"
-            },
             "browserTarget": "cr-connect-bpmn:build"
           },
           "configurations": {
             "production": {
               "browserTarget": "cr-connect-bpmn:build:production"
+            },
+            "development": {
+              "browserTarget": "cr-connect-bpmn:build:development"
             }
+
           }
         },
         "extract-i18n": {
@@ -143,14 +195,11 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "src/tsconfig.app.json",
-              "src/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
             ]
           }
         }
@@ -174,11 +223,11 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "e2e//**/*.ts",
+              "e2e//**/*.html"
             ]
           }
         }
@@ -192,6 +241,7 @@
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "defaultCollection": "@angular-eslint/schematics"
   }
 }

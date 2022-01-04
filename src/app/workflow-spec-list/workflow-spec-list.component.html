@@ -1,96 +1,182 @@
-
-<div class="container mat-typography" fxLayout="column" fxLayoutGap="10px">
-  <h1>Workflow Specifications</h1>
-  <div fxLayout="row" fxLayoutGap="10px">
-    <button mat-flat-button color="primary" (click)="editWorkflowSpec()">
-      <mat-icon>library_add</mat-icon>
-      Add new workflow specification
-    </button>
-    <button mat-flat-button color="accent" (click)="editWorkflowSpecCategory()">
-      <mat-icon>post_add</mat-icon>
-      Add category
-    </button>
+<div class="workflow-specs" fxLayout="column" fxLayoutGap="10px">
+  <div class="buttons" fxLayout="row" fxLayoutGap="20px">
+    <div>
+      <h1 style="margin-top: 16px">Workflow Specifications</h1>
+    </div>
+      <mat-form-field appearance="outline" style="padding:0">
+        <label><input matInput type="search" placeholder="Search Workflows" fxLayoutAlign="start" style="margin-top: 0;" class="form-control" [formControl]="searchField"></label>
+      </mat-form-field>
   </div>
-  <ng-container *ngFor="let cat of workflowSpecsByCategory">
-    <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
-      <div class="category" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
-        <h2>{{cat.display_name}} ({{cat.name}})</h2>
-        <div class="category-actions" fxLayout="row" fxLayoutGap="10px" *ngIf="cat.id !== null">
-          <button mat-mini-fab color="primary" (click)="editWorkflowSpecCategory(cat)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button
-            *ngIf="cat.display_order > 0"
-            mat-mini-fab
-            title="Move up"
-            color="primary"
-            (click)="editCategoryDisplayOrder(cat.id, -1, workflowSpecsByCategory)"
-          >
-            <mat-icon>arrow_upward</mat-icon>
-          </button>
-          <button
-            *ngIf="cat.display_order < workflowSpecsByCategory.length - 2"
-            mat-mini-fab
-            title="Move down"
-            color="primary"
-            (click)="editCategoryDisplayOrder(cat.id, 1, workflowSpecsByCategory)"
-          >
-            <mat-icon>arrow_downward</mat-icon>
-          </button>
-          <button mat-icon-button title="Delete this category" color="warn" (click)="confirmDeleteWorkflowSpecCategory(cat)">
-            <mat-icon>delete</mat-icon>
+  <mat-drawer-container class="example-container" autosize>
+    <mat-drawer #drawer class="example-sidenav" mode="side" opened="true">
+      <ng-container *ngIf="masterStatusSpec">
+        <div class="category-top">
+          <h4>Master Specification</h4>
+          <mat-list>
+            <mat-list-item class="workflow-spec" fxLayout="row">
+              <span class="spec_menu_item" (click)="selectSpec(masterStatusSpec)">{{masterStatusSpec.display_name}}</span>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </ng-container>
+      <mat-divider></mat-divider>
+
+      <mat-divider></mat-divider>
+      <ng-container>
+        <div class="category" fxLayout="row">
+          <h4>Library Specs</h4>
+          <button mat-fab class="custom-fab" id="add_spec" title="Add new Library" color="primary" (click)="editWorkflowSpec('library')" fxLayoutAlign="auto">
+            <mat-icon class="custom-icon">library_add</mat-icon>
           </button>
         </div>
-      </div>
-      <div *ngFor="let wfs of cat.workflow_specs" class="workflow-spec">
-        <ng-container *ngTemplateOutlet="workflowSpecCard; context: {wfs: wfs, cat: cat}"></ng-container>
-      </div>
-      <div *ngIf="cat.workflow_specs.length === 0">No workflow specs in this category</div>
-    </ng-container>
-  </ng-container>
-  <mat-divider></mat-divider>
-  <ng-container *ngIf="masterStatusSpec">
-    <h1>Master Status Specification</h1>
-    <ng-container *ngTemplateOutlet="workflowSpecCard; context: {wfs: masterStatusSpec, cat: null}"></ng-container>
-  </ng-container>
-</div>
+        <mat-divider></mat-divider>
+        <mat-accordion class="example-headers-align">
+            <mat-expansion-panel [expanded]="library_toggle" (opened)="libraryToggle(true)">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+              <h4>All Libraries</h4>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+              <mat-list>
+              <mat-list-item *ngFor="let wfs of workflowLibraries" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
+               <div>
+                 <span [ngClass]="{'library_item':true, 'spec_menu_item':true, 'library-selected': selectedSpec && wfs.id === selectedSpec.id}" (click)="selectSpec(wfs)">{{wfs.display_name}}</span>
+               </div>
+              </mat-list-item>
+              </mat-list>
+            </mat-expansion-panel>
+          </mat-accordion>
+      </ng-container>
 
-<ng-template #workflowSpecCard let-wfs="wfs" let-cat="cat">
-  <app-workflow-spec-card
-    [workflowSpec]="wfs"
-    [actionButtons]="actionButtons"
-    (workflowUpdated)="onWorkflowUpdated($event)"
-  ></app-workflow-spec-card>
-  <ng-template #actionButtons>
-    <div class="workflow-spec-actions">
-      <button mat-mini-fab title="Check for errors in this workflow specification" color="accent" (click)="validateWorkflowSpec(wfs)">
-        <mat-icon>verified_user</mat-icon>
-      </button>
-      <button
-        *ngIf="cat && cat.workflow_specs.length > 0 && wfs.display_order !== 0"
-        mat-mini-fab
-        title="Move up"
-        color="primary"
-        (click)="editSpecDisplayOrder(wfs.id, -1, cat.workflow_specs)"
-      >
-        <mat-icon>arrow_upward</mat-icon>
-      </button>
-      <button
-        *ngIf="cat && cat.workflow_specs.length > 0 && (wfs.display_order < cat.workflow_specs.length - 1)"
-        mat-mini-fab
-        title="Move down"
-        color="primary"
-        (click)="editSpecDisplayOrder(wfs.id, 1, cat.workflow_specs)"
-      >
-        <mat-icon>arrow_downward</mat-icon>
-      </button>
-      <button mat-mini-fab title="Edit this workflow specification" color="primary" (click)="editWorkflowSpec(wfs)">
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button mat-icon-button title="Delete this workflow specification" color="warn" (click)="confirmDeleteWorkflowSpec(wfs)">
-        <mat-icon>delete</mat-icon>
-      </button>
+      <mat-divider></mat-divider>
+
+      <ng-container>
+        <div class="category" fxLayout="row">
+          <h4 style="margin-right: 25px">Study Specs</h4>
+          <div fxLayout="row" fxLayoutGap="5px">
+            <button id="add_category" title="Add new Category" mat-fab class="custom-fab" color="accent" (click)="editWorkflowSpecCategory()"  fxLayoutAlign="stretch">
+              <mat-icon class="custom-icon">post_add</mat-icon>
+            </button>
+            <button id="add_library" title="Add new Study Spec" mat-fab class="custom-fab" color="primary" (click)="editWorkflowSpec('study')" fxLayoutAlign="start">
+              <mat-icon class="custom-icon">library_add</mat-icon>
+            </button>
+            </div>
+        </div>
+        <mat-divider></mat-divider>
+
+      <mat-accordion class="example-headers-align" multi="false">
+      <ng-container *ngFor="let cat of workflowSpecsByCategory; let j = index">
+
+        <div *ngIf="!(searchField.value && cat.workflow_specs.length === 0)">
+        <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
+          <mat-expansion-panel hideToggle (opened)="selectCat(cat); libraryToggle(false)" [expanded]="isSelected(cat) && !library_toggle" >
+            <mat-expansion-panel-header>
+                <mat-panel-description>
+                  <div *ngIf="cat.admin" style="color: darkorange">
+                    {{cat.display_name}}
+                  </div>
+                  <div *ngIf="!cat.admin">
+                    {{cat.display_name}}
+                  </div>
+                </mat-panel-description>
+              <button mat-mini-fab color="primary" style="box-shadow: none">
+                {{cat.workflow_specs.length}}
+              </button>
+            </mat-expansion-panel-header>
+            <mat-list>
+              <mat-list-item *ngFor="let wfs of cat.workflow_specs; let i = index" class="workflow-spec" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
+                <span [ngClass]="{'spec_menu_item':true, 'spec-selected': selectedSpec && wfs.id === selectedSpec.id}" (click)="selectSpec(wfs)">{{wfs.display_name}}</span>
+                <span class="spec-actions" fxLayout="row" fxLayoutGap="10px" *ngIf="cat.id !== null && cat">
+                <button
+                  *ngIf="i!==0 && cat.workflow_specs.length > 0"
+                  mat-icon-button
+                  title="Move up"
+                  color="primary"
+                  (click)="editSpecDisplayOrder(cat, wfs.id, 'up')"
+                >
+                  <mat-icon>arrow_upward</mat-icon>
+                </button>
+                <button
+                  *ngIf="i!==cat.workflow_specs.length-1 && cat.workflow_specs.length > 0"
+                  mat-icon-button
+                  title="Move down"
+                  color="primary"
+                  (click)="editSpecDisplayOrder(cat, wfs.id, 'down')"
+                >
+                  <mat-icon>arrow_downward</mat-icon>
+                </button>
+              </span>
+                <!--
+                <ng-container *ngTemplateOutlet="workflowSpecCard; context: {wfs: wfs, cat: cat}"></ng-container>
+                -->
+              </mat-list-item>
+            </mat-list>
+
+            <div *ngIf="cat.workflow_specs.length === 0">No workflow specs in this category</div>
+            <mat-action-row>
+              <button mat-mini-fab color="primary" (click)="editWorkflowSpecCategory(cat)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                *ngIf="j!==0"
+                mat-mini-fab
+                title="Move up"
+                color="primary"
+                (click)="editCategoryDisplayOrder(cat.id, 'up')"
+              >
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button
+                *ngIf="j!== workflowSpecsByCategory.length-1"
+                mat-mini-fab
+                title="Move down"
+                color="primary"
+                (click)="editCategoryDisplayOrder(cat.id, 'down')"
+              >
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+              <button mat-icon-button title="Delete this category" color="warn"
+                      (click)="confirmDeleteWorkflowSpecCategory(cat)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-action-row>
+          </mat-expansion-panel>
+
+        </ng-container>
+        </div>
+      </ng-container>
+      </mat-accordion>
+      </ng-container>
+    </mat-drawer>
+
+    <div class="content">
+        <ng-container *ngIf="selectedSpec">
+          <ng-container *ngTemplateOutlet="workflowSpecCard; context: {wfs: selectedSpec, cat: null}"></ng-container>
+        </ng-container>
     </div>
-  </ng-template>
-</ng-template>
+  </mat-drawer-container>
 
+
+  <ng-template #workflowSpecCard let-wfs="wfs" let-cat="cat">
+    <app-workflow-spec-card
+      [workflowSpec]="wfs"
+      [actionButtons]="actionButtons"
+    ></app-workflow-spec-card>
+    <ng-template #actionButtons>
+      <div class="workflow-spec-actions">
+        <button mat-mini-fab title="Check for errors in this workflow specification" color="accent"
+                (click)="validateWorkflowSpec(wfs)">
+          <mat-icon>verified_user</mat-icon>
+        </button>
+        <button mat-mini-fab title="Edit this workflow specification" color="primary" (click)="editWorkflowSpec(this.selectedSpec.library ? 'library' : 'study', wfs)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button title="Delete this workflow specification" color="warn"
+                (click)="confirmDeleteWorkflowSpec(wfs)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </ng-template>
+  </ng-template>
+
+</div>

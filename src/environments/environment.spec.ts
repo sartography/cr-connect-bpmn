@@ -1,5 +1,6 @@
 import {_has, environment} from './environment.runtime';
 
+// eslint-disable-next-line no-var
 declare var ENV;
 
 describe('Environments', () => {

@@ -1,6 +1,6 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -11,7 +11,13 @@ import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import {FormlyModule} from '@ngx-formly/core';
 import {FormlyMaterialModule} from '@ngx-formly/material';
-import {ApiService, MockEnvironment, mockWorkflowSpec0, mockWorkflowSpecCategories} from 'sartography-workflow-lib';
+import {
+  ApiService,
+  MockEnvironment,
+  mockWorkflowSpec0,
+  mockWorkflowSpecCategories,
+  mockWorkflowSpecs
+} from 'sartography-workflow-lib';
 import {WorkflowSpecDialogData} from '../../_interfaces/dialog-data';
 
 import {WorkflowSpecDialogComponent} from './workflow-spec-dialog.component';
@@ -22,7 +28,7 @@ describe('WorkflowSpecDialogComponent', () => {
   let fixture: ComponentFixture<WorkflowSpecDialogComponent>;
   const mockRouter = {navigate: jasmine.createSpy('navigate')};
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         BrowserAnimationsModule,
@@ -74,6 +80,12 @@ describe('WorkflowSpecDialogComponent', () => {
     expect(catReq.request.method).toEqual('GET');
     catReq.flush(mockWorkflowSpecCategories);
     expect(component.categories.length).toBeGreaterThan(0);
+
+    const specReq = httpMock.expectOne('apiRoot/workflow-specification');
+    expect(specReq.request.method).toEqual('GET');
+    specReq.flush(mockWorkflowSpecs);
+    expect(component.specs.length).toBeGreaterThan(0);
+
   });
 
   afterEach(() => {

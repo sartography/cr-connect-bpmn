@@ -1,6 +1,6 @@
 import {AppEnvironment} from 'sartography-workflow-lib';
 
-declare var ENV;
+declare let ENV;
 
 export const _has = (env, key, temp): boolean => env && ![null, undefined, temp, ''].includes(env[key]);
 

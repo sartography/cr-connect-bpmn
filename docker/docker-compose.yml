@@ -2,7 +2,7 @@ version: "3.3"
 services:
   db:
     container_name: db
-    image: sartography/cr-connect-db:$E2E_TAG
+    image: quay.io/sartography/cr-connect-db:$E2E_TAG
     ports:
       - "5432:5432"
     environment:
@@ -19,7 +19,7 @@ services:
     container_name: pb
     depends_on:
        - db
-    image: sartography/protocol-builder-mock:$E2E_TAG
+    image: quay.io/sartography/protocol-builder-mock:$E2E_TAG
     environment:
       - APPLICATION_ROOT=/
       - CORS_ALLOW_ORIGINS=localhost:5000,backend:5000,localhost:5002,bpmn:5002,localhost:4200,frontend:4200
@@ -39,7 +39,7 @@ services:
     depends_on:
        - db
        - pb
-    image: sartography/cr-connect-workflow:$E2E_TAG
+    image: quay.io/sartography/cr-connect-workflow:$E2E_TAG
     environment:
       - APPLICATION_ROOT=/
       - CORS_ALLOW_ORIGINS=localhost:5002,bpmn:5002,localhost:4200,frontend:4200
@@ -67,7 +67,7 @@ services:
 #    depends_on:
 #       - db
 #       - backend
-#    image: sartography/cr-connect-bpmn:dev
+#    image: quay.io/sartography/cr-connect-bpmn:dev
 #    environment:
 #      - API_URL=http://localhost:5000/api/v1.0
 #      - BASE_HREF=/bpmn/
@@ -83,7 +83,7 @@ services:
 #    depends_on:
 #       - db
 #       - backend
-#    image: sartography/cr-connect-frontend:dev
+#    image: quay.io/sartography/cr-connect-frontend:dev
 #    environment:
 #      - API_URL=http://localhost:5000/api/v1.0
 #      - BASE_HREF=/app/

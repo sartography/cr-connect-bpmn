@@ -2,7 +2,7 @@ import {APP_BASE_HREF} from '@angular/common';
 import {HttpClient} from '@angular/common/http';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {Component} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import {ApiService, MockEnvironment} from 'sartography-workflow-lib';
@@ -29,7 +29,7 @@ describe('HomeComponent', () => {
   let fixture: ComponentFixture<HomeComponent>;
   const mockRouter = {navigate: jasmine.createSpy('navigate')};
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         HomeComponent,

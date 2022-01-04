@@ -1,7 +1,7 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {HttpHeaders} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
@@ -10,9 +10,9 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import * as FileSaver from 'file-saver';
-import createClone from 'rfdc';
+import { cloneDeep } from 'lodash';
 import {of} from 'rxjs';
-import {ApiService, FileMeta, FileType, MockEnvironment, mockFileMetaReference0} from 'sartography-workflow-lib';
+import {ApiService, FileMeta, FileType, MockEnvironment, mockFileMetaReference0, mockFileReference0} from 'sartography-workflow-lib';
 import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
 import {ReferenceFilesComponent} from './reference-files.component';
 
@@ -23,12 +23,15 @@ describe('ReferenceFilesComponent', () => {
   const mockRouter = {navigate: jasmine.createSpy('navigate')};
 
   // Mock file and response headers
-  const mockDocMeta: FileMeta = createClone()(mockFileMetaReference0);
+  const mockDocMeta: FileMeta = cloneDeep(mockFileMetaReference0);
   mockDocMeta.type = FileType.XLSX;
+
+  const timeString = '2020-01-23T12:34:12.345Z';
+  const timeCode = new Date(timeString).getTime();
 
   const expectedFile = new File([], mockDocMeta.name, {
     type: mockDocMeta.content_type,
-    lastModified: mockDocMeta.file.lastModified
+    lastModified: timeCode
   });
 
   const mockHeaders = new HttpHeaders()
@@ -37,7 +40,7 @@ describe('ReferenceFilesComponent', () => {
 
   const mockArrayBuffer = new ArrayBuffer(8);
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         BrowserAnimationsModule,
@@ -101,7 +104,7 @@ describe('ReferenceFilesComponent', () => {
       .and.returnValue({
         afterClosed: () => of({
           fileMetaId: mockFileMetaReference0.id,
-          file: mockFileMetaReference0.file
+          file: mockFileReference0
         })
       } as any);
     const _loadReferenceFilesSpy = spyOn((component as any), '_loadReferenceFiles').and.stub();

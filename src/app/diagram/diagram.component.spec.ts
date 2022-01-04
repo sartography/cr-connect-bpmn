@@ -1,27 +1,43 @@
-import {APP_BASE_HREF} from '@angular/common';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {DebugNode} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatIconModule} from '@angular/material/icon';
-import {Router} from '@angular/router';
-import {RouterTestingModule} from '@angular/router/testing';
+import { APP_BASE_HREF } from '@angular/common';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { DebugNode } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import * as FileSaver from 'file-saver';
-import {ApiService, BPMN_DIAGRAM_DEFAULT, FileType, MockEnvironment} from 'sartography-workflow-lib';
+import {
+  ApiService,
+  BPMN_DIAGRAM_DEFAULT,
+  DMN_DIAGRAM_DEFAULT,
+  FileType,
+  MockEnvironment,
+} from 'sartography-workflow-lib';
 import {
   BPMN_DIAGRAM,
   BPMN_DIAGRAM_WITH_WARNINGS,
-  DMN_DIAGRAM,
-  DMN_DIAGRAM_WITH_WARNINGS
+  DMN_DIAGRAM, DMN_DIAGRAM_EMPTY,
+  DMN_DIAGRAM_WITH_WARNINGS,
 } from '../../testing/mocks/diagram.mocks';
-import {DiagramComponent} from './diagram.component';
+import { DiagramComponent } from './diagram.component';
 
 describe('DiagramComponent', () => {
   let httpMock: HttpTestingController;
   let fixture: ComponentFixture<DiagramComponent>;
   let component: DebugNode['componentInstance'];
   const mockRouter = {navigate: jasmine.createSpy('navigate')};
+  const testSaveAs = async (fileType: FileType, xml: string, callMethod: string, filename: string) => {
+    const saveDiagramSpy = spyOn(component, 'saveDiagram').and.callThrough();
+    const fileSaveAsSpy = spyOn(FileSaver, 'saveAs').and.stub();
+    component.fileName = filename + '.' + fileType;
+    component.diagramType = fileType;
+    component.xml = xml;
+    await component[callMethod]();
+    await expect(saveDiagramSpy).toHaveBeenCalled();
+    await expect(fileSaveAsSpy).toHaveBeenCalledWith(jasmine.any(Blob), jasmine.stringMatching(filename));
+  };
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
@@ -34,7 +50,7 @@ describe('DiagramComponent', () => {
         {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
         {provide: APP_BASE_HREF, useValue: ''},
         {provide: Router, useValue: mockRouter},
-      ]
+      ],
     });
 
     httpMock = TestBed.inject(HttpTestingController);
@@ -58,7 +74,7 @@ describe('DiagramComponent', () => {
     component.importDone.subscribe(result => {
       expect(result).toEqual({
         type: 'success',
-        warnings: []
+        warnings: [],
       });
       done();
     });
@@ -73,7 +89,7 @@ describe('DiagramComponent', () => {
     component.importDone.subscribe(result => {
       expect(result).toEqual({
         type: 'success',
-        warnings: []
+        warnings: [],
       });
       done();
     });
@@ -85,12 +101,17 @@ describe('DiagramComponent', () => {
 
   it('should expose BPMN import warnings', (done) => {
     const diagramURL = 'some-url';
-    component.importDone.subscribe(result => {
-      expect(result.type).toEqual('success');
-      expect(result.warnings.length).toEqual(1);
-      expect(result.warnings[0].message).toContain('unparsable content <process> detected');
-      done();
-    });
+    component.importDone.subscribe(
+      result => {
+        expect(result.type).toEqual('error');
+        expect(result.error).toBeDefined();
+        expect(result.error.warnings).toBeDefined();
+        expect(result.error.warnings.length).toEqual(1);
+        expect(result.error.warnings[0].message).toContain('unparsable content <process> detected');
+        done();
+      },
+      error => {
+      });
     component.loadUrl(diagramURL);
 
     const request = httpMock.expectOne({url: diagramURL, method: 'GET'});
@@ -100,9 +121,9 @@ describe('DiagramComponent', () => {
   it('should expose DMN import warnings', (done) => {
     const diagramURL = 'some-url';
     component.importDone.subscribe(result => {
-      expect(result.type).toEqual('success');
-      expect(result.warnings.length).toEqual(1);
-      expect(result.warnings[0].message).toContain('unparsable content <decision> detected');
+      expect(result.type).toEqual('error');
+      expect(result.error.warnings.length).toEqual(1);
+      expect(result.error.warnings[0].message).toContain('unparsable content <decision> detected');
       done();
     });
     component.loadUrl(diagramURL);
@@ -123,20 +144,24 @@ describe('DiagramComponent', () => {
     const request = httpMock.expectOne({url: diagramURL, method: 'GET'});
     request.flush('Not Found', {
       status: 404,
-      statusText: 'FOO'
+      statusText: 'FOO',
     });
   });
 
-  it('should save diagram as SVG', () => {
-    const fileSaverSpy = spyOn(FileSaver, 'saveAs').and.stub();
-    component.saveSVG();
-    expect(fileSaverSpy).toHaveBeenCalled();
+  it('should save BPMN diagram as SVG', async () => {
+    await testSaveAs(FileType.BPMN, BPMN_DIAGRAM, 'saveSVG', 'some_bpmn_name');
   });
 
-  it('should save diagram as XML', () => {
-    const fileSaverSpy = spyOn(FileSaver, 'saveAs').and.stub();
-    component.saveXML();
-    expect(fileSaverSpy).toHaveBeenCalled();
+  it('should save BPMN diagram as XML', async () => {
+    await testSaveAs(FileType.BPMN, BPMN_DIAGRAM, 'saveXML', 'some_bpmn_name');
+  });
+
+  it('should save DMN diagram as SVG', async () => {
+    await testSaveAs(FileType.DMN, DMN_DIAGRAM, 'saveSVG', 'some_dmn_name');
+  });
+
+  it('should save DMN diagram as XML', async () => {
+    await testSaveAs(FileType.DMN, DMN_DIAGRAM, 'saveXML', 'some_dmn_name');
   });
 
   it('should insert date into filename', () => {
@@ -152,57 +177,85 @@ describe('DiagramComponent', () => {
 
   it('should create a new diagram', () => {
     const initializeModelerSpy = spyOn(component, 'initializeModeler').and.stub();
-    const importXMLSpy = spyOn(component.modeler, 'importXML').and.stub();
+    const importXMLSpy = spyOn(component.modeler, 'importXML').and.callThrough();
     spyOn(component, 'getRandomString').and.returnValue('REPLACE_ME');
     component.openDiagram();
     expect(initializeModelerSpy).toHaveBeenCalledWith(undefined);
-    expect(importXMLSpy).toHaveBeenCalledWith(BPMN_DIAGRAM_DEFAULT, jasmine.any(Function));
+    expect(importXMLSpy).toHaveBeenCalledWith(BPMN_DIAGRAM_DEFAULT);
   });
 
   it('should open an existing BPMN diagram from XML', () => {
     const initializeBPMNModelerSpy = spyOn(component, 'initializeBPMNModeler').and.stub();
-    const importXMLSpy = spyOn(component.modeler, 'importXML').and.stub();
+    const importXMLSpy = spyOn(component.modeler, 'importXML').and.callThrough();
     component.openDiagram(BPMN_DIAGRAM, FileType.BPMN);
     expect(initializeBPMNModelerSpy).toHaveBeenCalled();
     expect(importXMLSpy).toHaveBeenCalled();
   });
 
-  it('should open an existing DMN diagram from XML', () => {
+  it('should open an existing DMN diagram from XML', async () => {
     const initializeDMNModelerSpy = spyOn(component, 'initializeDMNModeler').and.stub();
-    const importXMLSpy = spyOn(component.modeler, 'importXML').and.stub();
-    component.openDiagram(DMN_DIAGRAM, FileType.DMN);
+    const importXMLSpy = spyOn(component.modeler, 'importXML').and.callThrough();
+    await component.openDiagram(DMN_DIAGRAM, FileType.DMN);
     expect(initializeDMNModelerSpy).toHaveBeenCalled();
     expect(importXMLSpy).toHaveBeenCalled();
   });
 
   it('should fail to open BPMN diagram', (done) => {
     component.openDiagram('INVALID BPMN XML', FileType.BPMN);
-    component.importDone.subscribe(result => {
-      expect(result.type).toEqual('error');
-      expect(result.error.message).toContain('unparsable content INVALID BPMN XML detected');
-      done();
-    });
+    component.importDone.subscribe(
+      result => {
+        expect(result.type).toEqual('error');
+        expect(result.error.message).toContain('unparsable content INVALID BPMN XML detected');
+        done();
+      },
+      error => {
+      });
   });
 
   it('should fail to open DMN diagram', (done) => {
     component.openDiagram('INVALID DMN XML', FileType.DMN);
-    component.importDone.subscribe(result => {
-      expect(result.type).toEqual('error');
-      expect(result.error.message).toContain('unparsable content INVALID DMN XML detected');
-      done();
-    });
+    component.importDone.subscribe(
+      result => {
+        expect(result.type).toEqual('error');
+        expect(result.error.message).toContain('unparsable content INVALID DMN XML detected');
+        done();
+      },
+      error => {
+        console.error('importDone > subscribe > error', error);
+      });
   });
 
-  it('should edit diagram', () => {
+  it('should edit BPMN diagram', () => {
     const initializeModelerSpy = spyOn(component, 'initializeModeler').and.stub();
     const onChangeSpy = spyOn(component, 'onChange').and.stub();
-    const importXMLSpy = spyOn(component.modeler, 'importXML').and.stub();
+    const importXMLSpy = spyOn(component.modeler, 'importXML').and.callThrough();
     spyOn(component, 'getRandomString').and.returnValue('REPLACE_ME');
     component.openDiagram();
     expect(initializeModelerSpy).toHaveBeenCalledWith(undefined);
-    expect(importXMLSpy).toHaveBeenCalledWith(BPMN_DIAGRAM_DEFAULT, jasmine.any(Function));
+    expect(importXMLSpy).toHaveBeenCalledWith(BPMN_DIAGRAM_DEFAULT);
 
     component.writeValue(BPMN_DIAGRAM);
+    expect(initializeModelerSpy).toHaveBeenCalledWith(undefined);
+    expect(onChangeSpy).toHaveBeenCalled();
+  });
+
+  it('should edit DMN diagram', async () => {
+    fixture.detectChanges();
+    await fixture.whenRenderingDone();
+
+    const initializeModelerSpy = spyOn(component, 'initializeModeler').and.stub();
+    const onChangeSpy = spyOn(component, 'onChange').and.stub();
+    const dmnMigrateSpy = spyOn((component as any), 'convertDMN').and.returnValue(DMN_DIAGRAM_EMPTY);
+    const importXMLSpy = spyOn(component.modeler, 'importXML').and.callThrough();
+    spyOn(component, 'getRandomString').and.returnValue('REPLACE_ME');
+
+    await component.openDiagram(DMN_DIAGRAM_DEFAULT, FileType.DMN);
+    expect(initializeModelerSpy).toHaveBeenCalledWith(FileType.DMN);
+    expect(dmnMigrateSpy).toHaveBeenCalledOnceWith(DMN_DIAGRAM_DEFAULT);
+    expect(importXMLSpy).toHaveBeenCalledWith(DMN_DIAGRAM_EMPTY);
+    initializeModelerSpy.calls.reset();
+
+    component.writeValue(DMN_DIAGRAM);
     expect(initializeModelerSpy).toHaveBeenCalledWith(undefined);
     expect(onChangeSpy).toHaveBeenCalled();
   });
