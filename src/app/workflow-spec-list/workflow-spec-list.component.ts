@@ -248,6 +248,8 @@ export class WorkflowSpecListComponent implements OnInit {
   private _loadWorkflowLibraries(selectedSpecName: string = null) {
     this.api.getWorkflowSpecificationLibraries().subscribe(wfs => {
       this.workflowLibraries = wfs;
+      // Sort libraries alphabetically
+      this.workflowLibraries.sort((a,b) => a.display_name.localeCompare(b.display_name));
 
       // If selected spec is a library, set it.
       if (selectedSpecName) {
