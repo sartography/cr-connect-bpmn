@@ -6,7 +6,7 @@
       [attr.data-workflow-spec-id]="workflowSpec.id"
     >
       <mat-icon (click)="editFile(fm)" mat-list-icon>{{fm.type | getIconCode}}</mat-icon>
-      <ng-container *ngIf="fm.type === fileType.BPMN">
+      <ng-container *ngIf="fm.type === fileType.BPMN && !this.workflowSpec.library">
         <button (click)="makePrimary(fm)" *ngIf="!fm.primary" mat-flat-button class="make-primary">
           <mat-icon>radio_button_unchecked</mat-icon>
           Make primary process
