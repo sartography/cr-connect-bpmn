@@ -81,7 +81,7 @@ describe('FileListComponent', () => {
     fixture.detectChanges();
 
 
-    const fmsReq = httpMock.expectOne(`apiRoot/file?workflow_spec_id=${mockWorkflowSpec0.id}`);
+    const fmsReq = httpMock.expectOne(`apiRoot/spec_file?workflow_spec_id=${mockWorkflowSpec0.id}`);
     expect(fmsReq.request.method).toEqual('GET');
     fmsReq.flush(mockFileMetas);
     expect(component.fileMetas.length).toBeGreaterThan(0);
@@ -133,7 +133,7 @@ describe('FileListComponent', () => {
   it('should delete a file', () => {
     const loadFileMetasSpy = spyOn((component as any), '_loadFileMetas').and.stub();
     (component as any)._deleteFile(mockFileMeta0);
-    const fmsReq = httpMock.expectOne(`apiRoot/file/${mockFileMeta0.id}`);
+    const fmsReq = httpMock.expectOne(`apiRoot/spec_file/${mockFileMeta0.id}`);
     expect(fmsReq.request.method).toEqual('DELETE');
     fmsReq.flush(null);
 
@@ -181,7 +181,7 @@ describe('FileListComponent', () => {
       type: mockDocMeta.content_type,
       lastModified: timeCode
     });
-    const fReq = httpMock.expectOne(`apiRoot/file/${mockDocMeta.id}/data`);
+    const fReq = httpMock.expectOne(`apiRoot/spec_file/${mockDocMeta.id}/data`);
 
     const mockHeaders = new HttpHeaders()
       .append('last-modified', expectedFile.lastModified.toString())
@@ -204,7 +204,7 @@ describe('FileListComponent', () => {
     component.workflowSpec = mockWorkflowSpec0;
 
     (component as any)._openFileDialog();
-    const addReq = httpMock.expectOne(`apiRoot/file?workflow_spec_id=${mockWorkflowSpec0.id}`);
+    const addReq = httpMock.expectOne(`apiRoot/spec_file?workflow_spec_id=${mockWorkflowSpec0.id}`);
     expect(addReq.request.method).toEqual('POST');
     addReq.flush(mockFileMeta0);
 
@@ -219,7 +219,7 @@ describe('FileListComponent', () => {
     component.workflowSpec = mockWorkflowSpec0;
 
     (component as any)._openFileDialog(mockFileMeta0, mockFile0);
-    const updateReq = httpMock.expectOne(`apiRoot/file/${mockFileMeta0.id}/data`);
+    const updateReq = httpMock.expectOne(`apiRoot/spec_file/${mockFileMeta0.id}/data`);
     expect(updateReq.request.method).toEqual('PUT');
     updateReq.flush(mockFileMeta0);
 
