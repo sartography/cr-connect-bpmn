@@ -55,7 +55,7 @@ export class FileListComponent implements OnInit, OnChanges {
 
   editFileMeta(fm: FileMeta) {
     if (fm && isNumberDefined(fm.id)) {
-      this.api.getFileData(fm.id).subscribe(response => {
+      this.api.getSpecFileData(fm.id).subscribe(response => {
         const file = newFileFromResponse(fm, response);
         this._openFileDialog(fm, file);
       });
@@ -85,9 +85,8 @@ export class FileListComponent implements OnInit, OnChanges {
       // Fixme: This buisness rule does not belong here.
       this.fileMetas.forEach(fm => {
         fm.primary = (fmPrimary.id === fm.id);
-        this.api.updateFileMeta(fm).subscribe(() => {
+        this.api.updateSpecFileMeta(fm).subscribe(() => {
           numUpdated++;
-
           // Reload all fileMetas when all have been updated.
           if (numUpdated === this.fileMetas.length) {
             this._loadFileMetas();
@@ -125,16 +124,11 @@ export class FileListComponent implements OnInit, OnChanges {
 
         if (isNumberDefined(data.fileMetaId)) {
           // Update existing file
-          this.api.updateFileData(newFileMeta, data.file).subscribe(() => {
+          this.api.updateSpecFileData(newFileMeta, data.file).subscribe(() => {
             this._loadFileMetas();
           });
         } else {
-          // Add new file
-          const fileParams: FileParams = {
-            workflow_spec_id: this.workflowSpec.id,
-          };
-
-          this.api.addFile(fileParams, newFileMeta, data.file).subscribe(dbFm => {
+          this.api.addSpecFile(this.workflowSpec, newFileMeta, data.file).subscribe(dbFm => {
             this._loadFileMetas();
           });
         }
@@ -143,14 +137,14 @@ export class FileListComponent implements OnInit, OnChanges {
   }
 
   private _deleteFile(fileMeta: FileMeta) {
-    this.api.deleteFileMeta(fileMeta.id).subscribe(() => {
+    this.api.deleteSpecFileMeta(fileMeta.id).subscribe(() => {
       this._loadFileMetas();
       this.snackBar.open(`Deleted file ${fileMeta.name}.`, 'Ok', {duration: 3000});
     });
   }
 
   private _loadFileMetas() {
-    this.api.getFileMetas({workflow_spec_id: this.workflowSpec.id}).subscribe(fms => {
+    this.api.getSpecFileMetas(this.workflowSpec.id).subscribe(fms => {
       this.fileMetas = fms.sort((a, b) => (a.name > b.name) ? 1 : -1);
     });
   }

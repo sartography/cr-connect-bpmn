@@ -83,7 +83,7 @@ export class ReferenceFilesComponent {
   }
 
   deleteFile(id: number, name: string) {
-    this.apiService.deleteFileMeta(id).subscribe(f => {
+    this.apiService.deleteRefFileMeta(id).subscribe(f => {
       this.snackBar.open(`Deleted reference file ${name}.`, 'Ok', {duration: 3000});
       this._loadReferenceFiles();
     });

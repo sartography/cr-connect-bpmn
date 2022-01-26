@@ -294,6 +294,26 @@ describe('WorkflowSpecListComponent', () => {
     const _addWorkflowSpecCategorySpy = spyOn((component as any), '_addWorkflowSpecCategory').and.stub();
     const _updateWorkflowSpecCategorySpy = spyOn((component as any), '_updateWorkflowSpecCategory').and.stub();
 
+    // This disaster keeps up from having to deal with the '"find" is not a function' error, it assures there is one.
+    if (typeof Array.prototype.find !== 'function') {
+      Array.prototype.find = function(iterator) {
+        var list = Object(this);
+        var length = list.length >>> 0;
+        var thisArg = arguments[1];
+        var value;
+
+        for (var i = 0; i < length; i++) {
+          value = list[i];
+          if (iterator.call(thisArg, value, i, list)) {
+            return value;
+          }
+        }
+        return undefined;
+      };
+    }
+
+
+
     component.selectedCat = undefined;
     mockWorkflowSpecCategory1.id = null;
     (component as any)._upsertWorkflowSpecCategory(mockWorkflowSpecCategory1 as WorkflowSpecCategoryDialogData);

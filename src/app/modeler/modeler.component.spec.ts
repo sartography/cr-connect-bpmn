@@ -129,11 +129,11 @@ describe('ModelerComponent', () => {
     wfsReq.flush(mockWorkflowSpec0);
     expect(component.workflowSpec).toEqual(mockWorkflowSpec0);
 
-    const req = httpMock.expectOne(`apiRoot/file?workflow_spec_id=${mockWorkflowSpec0.id}`);
+    const req = httpMock.expectOne(`apiRoot/spec_file?workflow_spec_id=${mockWorkflowSpec0.id}`);
     expect(req.request.method).toEqual('GET');
     req.flush(mockFileMetas);
 
-    const fmReq = httpMock.expectOne(`apiRoot/file/${mockFileMeta0.id}/data`);
+    const fmReq = httpMock.expectOne(`apiRoot/spec_file/${mockFileMeta0.id}/data`);
 
 
   });
@@ -279,7 +279,7 @@ describe('ModelerComponent', () => {
   });
 
   it('should save file changes', () => {
-    const updateFileDataSpy = spyOn(component.api, 'updateFileData').and.returnValue(of(mockFileMeta0));
+    const updateFileDataSpy = spyOn(component.api, 'updateSpecFileData').and.returnValue(of(mockFileMeta0));
     const snackBarOpenSpy = spyOn(component.snackBar, 'open').and.stub();
 
     component.workflowSpec = mockWorkflowSpec0;
@@ -311,9 +311,9 @@ describe('ModelerComponent', () => {
       fileName: mockFileMeta0.name,
       fileType: FileType.BPMN,
     };
-    const updateFileMetaSpy = spyOn(component.api, 'updateFileMeta')
+    const updateFileMetaSpy = spyOn(component.api, 'updateSpecFileMeta')
       .and.returnValue(of(mockFileMeta0));
-    const updateFileDataSpy = spyOn(component.api, 'updateFileData')
+    const updateFileDataSpy = spyOn(component.api, 'updateSpecFileData')
       .and.returnValue(of(mockFile0));
     const loadFilesFromDbSpy = spyOn(component, 'loadFilesFromDb').and.stub();
     const snackBarSpy = spyOn(component.snackBar, 'open').and.stub();
@@ -349,7 +349,7 @@ describe('ModelerComponent', () => {
       workflow_spec_id: mockFileMeta0.workflow_spec_id,
     };
 
-    const addFileMetaSpy = spyOn(component.api, 'addFile')
+    const addFileMetaSpy = spyOn(component.api, 'addSpecFile')
       .and.returnValue(of(mockFileMeta0));
     const loadFilesFromDbSpy = spyOn(component, 'loadFilesFromDb').and.stub();
     const routerNavigateSpy = spyOn(component.router, 'navigate').and.stub();
@@ -361,7 +361,7 @@ describe('ModelerComponent', () => {
     component.draftXml = newXml;
     component._upsertFileMeta(data);
     expect(component.xml).toEqual(newXml);
-    expect(addFileMetaSpy).toHaveBeenCalledWith({workflow_spec_id: mockWorkflowSpec0.id}, noDateOrVersion, mockFile0);
+    expect(addFileMetaSpy).toHaveBeenCalledWith(mockWorkflowSpec0, noDateOrVersion, mockFile0);
     expect(loadFilesFromDbSpy).not.toHaveBeenCalled();
     expect(routerNavigateSpy).toHaveBeenCalled();
     expect(snackBarSpy).toHaveBeenCalled();
@@ -378,15 +378,15 @@ describe('ModelerComponent', () => {
 
     const getWorkflowSpecSpy = spyOn(component.api, 'getWorkflowSpecification')
       .and.returnValue(of(mockWorkflowSpec0));
-    const getFileMetasSpy = spyOn(component.api, 'getFileMetas')
+    const getFileMetasSpy = spyOn(component.api, 'getSpecFileMetas')
       .and.returnValue(of(mockFileMetas));
-    const getFileDataSpy = spyOn(component.api, 'getFileData')
+    const getFileDataSpy = spyOn(component.api, 'getSpecFileData')
       .and.returnValue(of(mockResponse));
     component.loadFilesFromDb();
 
     expect(getWorkflowSpecSpy).toHaveBeenCalled();
     expect(component.workflowSpec).toEqual(mockWorkflowSpec0);
-    expect(getFileMetasSpy).toHaveBeenCalledWith({workflow_spec_id: mockWorkflowSpec0.id});
+    expect(getFileMetasSpy).toHaveBeenCalledWith(mockWorkflowSpec0.id);
 
 
     expect(component.bpmnFiles.length).toEqual(mockFileMetas.length);
