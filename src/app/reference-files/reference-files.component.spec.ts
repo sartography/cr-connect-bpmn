@@ -115,7 +115,7 @@ describe('ReferenceFilesComponent', () => {
     expect(fReq.request.method).toEqual('GET');
     fReq.flush(mockArrayBuffer, {headers: mockHeaders});
 
-    const updateReq = httpMock.expectOne(`apiRoot/reference_file/${mockFileMetaReference0.name}`);
+    const updateReq = httpMock.expectOne(`apiRoot/reference_file/${mockFileMetaReference0.name}/data`);
     expect(updateReq.request.method).toEqual('PUT');
     updateReq.flush(mockArrayBuffer, {headers: mockHeaders});
 
