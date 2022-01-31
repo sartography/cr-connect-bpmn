@@ -366,7 +366,7 @@ export class ModelerComponent implements AfterViewInit {
 
             if (f.id === this.fileMetaId) {
               this.diagramFileMeta = f;
-              this.api.getSpecFileData(f.id).subscribe(response => {
+              this.api.getSpecFileData(this.workflowSpec, f.id, f.name).subscribe(response => {
                 this.diagramFile = newFileFromResponse(f, response);
                 this.onSubmitFileToOpen();
               });
@@ -394,8 +394,8 @@ export class ModelerComponent implements AfterViewInit {
 
       if (this.workflowSpec && isNumberDefined(fileMetaId)) {
         // Update existing file meta
-        this.api.updateSpecFileData(this.diagramFileMeta, this.diagramFile).subscribe(() => {
-          this.api.updateSpecFileMeta(this.diagramFileMeta).subscribe(() => {
+        this.api.updateSpecFileData(this.workflowSpec, this.diagramFileMeta, this.diagramFile).subscribe(() => {
+          this.api.updateSpecFileMeta(this.workflowSpec, this.diagramFileMeta).subscribe(() => {
             this.loadFilesFromDb();
             this.snackBar.open(`Saved changes to file ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
           });
@@ -419,7 +419,7 @@ export class ModelerComponent implements AfterViewInit {
     this.xml = this.draftXml;
     this.diagramFile = new File([this.xml], this.diagramFileMeta.name, {type: 'text/xml'});
 
-    this.api.updateSpecFileData(this.diagramFileMeta, this.diagramFile).subscribe(newFileMeta => {
+    this.api.updateSpecFileData(this.workflowSpec, this.diagramFileMeta, this.diagramFile).subscribe(newFileMeta => {
       this.diagramFileMeta = newFileMeta;
       this.snackBar.open(`Saved changes to file metadata ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
     });
