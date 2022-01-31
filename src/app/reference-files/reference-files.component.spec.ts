@@ -111,11 +111,11 @@ describe('ReferenceFilesComponent', () => {
 
     component.openFileDialog(mockFileMetaReference0);
 
-    const fReq = httpMock.expectOne(`apiRoot/reference_file/${mockDocMeta.name}`);
+    const fReq = httpMock.expectOne(`apiRoot/reference_file/${mockDocMeta.name}/data`);
     expect(fReq.request.method).toEqual('GET');
     fReq.flush(mockArrayBuffer, {headers: mockHeaders});
 
-    const updateReq = httpMock.expectOne(`apiRoot/reference_file/${mockFileMetaReference0.name}`);
+    const updateReq = httpMock.expectOne(`apiRoot/reference_file/${mockFileMetaReference0.name}/data`);
     expect(updateReq.request.method).toEqual('PUT');
     updateReq.flush(mockArrayBuffer, {headers: mockHeaders});
 
@@ -128,7 +128,7 @@ describe('ReferenceFilesComponent', () => {
 
     component.downloadFile(mockDocMeta);
 
-    const fReq = httpMock.expectOne(`apiRoot/reference_file/${mockDocMeta.name}`);
+    const fReq = httpMock.expectOne(`apiRoot/reference_file/${mockDocMeta.name}/data`);
     expect(fReq.request.method).toEqual('GET');
     fReq.flush(mockArrayBuffer, {headers: mockHeaders});
 

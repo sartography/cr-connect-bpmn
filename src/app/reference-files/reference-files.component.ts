@@ -27,7 +27,7 @@ export class ReferenceFilesComponent {
   }
 
   openFileDialog(fm: FileMeta) {
-    this.apiService.getReferenceFile(fm.name).subscribe(oldFile => {
+    this.apiService.getReferenceFileData(fm.name).subscribe(oldFile => {
       const dialogData: OpenFileDialogData = {
         fileMetaId: fm.id,
         file: new File([oldFile.body], fm.name, {
@@ -51,7 +51,7 @@ export class ReferenceFilesComponent {
   }
 
   downloadFile(fm: FileMeta) {
-    this.apiService.getReferenceFile(fm.name).subscribe(response => {
+    this.apiService.getReferenceFileData(fm.name).subscribe(response => {
       const blob = new Blob([response.body], {type: fm.content_type});
       fileSaver.saveAs(blob, fm.name);
     });
