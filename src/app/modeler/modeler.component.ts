@@ -227,7 +227,8 @@ export class ModelerComponent implements AfterViewInit {
 
   saveChanges() {
     if (this.hasChanged()) {
-      if (this.diagramFileMeta && this.diagramFileMeta.workflow_spec_id) {
+      console.log(this.diagramFileMeta);
+      if (this.diagramFileMeta) {
         // Save changes to just the file
         this.saveFileChanges();
       } else {
@@ -380,10 +381,8 @@ export class ModelerComponent implements AfterViewInit {
   private _upsertFileMeta(data: FileMetaDialogData) {
     if (data.fileName) {
       this.xml = this.draftXml;
-      const fileMetaId = this.diagramFileMeta ? this.diagramFileMeta.id : undefined;
       const fileType = this.diagramFileMeta ? this.diagramFileMeta.type : FileType.BPMN;
       this.diagramFileMeta = {
-        id: fileMetaId,
         content_type: 'text/xml',
         name: data.fileName,
         type: fileType,
@@ -392,8 +391,11 @@ export class ModelerComponent implements AfterViewInit {
       this.diagramFile = new File([this.xml], data.fileName, {type: 'text/xml'});
 
 
-      if (this.workflowSpec && isNumberDefined(fileMetaId)) {
-        // Update existing file meta
+      //TODO: if filename not in bpmnFiles, AND data.fileName is not equal to the params filename (ie you changed the name)
+      // todo: then delete the old paramsFileName thing too
+      if (data.fileName in this.bpmnFiles) {
+        // If the filename has changed, delete the old version
+        // Update the existing file meta
         this.api.updateSpecFileData(this.workflowSpec, this.diagramFileMeta, this.diagramFile).subscribe(() => {
           this.api.updateSpecFileMeta(this.workflowSpec, this.diagramFileMeta).subscribe(() => {
             this.loadFilesFromDb();
@@ -401,9 +403,15 @@ export class ModelerComponent implements AfterViewInit {
           });
         });
       } else {
-        // Add new file meta
+        if (this.fileMetaName !== data.fileName && this.fileMetaName !== null) {
+          this.api.deleteSpecFileMeta(this.workflowSpec, this.fileMetaName).subscribe(() => {
+            this.api.getSpecFileMetas(this.workflowSpec.id).subscribe(fms => {
+              this.bpmnFiles = fms.sort((a, b) => (a.name > b.name) ? 1 : -1);
+            });
+          });
+        }
         this.api.addSpecFile(this.workflowSpec, this.diagramFileMeta, this.diagramFile).subscribe(fileMeta => {
-          this.router.navigate(['/modeler', this.workflowSpec.id, fileMeta.id]);
+          this.router.navigate(['/modeler', this.workflowSpec.id, 'file', fileMeta.name]);
           this.snackBar.open(`Saved new file ${fileMeta.name} to workflow spec ${this.workflowSpec.display_name}.`, 'Ok', {duration: 5000});
         }, () => {
           // if this fails, we make sure that the file is treated as still new,

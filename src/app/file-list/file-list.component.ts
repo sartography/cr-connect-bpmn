@@ -137,7 +137,7 @@ export class FileListComponent implements OnInit, OnChanges {
   }
 
   private _deleteFile(fileMeta: FileMeta) {
-    this.api.deleteSpecFileMeta(this.workflowSpec, fileMeta.id, fileMeta.name).subscribe(() => {
+    this.api.deleteSpecFileMeta(this.workflowSpec, fileMeta.name).subscribe(() => {
       this._loadFileMetas();
       this.snackBar.open(`Deleted file ${fileMeta.name}.`, 'Ok', {duration: 3000});
     });
