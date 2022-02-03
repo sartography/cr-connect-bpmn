@@ -244,7 +244,7 @@ export class ModelerComponent implements AfterViewInit {
     this.validationState = 'unknown';
     this.validationData = {testing_only: {a: 1, b: 'b', c: false, e: [], d: undefined}, real_fields: undefined};
 
-    this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id, until_task, study_id).subscribe(apiErrors => {
+    this.api.validateWorkflowSpecification(this.workflowSpecId, until_task, study_id).subscribe(apiErrors => {
       if (apiErrors && apiErrors.length === 1) {
         if (apiErrors[0].code === 'validation_break') {
           this.validationData = apiErrors[0];
@@ -263,7 +263,7 @@ export class ModelerComponent implements AfterViewInit {
   validate() {
     this.saveChanges();
     const studyId = this.settingsService.getStudyIdForValidation();
-    this.api.validateWorkflowSpecification(this.diagramFileMeta.workflow_spec_id, '', studyId).subscribe(apiErrors => {
+    this.api.validateWorkflowSpecification(this.workflowSpecId, '', studyId).subscribe(apiErrors => {
       if (apiErrors && apiErrors.length > 0) {
         this.bottomSheet.open(ApiErrorsComponent, {data: {apiErrors}});
       } else {
@@ -397,7 +397,7 @@ export class ModelerComponent implements AfterViewInit {
         // If the filename has changed, delete the old version
         // Update the existing file meta
         this.api.updateSpecFileData(this.workflowSpec, this.diagramFileMeta, this.diagramFile).subscribe(() => {
-          this.api.updateSpecFileMeta(this.workflowSpec, this.diagramFileMeta).subscribe(() => {
+          this.api.updateSpecFileMeta(this.workflowSpec, this.diagramFileMeta, false).subscribe(() => {
             this.loadFilesFromDb();
             this.snackBar.open(`Saved changes to file ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
           });
