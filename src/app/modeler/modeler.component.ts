@@ -50,7 +50,7 @@ export class ModelerComponent implements AfterViewInit {
   private svg = '';
   private diagramType: FileType;
   private workflowSpecId: string;
-  private fileMetaId: number;
+  private fileMetaName: string;
   private isNew = false;
   private requestFileClick = false;
 
@@ -69,13 +69,13 @@ export class ModelerComponent implements AfterViewInit {
 
     this.route.paramMap.subscribe(paramMap => {
       this.workflowSpecId = paramMap.get('workflowSpecId');
-      this.fileMetaId = parseInt(paramMap.get('fileMetaId'), 10);
+      this.fileMetaName = paramMap.get('fileMetaName');
       this.loadFilesFromDb();
     });
   }
 
   get bpmnFilesNoSelf(): FileMeta[] {
-    return this.bpmnFiles.filter(f => f.id !== this.fileMetaId);
+    return this.bpmnFiles.filter(f => f.name !== this.fileMetaName);
   }
 
   static isXmlFile(file: File) {
@@ -364,9 +364,9 @@ export class ModelerComponent implements AfterViewInit {
             f.content_type = 'text/xml';
             this.bpmnFiles.push(f);
 
-            if (f.id === this.fileMetaId) {
+            if (f.name === this.fileMetaName) {
               this.diagramFileMeta = f;
-              this.api.getSpecFileData(this.workflowSpec, f.id, f.name).subscribe(response => {
+              this.api.getSpecFileData(this.workflowSpec, f.name).subscribe(response => {
                 this.diagramFile = newFileFromResponse(f, response);
                 this.onSubmitFileToOpen();
               });

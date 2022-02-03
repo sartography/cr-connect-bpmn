@@ -46,7 +46,7 @@ export class FileListComponent implements OnInit, OnChanges {
 
   editFile(fileMeta?: FileMeta) {
     if (fileMeta && ((fileMeta.type === FileType.BPMN) || (fileMeta.type === FileType.DMN))) {
-      this.router.navigate([`/modeler/${this.workflowSpec.id}/${fileMeta.id}`]);
+      this.router.navigate([`/modeler/${this.workflowSpec.id}/file/${fileMeta.name}`]);
     } else {
       // Show edit file meta dialog
       this.editFileMeta(fileMeta);
@@ -55,7 +55,7 @@ export class FileListComponent implements OnInit, OnChanges {
 
   editFileMeta(fm: FileMeta) {
     if (fm && isNumberDefined(fm.id)) {
-      this.api.getSpecFileData(this.workflowSpec, fm.id, fm.name).subscribe(response => {
+      this.api.getSpecFileData(this.workflowSpec, fm.name).subscribe(response => {
         const file = newFileFromResponse(fm, response);
         this._openFileDialog(fm, file);
       });

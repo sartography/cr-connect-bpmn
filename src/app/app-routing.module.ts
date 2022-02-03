@@ -43,7 +43,7 @@ const routes: Routes = [
     component: ModelerComponent
   },
   {
-    path: 'modeler/:workflowSpecId/:fileMetaId',
+    path: 'modeler/:workflowSpecId/file/:fileMetaName',
     component: ModelerComponent
   },
   {
