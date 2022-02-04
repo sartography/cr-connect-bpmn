@@ -207,6 +207,7 @@ export class ModelerComponent implements AfterViewInit {
 
   onFileSelected($event: Event) {
     this.diagramFile = ($event.target as HTMLFormElement).files[0];
+    this.fileName = this.diagramFile.name;
     this.onSubmitFileToOpen();
     this.isNew = true;
   }
@@ -390,11 +391,7 @@ export class ModelerComponent implements AfterViewInit {
       };
       this.diagramFile = new File([this.xml], data.fileName, {type: 'text/xml'});
 
-
-      //TODO: if filename not in bpmnFiles, AND data.fileName is not equal to the params filename (ie you changed the name)
-      // todo: then delete the old paramsFileName thing too
-      if (data.fileName in this.bpmnFiles) {
-        // If the filename has changed, delete the old version
+        if (this.bpmnFiles.find(x => x.name === data.fileName)) {
         // Update the existing file meta
         this.api.updateSpecFileData(this.workflowSpec, this.diagramFileMeta, this.diagramFile).subscribe(() => {
           this.api.updateSpecFileMeta(this.workflowSpec, this.diagramFileMeta, false).subscribe(() => {
@@ -403,6 +400,7 @@ export class ModelerComponent implements AfterViewInit {
           });
         });
       } else {
+        // If the filename has changed, delete the old version
         if (this.fileMetaName !== data.fileName && this.fileMetaName !== null) {
           this.api.deleteSpecFileMeta(this.workflowSpec, this.fileMetaName).subscribe(() => {
             this.api.getSpecFileMetas(this.workflowSpec.id).subscribe(fms => {

@@ -138,5 +138,8 @@ export class FileListComponent implements OnInit, OnChanges {
     this.api.getSpecFileMetas(this.workflowSpec.id).subscribe(fms => {
       this.fileMetas = fms.sort((a, b) => (a.name > b.name) ? 1 : -1);
     });
+    this.api.getWorkflowSpecification(this.workflowSpec.id).subscribe(wfs => {
+      this.workflowSpec = wfs;
+    });
   }
 }

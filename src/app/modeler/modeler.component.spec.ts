@@ -129,12 +129,9 @@ describe('ModelerComponent', () => {
     wfsReq.flush(mockWorkflowSpec0);
     expect(component.workflowSpec).toEqual(mockWorkflowSpec0);
 
-    const req = httpMock.expectOne(`apiRoot/spec_file?workflow_spec_id=${mockWorkflowSpec0.id}`);
+    const req = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}/file?workflow_spec_id=${mockWorkflowSpec0.id}`);
     expect(req.request.method).toEqual('GET');
     req.flush(mockFileMetas);
-
-    const fmReq = httpMock.expectOne(`apiRoot/spec_file/${mockFileMeta0.id}/data`);
-
 
   });
 
@@ -218,14 +215,6 @@ describe('ModelerComponent', () => {
     expect(handleImportedSpy).toHaveBeenCalledWith(expectedParams);
   });
 
-  it('should get the diagram file name', () => {
-    expect(component.getFileName()).toEqual(mockFileMeta0.name);
-
-    const filename = 'one-fish.bpmn';
-    component.diagramFileMeta.name = filename;
-    expect(component.getFileName()).toEqual(filename);
-  });
-
   it('should get the diagram file from the file input form control', () => {
     const expectedFile = new File([], 'filename.jpg', {type: 'image/jpeg'});
     const event = {target: {files: [expectedFile]}};
@@ -287,7 +276,7 @@ describe('ModelerComponent', () => {
     component.diagramComponent.writeValue(BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'cream_colored_ponies'));
     component.saveFileChanges();
 
-    expect(updateFileDataSpy).toHaveBeenCalledWith(mockFileMeta0, mockFile0);
+    expect(updateFileDataSpy).toHaveBeenCalledWith(mockWorkflowSpec0, mockFileMeta0, mockFile0);
     expect(snackBarOpenSpy).toHaveBeenCalled();
   });
 
@@ -311,6 +300,7 @@ describe('ModelerComponent', () => {
       fileName: mockFileMeta0.name,
       fileType: FileType.BPMN,
     };
+
     const updateFileMetaSpy = spyOn(component.api, 'updateSpecFileMeta')
       .and.returnValue(of(mockFileMeta0));
     const updateFileDataSpy = spyOn(component.api, 'updateSpecFileData')
@@ -319,51 +309,19 @@ describe('ModelerComponent', () => {
     const snackBarSpy = spyOn(component.snackBar, 'open').and.stub();
     const noDateOrVersion: FileMeta = {
       content_type: mockFileMeta0.content_type,
-      id: mockFileMeta0.id,
       name: mockFileMeta0.name,
       type: mockFileMeta0.type,
       workflow_spec_id: mockFileMeta0.workflow_spec_id,
     };
 
+    // upsert original file
     component.draftXml = newXml;
     component._upsertFileMeta(data);
+
     expect(component.xml).toEqual(newXml);
-    expect(updateFileMetaSpy).toHaveBeenCalledWith(noDateOrVersion);
-    expect(updateFileDataSpy).toHaveBeenCalledWith(noDateOrVersion, mockFile0);
+    expect(updateFileMetaSpy).toHaveBeenCalledWith(mockWorkflowSpec0, noDateOrVersion, false);
+    expect(updateFileDataSpy).toHaveBeenCalledWith(mockWorkflowSpec0, noDateOrVersion, mockFile0);
     expect(loadFilesFromDbSpy).toHaveBeenCalled();
-    expect(snackBarSpy).toHaveBeenCalled();
-  });
-
-  it('should create new file metadata for new file', () => {
-    const newXml = BPMN_DIAGRAM_EMPTY.replace(/REPLACE_ME/g, 'doorbells');
-    const data: FileMetaDialogData = {
-      fileName: mockFileMeta0.name,
-      fileType: FileType.BPMN,
-    };
-
-    const noDateOrVersion: FileMeta = {
-      id: undefined,
-      content_type: mockFileMeta0.content_type,
-      name: mockFileMeta0.name,
-      type: mockFileMeta0.type,
-      workflow_spec_id: mockFileMeta0.workflow_spec_id,
-    };
-
-    const addFileMetaSpy = spyOn(component.api, 'addSpecFile')
-      .and.returnValue(of(mockFileMeta0));
-    const loadFilesFromDbSpy = spyOn(component, 'loadFilesFromDb').and.stub();
-    const routerNavigateSpy = spyOn(component.router, 'navigate').and.stub();
-    const snackBarSpy = spyOn(component.snackBar, 'open').and.stub();
-
-    component.newDiagram(FileType.BPMN);
-    expect(component.diagramFileMeta).toBeFalsy();
-
-    component.draftXml = newXml;
-    component._upsertFileMeta(data);
-    expect(component.xml).toEqual(newXml);
-    expect(addFileMetaSpy).toHaveBeenCalledWith(mockWorkflowSpec0, noDateOrVersion, mockFile0);
-    expect(loadFilesFromDbSpy).not.toHaveBeenCalled();
-    expect(routerNavigateSpy).toHaveBeenCalled();
     expect(snackBarSpy).toHaveBeenCalled();
   });
 
