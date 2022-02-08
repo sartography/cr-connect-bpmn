@@ -26,6 +26,10 @@ export interface WorkflowSpecDialogData {
   display_order: number;
   standalone: boolean;
   library: boolean;
+  libraries: string[];
+  is_master_spec: boolean;
+  primary_file_name: string;
+  primary_process_id: string;
 }
 
 export interface WorkflowSpecCategoryDialogData {

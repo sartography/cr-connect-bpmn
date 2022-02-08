@@ -127,6 +127,10 @@ export class WorkflowSpecListComponent implements OnInit {
       display_order: hasDisplayOrder ? selectedSpec.display_order : 0,
       standalone: selectedSpec ? selectedSpec.standalone : null,
       library: selectedSpec ? selectedSpec.library : (state === 'library' ? true : null),
+      libraries: selectedSpec ? selectedSpec.libraries : [],
+      primary_file_name: selectedSpec ? selectedSpec.primary_file_name : '',
+      primary_process_id: selectedSpec ? selectedSpec.primary_process_id : '',
+      is_master_spec: false,
     };
 
     // Open new filename/workflow spec dialog
@@ -324,6 +328,10 @@ export class WorkflowSpecListComponent implements OnInit {
         category_id: data.category_id,
         standalone: data.standalone,
         library: data.library,
+        libraries: data.libraries ? data.libraries : [],
+        is_master_spec: data.is_master_spec ? data.is_master_spec : false,
+        primary_file_name: data.primary_file_name ? data.primary_file_name : '',
+        primary_process_id: data.primary_process_id ? data.primary_process_id : '',
       };
 
       if (isNew) {
