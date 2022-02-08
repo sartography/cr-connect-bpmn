@@ -32,7 +32,7 @@ import { SettingsService } from '../settings.service';
 
 
 export interface WorkflowSpecCategoryGroup {
-  id?: number;
+  id?: string;
   display_name: string;
   workflow_specs?: WorkflowSpec[];
   display_order: number;
@@ -48,6 +48,7 @@ export class WorkflowSpecListComponent implements OnInit {
   workflowSpecs: WorkflowSpec[] = [];
   workflowLibraries: WorkflowSpec[] = [];
   selectedSpec: WorkflowSpec;
+  selectedCatID: string;
   masterStatusSpec: WorkflowSpec;
   selectedCat: WorkflowSpecCategory;
   workflowSpecsByCategory: WorkflowSpecCategoryGroup[] = [];
@@ -96,6 +97,12 @@ export class WorkflowSpecListComponent implements OnInit {
     this.selectedCat = selectedCat;
   }
 
+  setCatByID(cat_id: string) {
+    this.api.getWorkflowSpecCategory(cat_id).subscribe( cat => {
+      this.selectedCat = cat;
+    })
+  }
+
   isSelected(cat: WorkflowSpecCategoryGroup) {
     return this.selectedCat && this.selectedCat.id === cat.id;
   }
@@ -116,7 +123,7 @@ export class WorkflowSpecListComponent implements OnInit {
       id: selectedSpec ? selectedSpec.id : '',
       display_name: selectedSpec ? selectedSpec.display_name : '',
       description: selectedSpec ? selectedSpec.description : '',
-      category_name: selectedSpec ? selectedSpec.category_name : null,
+      category_id: selectedSpec ? selectedSpec.category_id : null,
       display_order: hasDisplayOrder ? selectedSpec.display_order : 0,
       standalone: selectedSpec ? selectedSpec.standalone : null,
       library: selectedSpec ? selectedSpec.library : (state === 'library' ? true : null),
@@ -212,7 +219,7 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  editCategoryDisplayOrder(catId: number, direction: string) {
+  editCategoryDisplayOrder(catId: string, direction: string) {
     this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
         this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
           let new_cat = (cat_change.find(i2 => i2.id === cat.id));
@@ -273,10 +280,11 @@ export class WorkflowSpecListComponent implements OnInit {
       this.workflowSpecsByCategory.forEach(cat => {
         cat.workflow_specs = this.workflowSpecs
           .filter(wf => {
+            // TODO: fix search feature
             if (searchSpecName) {
-              return (wf.category_name === cat.display_name) && wf.display_name.toLowerCase().includes(searchSpecName.toLowerCase());
+              return (wf.category_id === cat.id);
             } else {
-              return wf.category_name === cat.display_name;
+              return (wf.category_id === cat.id);
             }
           })
         cat.workflow_specs.sort((x,y) => x.display_order - y.display_order);
@@ -297,7 +305,9 @@ export class WorkflowSpecListComponent implements OnInit {
         this.workflowSpecs.forEach(ws => {
           if (selectedSpecName && selectedSpecName === ws.id) {
             this.selectedSpec = ws;
-            this.selectedCat = this.selectedSpec.category;
+            this.selectedCatID = ws.category_id;
+            // TODO: maybe fix expression changes after init error
+            this.setCatByID(ws.category_id);
           }
         });
       }
@@ -311,7 +321,7 @@ export class WorkflowSpecListComponent implements OnInit {
         id: data.id,
         display_name: data.display_name,
         description: data.description,
-        category_name: data.category_name,
+        category_id: data.category_id,
         standalone: data.standalone,
         library: data.library,
       };
@@ -327,7 +337,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _upsertWorkflowSpecCategory(data: WorkflowSpecCategoryDialogData) {
     if (data.display_name) {
-      if (isNumberDefined(data.id)) {
+      if (this.categories.find(x => x.id === data.id)) {
         const newCat: WorkflowSpecCategory = {
           id: data.id,
           display_name: data.display_name,
@@ -370,7 +380,7 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  private _updateWorkflowSpecCategory(catId: number, newCat: WorkflowSpecCategory) {
+  private _updateWorkflowSpecCategory(catId: string, newCat: WorkflowSpecCategory) {
     this.api.updateWorkflowSpecCategory(catId, newCat).subscribe(_ => {
       this._loadWorkflowSpecCategories();
       this._displayMessage('Saved changes to workflow spec category.');

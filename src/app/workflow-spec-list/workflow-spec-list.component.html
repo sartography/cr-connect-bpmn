@@ -69,7 +69,7 @@
 
         <div *ngIf="!(searchField.value && cat.workflow_specs.length === 0)">
         <ng-container *ngIf="!(cat.id === null && cat.workflow_specs.length === 0)">
-          <mat-expansion-panel hideToggle (opened)="selectCat(cat); libraryToggle(false)" [expanded]="isSelected(cat) && !library_toggle" >
+          <mat-expansion-panel hideToggle (opened)="setCatByID(cat.id); libraryToggle(false)" [expanded]="isSelected(cat) && !library_toggle" >
             <mat-expansion-panel-header>
                 <mat-panel-description>
                   <div *ngIf="cat.admin" style="color: darkorange">

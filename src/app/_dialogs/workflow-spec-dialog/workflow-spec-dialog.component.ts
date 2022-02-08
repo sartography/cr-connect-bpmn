@@ -105,7 +105,7 @@ export class WorkflowSpecDialogComponent {
         {
           key: 'category_id',
           type: 'select',
-          defaultValue: this.data.category_name,
+          defaultValue: this.data.category_id,
           templateOptions: {
             label: 'Category',
             placeholder: 'Category of workflow specification',
