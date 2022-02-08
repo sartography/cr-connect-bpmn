@@ -26,7 +26,7 @@
         <mat-icon (click)="expandToggle()" class="expand" *ngIf="!showAll">chevron_right</mat-icon>
         <mat-icon (click)="expandToggle()" class="expand" *ngIf="showAll">expand_more</mat-icon>
         Included Libraries</h4>
-      <app-library-list [showAll]="showAll"   [workflowSpecId]="workflowSpec.id"></app-library-list>
+      <app-library-list [showAll]="showAll"   [workflowSpec]="workflowSpec"></app-library-list>
     </div>
   </mat-card-content>
   <mat-card-actions>

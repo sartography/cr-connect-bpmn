@@ -116,7 +116,7 @@ export class WorkflowSpecListComponent implements OnInit {
       id: selectedSpec ? selectedSpec.id : '',
       display_name: selectedSpec ? selectedSpec.display_name : '',
       description: selectedSpec ? selectedSpec.description : '',
-      category_id: selectedSpec ? selectedSpec.category_id : null,
+      category_name: selectedSpec ? selectedSpec.category_name : null,
       display_order: hasDisplayOrder ? selectedSpec.display_order : 0,
       standalone: selectedSpec ? selectedSpec.standalone : null,
       library: selectedSpec ? selectedSpec.library : (state === 'library' ? true : null),
@@ -274,9 +274,9 @@ export class WorkflowSpecListComponent implements OnInit {
         cat.workflow_specs = this.workflowSpecs
           .filter(wf => {
             if (searchSpecName) {
-              return (wf.category_id === cat.id) && wf.display_name.toLowerCase().includes(searchSpecName.toLowerCase());
+              return (wf.category_name === cat.display_name) && wf.display_name.toLowerCase().includes(searchSpecName.toLowerCase());
             } else {
-              return wf.category_id === cat.id;
+              return wf.category_name === cat.display_name;
             }
           })
         cat.workflow_specs.sort((x,y) => x.display_order - y.display_order);
@@ -311,7 +311,7 @@ export class WorkflowSpecListComponent implements OnInit {
         id: data.id,
         display_name: data.display_name,
         description: data.description,
-        category_id: data.category_id,
+        category_name: data.category_name,
         standalone: data.standalone,
         library: data.library,
       };

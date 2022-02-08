@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import * as fileSaver from 'file-saver';
-import {ApiService, FileMeta, FileParams, FileType, getFileType, isNumberDefined} from 'sartography-workflow-lib';
+import {ApiService, FileMeta, FileParams, FileType, getFileType} from 'sartography-workflow-lib';
 import {OpenFileDialogComponent} from '../_dialogs/open-file-dialog/open-file-dialog.component';
 import {OpenFileDialogData} from '../_interfaces/dialog-data';
 

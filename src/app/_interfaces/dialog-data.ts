@@ -22,7 +22,7 @@ export interface WorkflowSpecDialogData {
   id: string;
   display_name: string;
   description: string;
-  category_id: number;
+  category_name: string;
   display_order: number;
   standalone: boolean;
   library: boolean;

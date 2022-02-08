@@ -10,7 +10,7 @@ import {
   styleUrls: ['./library-list.component.scss']
 })
 export class LibraryListComponent implements OnInit, OnChanges {
-  @Input() workflowSpecId: string;
+  @Input() workflowSpec: WorkflowSpec;
   @Input() showAll: boolean;
   workflowLibraries: WorkflowSpec[];
 
@@ -32,9 +32,7 @@ export class LibraryListComponent implements OnInit, OnChanges {
 
   isChecked(libraryspec): boolean {
     let checked = false;
-    for (const item of libraryspec.parents) {
-      checked = checked || (item.id === this.workflowSpecId);
-    }
+    checked = checked || this.workflowSpec.libraries.indexOf(libraryspec.id) >= 0 ;
     return checked;
   }
 
@@ -44,11 +42,11 @@ export class LibraryListComponent implements OnInit, OnChanges {
 
   updateItem(library: WorkflowSpec , checked: boolean) {
     if (checked) {
-      this.api.deleteWorkflowLibrary(this.workflowSpecId, library.id).subscribe(() => {
+      this.api.deleteWorkflowLibrary(this.workflowSpec.id, library.id).subscribe(() => {
         this._loadWorkflowLibraries();
       });
     } else {
-      this.api.addWorkflowLibrary(this.workflowSpecId, library.id).subscribe(() => {
+      this.api.addWorkflowLibrary(this.workflowSpec.id, library.id).subscribe(() => {
         this._loadWorkflowLibraries();
       });
     }
@@ -58,6 +56,9 @@ export class LibraryListComponent implements OnInit, OnChanges {
 
     this.api.getWorkflowSpecificationLibraries().subscribe(wfs => {
       this.workflowLibraries = wfs;
+    });
+    this.api.getWorkflowSpecification(this.workflowSpec.id).subscribe(spec => {
+      this.workflowSpec = spec;
     });
   }
 }
