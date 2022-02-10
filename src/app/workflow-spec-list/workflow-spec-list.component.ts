@@ -35,7 +35,7 @@ export interface WorkflowSpecCategoryGroup {
   id?: string;
   display_name: string;
   workflow_specs?: WorkflowSpec[];
-  display_order: number;
+  display_order?: number;
   admin: boolean,
 }
 
@@ -191,15 +191,10 @@ export class WorkflowSpecListComponent implements OnInit {
 
 
   canDeleteWorkflowSpec(wfs){
-    if ((wfs.parents.length > 0) && (wfs.library)){
-      let message = '';
-      for (let p of wfs.parents) {
-        message += p.display_name + ', ';
-      }
-      message = message.replace(/,\s*$/, "");
-      this.snackBar.open('The Library ' + '\'' + wfs.display_name + '\'' +
-        ' is still being referenced by these workflows: ' + message, 'Ok');
-      return false;
+    // TODO: move this to the backend
+    // Find if library is still being referenced somewhere. If so, return a message about where
+    if (wfs.library){
+      // return false;
     }
     return true;
   }
@@ -336,7 +331,6 @@ export class WorkflowSpecListComponent implements OnInit {
 
       if (isNew) {
         this._addWorkflowSpec(newSpec);
-        this.selectSpec(newSpec);
       } else {
         this._updateWorkflowSpec(data.id, newSpec);
       }
@@ -354,9 +348,10 @@ export class WorkflowSpecListComponent implements OnInit {
       };
         this._updateWorkflowSpecCategory(data.id, newCat);
       } else {
+        // TODO: prompt user for somethin about the id generation
         const newCat: WorkflowSpecCategory = {
+          id: data.display_name,
           display_name: data.display_name,
-          display_order: data.display_order,
           admin: data.admin,
       };
         this._addWorkflowSpecCategory(newCat);
@@ -377,6 +372,7 @@ export class WorkflowSpecListComponent implements OnInit {
       this._loadWorkflowLibraries(newSpec.id);
       this._loadWorkflowSpecs(newSpec.id);
       this._displayMessage('Saved new workflow spec.');
+      this.selectSpec(newSpec);
     });
   }
 

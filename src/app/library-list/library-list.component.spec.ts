@@ -42,6 +42,7 @@ describe('LibraryListComponent', () => {
     libraries = [mockWorkflowSpec0, mockWorkflowSpec1];
     libraries[0].library = true;
     libraries[1].library = true;
+    component.workflowSpec = mockWorkflowSpec0;
     fixture.detectChanges();
     const uReq = httpMock.expectOne('apiRoot/workflow-specification?libraries=true');
     expect(uReq.request.method).toEqual('GET');
