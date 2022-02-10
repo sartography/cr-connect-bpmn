@@ -199,7 +199,9 @@ export class WorkflowSpecListComponent implements OnInit {
           references.push(wfs.id);
         }
       });
-      return false; // and later return and deal with references
+      if (references.length > 0) {
+        return false;
+      }
     }
     return true;
   }
