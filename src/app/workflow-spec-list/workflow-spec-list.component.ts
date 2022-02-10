@@ -191,10 +191,15 @@ export class WorkflowSpecListComponent implements OnInit {
 
 
   canDeleteWorkflowSpec(wfs){
-    // TODO: move this to the backend
-    // Find if library is still being referenced somewhere. If so, return a message about where
+    // TODO: put the popup back in for this
+    let references = []
     if (wfs.library){
-      // return false;
+      this.workflowSpecs.forEach(spec => {
+        if (spec.libraries.indexOf(wfs.id) >= 0 ) {
+          references.push(wfs.id);
+        }
+      });
+      return false; // and later return and deal with references
     }
     return true;
   }
@@ -210,10 +215,12 @@ export class WorkflowSpecListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((data: DeleteWorkflowSpecDialogData) => {
       if (data && data.confirm && data.workflowSpec && this.canDeleteWorkflowSpec(data.workflowSpec)) {
-        this._deleteWorkflowSpec(data.workflowSpec);
+7        this._deleteWorkflowSpec(data.workflowSpec);
         if (typeof this.masterStatusSpec !== 'undefined') {
           this.selectSpec(this.masterStatusSpec);
         }
+      } else {
+        // TODO: the library is being referenced elsewhere still
       }
     });
   }

@@ -495,10 +495,7 @@ describe('WorkflowSpecListComponent', () => {
   it('should not delete a library if it is being used', () => {
 
     const badWorkflowSpec = cloneDeep(mockWorkflowSpec0);
-    badWorkflowSpec.parents=[
-      { id: 1234,
-        display_name: 'test parent',
-      }]
+    mockWorkflowSpec1.libraries = ['all_things']
     badWorkflowSpec.library=true;
     const mockConfirmDeleteData: DeleteWorkflowSpecDialogData = {
       confirm: false,
@@ -508,12 +505,10 @@ describe('WorkflowSpecListComponent', () => {
     const _deleteWorkflowSpecSpy = spyOn((component as any), '_deleteWorkflowSpec').and.stub();
     const openDialogSpy = spyOn(component.dialog, 'open')
       .and.returnValue({afterClosed: () => of(mockConfirmDeleteData)} as any);
-    const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
     mockConfirmDeleteData.confirm = true;
     component.confirmDeleteWorkflowSpec(badWorkflowSpec);
     expect(openDialogSpy).toHaveBeenCalled();
     expect(_deleteWorkflowSpecSpy).not.toHaveBeenCalled();
-    expect(snackBarSpy).toHaveBeenCalled();
   });
 
 
