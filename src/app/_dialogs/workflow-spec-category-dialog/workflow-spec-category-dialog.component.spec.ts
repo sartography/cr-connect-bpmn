@@ -7,11 +7,14 @@ import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {FormlyModule} from '@ngx-formly/core';
 import {FormlyMaterialModule} from '@ngx-formly/material';
-import {mockWorkflowSpecCategory0} from 'sartography-workflow-lib';
+import {mockWorkflowSpecCategory0, MockEnvironment, ApiService } from 'sartography-workflow-lib';
 import {WorkflowSpecCategoryDialogData} from '../../_interfaces/dialog-data';
 import {WorkflowSpecCategoryDialogComponent} from './workflow-spec-category-dialog.component';
+import {APP_BASE_HREF} from "@angular/common";
+import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 
 describe('WorkflowSpecCategoryDialogComponent', () => {
+  let httpMock: HttpTestingController;
   let component: WorkflowSpecCategoryDialogComponent;
   let fixture: ComponentFixture<WorkflowSpecCategoryDialogComponent>;
 
@@ -22,6 +25,7 @@ describe('WorkflowSpecCategoryDialogComponent', () => {
         FormlyModule.forRoot(),
         FormlyMaterialModule,
         FormsModule,
+        HttpClientTestingModule,
         MatDialogModule,
         MatFormFieldModule,
         MatIconModule,
@@ -31,6 +35,9 @@ describe('WorkflowSpecCategoryDialogComponent', () => {
       ],
       declarations: [WorkflowSpecCategoryDialogComponent],
       providers: [
+        ApiService,
+        {provide: 'APP_ENVIRONMENT', useClass: MockEnvironment},
+        {provide: APP_BASE_HREF, useValue: ''},
         {
           provide: MatDialogRef,
           useValue: {
@@ -52,6 +59,7 @@ describe('WorkflowSpecCategoryDialogComponent', () => {
   }));
 
   beforeEach(() => {
+    httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(WorkflowSpecCategoryDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

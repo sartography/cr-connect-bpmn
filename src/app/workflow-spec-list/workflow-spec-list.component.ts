@@ -191,15 +191,21 @@ export class WorkflowSpecListComponent implements OnInit {
 
 
   canDeleteWorkflowSpec(wfs){
-    // TODO: put the popup back in for this
     let references = []
     if (wfs.library){
       this.workflowSpecs.forEach(spec => {
         if (spec.libraries.indexOf(wfs.id) >= 0 ) {
-          references.push(wfs.id);
+          references.push(spec.id);
         }
       });
       if (references.length > 0) {
+        let message = '';
+        references.forEach(ref => {
+          message += ref.toString() + ', ';
+        });
+        message = message.substr(0, message.length-2);
+        this.snackBar.open('The Library ' + '\'' + wfs.display_name + '\'' +
+          ' is still being referenced by these workflows: ' + message, 'Ok');
         return false;
       }
     }
@@ -221,8 +227,6 @@ export class WorkflowSpecListComponent implements OnInit {
         if (typeof this.masterStatusSpec !== 'undefined') {
           this.selectSpec(this.masterStatusSpec);
         }
-      } else {
-        // TODO: the library is being referenced elsewhere still
       }
     });
   }
@@ -314,7 +318,6 @@ export class WorkflowSpecListComponent implements OnInit {
           if (selectedSpecName && selectedSpecName === ws.id) {
             this.selectedSpec = ws;
             this.selectedCatID = ws.category_id;
-            // TODO: maybe fix expression changes after init error
             this.setCatByID(ws.category_id);
           }
         });
@@ -357,9 +360,8 @@ export class WorkflowSpecListComponent implements OnInit {
       };
         this._updateWorkflowSpecCategory(data.id, newCat);
       } else {
-        // TODO: prompt user for somethin about the id generation
         const newCat: WorkflowSpecCategory = {
-          id: data.display_name,
+          id: data.id,
           display_name: data.display_name,
           admin: data.admin,
       };
