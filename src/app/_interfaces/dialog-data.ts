@@ -22,14 +22,18 @@ export interface WorkflowSpecDialogData {
   id: string;
   display_name: string;
   description: string;
-  category_id: number;
+  category_id: string;
   display_order: number;
   standalone: boolean;
   library: boolean;
+  libraries: string[];
+  is_master_spec: boolean;
+  primary_file_name: string;
+  primary_process_id: string;
 }
 
 export interface WorkflowSpecCategoryDialogData {
-  id: number;
+  id: string;
   display_name: string;
   display_order?: number;
   admin: boolean;

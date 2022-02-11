@@ -46,7 +46,7 @@ export class FileListComponent implements OnInit, OnChanges {
 
   editFile(fileMeta?: FileMeta) {
     if (fileMeta && ((fileMeta.type === FileType.BPMN) || (fileMeta.type === FileType.DMN))) {
-      this.router.navigate([`/modeler/${this.workflowSpec.id}/${fileMeta.id}`]);
+      this.router.navigate([`/modeler/${this.workflowSpec.id}/file/${fileMeta.name}`]);
     } else {
       // Show edit file meta dialog
       this.editFileMeta(fileMeta);
@@ -55,7 +55,7 @@ export class FileListComponent implements OnInit, OnChanges {
 
   editFileMeta(fm: FileMeta) {
     if (fm && isNumberDefined(fm.id)) {
-      this.api.getSpecFileData(fm.id).subscribe(response => {
+      this.api.getSpecFileData(this.workflowSpec, fm.name).subscribe(response => {
         const file = newFileFromResponse(fm, response);
         this._openFileDialog(fm, file);
       });
@@ -81,17 +81,8 @@ export class FileListComponent implements OnInit, OnChanges {
 
   makePrimary(fmPrimary: FileMeta) {
     if (fmPrimary.type === FileType.BPMN) {
-      let numUpdated = 0;
-      // Fixme: This buisness rule does not belong here.
-      this.fileMetas.forEach(fm => {
-        fm.primary = (fmPrimary.id === fm.id);
-        this.api.updateSpecFileMeta(fm).subscribe(() => {
-          numUpdated++;
-          // Reload all fileMetas when all have been updated.
-          if (numUpdated === this.fileMetas.length) {
-            this._loadFileMetas();
-          }
-        });
+      this.api.updateSpecFileMeta(this.workflowSpec, fmPrimary, true).subscribe(() => {
+        this._loadFileMetas();
       });
     }
   }
@@ -124,7 +115,7 @@ export class FileListComponent implements OnInit, OnChanges {
 
         if (isNumberDefined(data.fileMetaId)) {
           // Update existing file
-          this.api.updateSpecFileData(newFileMeta, data.file).subscribe(() => {
+          this.api.updateSpecFileData(this.workflowSpec, newFileMeta, data.file).subscribe(() => {
             this._loadFileMetas();
           });
         } else {
@@ -137,7 +128,7 @@ export class FileListComponent implements OnInit, OnChanges {
   }
 
   private _deleteFile(fileMeta: FileMeta) {
-    this.api.deleteSpecFileMeta(fileMeta.id).subscribe(() => {
+    this.api.deleteSpecFileMeta(this.workflowSpec, fileMeta.name).subscribe(() => {
       this._loadFileMetas();
       this.snackBar.open(`Deleted file ${fileMeta.name}.`, 'Ok', {duration: 3000});
     });
@@ -146,6 +137,9 @@ export class FileListComponent implements OnInit, OnChanges {
   private _loadFileMetas() {
     this.api.getSpecFileMetas(this.workflowSpec.id).subscribe(fms => {
       this.fileMetas = fms.sort((a, b) => (a.name > b.name) ? 1 : -1);
+    });
+    this.api.getWorkflowSpecification(this.workflowSpec.id).subscribe(wfs => {
+      this.workflowSpec = wfs;
     });
   }
 }

@@ -32,10 +32,10 @@ import { SettingsService } from '../settings.service';
 
 
 export interface WorkflowSpecCategoryGroup {
-  id?: number;
+  id?: string;
   display_name: string;
   workflow_specs?: WorkflowSpec[];
-  display_order: number;
+  display_order?: number;
   admin: boolean,
 }
 
@@ -48,6 +48,7 @@ export class WorkflowSpecListComponent implements OnInit {
   workflowSpecs: WorkflowSpec[] = [];
   workflowLibraries: WorkflowSpec[] = [];
   selectedSpec: WorkflowSpec;
+  selectedCatID: string;
   masterStatusSpec: WorkflowSpec;
   selectedCat: WorkflowSpecCategory;
   workflowSpecsByCategory: WorkflowSpecCategoryGroup[] = [];
@@ -96,6 +97,12 @@ export class WorkflowSpecListComponent implements OnInit {
     this.selectedCat = selectedCat;
   }
 
+  setCatByID(cat_id: string) {
+    this.api.getWorkflowSpecCategory(cat_id).subscribe( cat => {
+      this.selectedCat = cat;
+    })
+  }
+
   isSelected(cat: WorkflowSpecCategoryGroup) {
     return this.selectedCat && this.selectedCat.id === cat.id;
   }
@@ -120,6 +127,10 @@ export class WorkflowSpecListComponent implements OnInit {
       display_order: hasDisplayOrder ? selectedSpec.display_order : 0,
       standalone: selectedSpec ? selectedSpec.standalone : null,
       library: selectedSpec ? selectedSpec.library : (state === 'library' ? true : null),
+      libraries: selectedSpec ? selectedSpec.libraries : [],
+      primary_file_name: selectedSpec ? selectedSpec.primary_file_name : '',
+      primary_process_id: selectedSpec ? selectedSpec.primary_process_id : '',
+      is_master_spec: false,
     };
 
     // Open new filename/workflow spec dialog
@@ -180,15 +191,23 @@ export class WorkflowSpecListComponent implements OnInit {
 
 
   canDeleteWorkflowSpec(wfs){
-    if ((wfs.parents.length > 0) && (wfs.library)){
-      let message = '';
-      for (let p of wfs.parents) {
-        message += p.display_name + ', ';
+    let references = []
+    if (wfs.library){
+      this.workflowSpecs.forEach(spec => {
+        if (spec.libraries.indexOf(wfs.id) >= 0 ) {
+          references.push(spec.id);
+        }
+      });
+      if (references.length > 0) {
+        let message = '';
+        references.forEach(ref => {
+          message += ref.toString() + ', ';
+        });
+        message = message.substr(0, message.length-2);
+        this.snackBar.open('The Library ' + '\'' + wfs.display_name + '\'' +
+          ' is still being referenced by these workflows: ' + message, 'Ok');
+        return false;
       }
-      message = message.replace(/,\s*$/, "");
-      this.snackBar.open('The Library ' + '\'' + wfs.display_name + '\'' +
-        ' is still being referenced by these workflows: ' + message, 'Ok');
-      return false;
     }
     return true;
   }
@@ -212,7 +231,7 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  editCategoryDisplayOrder(catId: number, direction: string) {
+  editCategoryDisplayOrder(catId: string, direction: string) {
     this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
         this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
           let new_cat = (cat_change.find(i2 => i2.id === cat.id));
@@ -273,10 +292,11 @@ export class WorkflowSpecListComponent implements OnInit {
       this.workflowSpecsByCategory.forEach(cat => {
         cat.workflow_specs = this.workflowSpecs
           .filter(wf => {
+            // TODO: fix search feature
             if (searchSpecName) {
-              return (wf.category_id === cat.id) && wf.display_name.toLowerCase().includes(searchSpecName.toLowerCase());
+              return (wf.category_id === cat.id);
             } else {
-              return wf.category_id === cat.id;
+              return (wf.category_id === cat.id);
             }
           })
         cat.workflow_specs.sort((x,y) => x.display_order - y.display_order);
@@ -297,7 +317,8 @@ export class WorkflowSpecListComponent implements OnInit {
         this.workflowSpecs.forEach(ws => {
           if (selectedSpecName && selectedSpecName === ws.id) {
             this.selectedSpec = ws;
-            this.selectedCat = this.selectedSpec.category;
+            this.selectedCatID = ws.category_id;
+            this.setCatByID(ws.category_id);
           }
         });
       }
@@ -314,11 +335,14 @@ export class WorkflowSpecListComponent implements OnInit {
         category_id: data.category_id,
         standalone: data.standalone,
         library: data.library,
+        libraries: data.libraries ? data.libraries : [],
+        is_master_spec: data.is_master_spec ? data.is_master_spec : false,
+        primary_file_name: data.primary_file_name ? data.primary_file_name : '',
+        primary_process_id: data.primary_process_id ? data.primary_process_id : '',
       };
 
       if (isNew) {
         this._addWorkflowSpec(newSpec);
-        this.selectSpec(newSpec);
       } else {
         this._updateWorkflowSpec(data.id, newSpec);
       }
@@ -327,7 +351,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _upsertWorkflowSpecCategory(data: WorkflowSpecCategoryDialogData) {
     if (data.display_name) {
-      if (isNumberDefined(data.id)) {
+      if (this.categories.find(x => x.id === data.id)) {
         const newCat: WorkflowSpecCategory = {
           id: data.id,
           display_name: data.display_name,
@@ -337,8 +361,8 @@ export class WorkflowSpecListComponent implements OnInit {
         this._updateWorkflowSpecCategory(data.id, newCat);
       } else {
         const newCat: WorkflowSpecCategory = {
+          id: data.id,
           display_name: data.display_name,
-          display_order: data.display_order,
           admin: data.admin,
       };
         this._addWorkflowSpecCategory(newCat);
@@ -359,6 +383,7 @@ export class WorkflowSpecListComponent implements OnInit {
       this._loadWorkflowLibraries(newSpec.id);
       this._loadWorkflowSpecs(newSpec.id);
       this._displayMessage('Saved new workflow spec.');
+      this.selectSpec(newSpec);
     });
   }
 
@@ -370,7 +395,7 @@ export class WorkflowSpecListComponent implements OnInit {
     });
   }
 
-  private _updateWorkflowSpecCategory(catId: number, newCat: WorkflowSpecCategory) {
+  private _updateWorkflowSpecCategory(catId: string, newCat: WorkflowSpecCategory) {
     this.api.updateWorkflowSpecCategory(catId, newCat).subscribe(_ => {
       this._loadWorkflowSpecCategories();
       this._displayMessage('Saved changes to workflow spec category.');

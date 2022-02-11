@@ -55,9 +55,8 @@ const librarySpec0: WorkflowSpec = {
   id: 'one_thing',
   display_name: 'One thing',
   description: 'Do just one thing',
-  category_id: 2,
+  category_id: '2',
   library: true,
-  category: mockWorkflowSpecCategory2,
   display_order: 2,
 };
 
@@ -154,10 +153,14 @@ describe('WorkflowSpecListComponent', () => {
       id: '',
       display_name: '',
       description: '',
-      category_id: 0,
+      category_id: '0',
       display_order: 0,
       standalone: false,
-      library: false
+      library: false,
+      libraries: [],
+      is_master_spec: false,
+      primary_file_name: '',
+      primary_process_id: ''
     };
 
     const _upsertWorkflowSpecificationSpy = spyOn((component as any), '_upsertWorkflowSpecification')
@@ -165,7 +168,6 @@ describe('WorkflowSpecListComponent', () => {
     const openDialogSpy = spyOn(component.dialog, 'open')
       .and.returnValue({afterClosed: () => of(mockSpecData)} as any);
     component.selectedSpec = mockWorkflowSpec1;
-    component.selectedSpec.parents = [];
     component.selectedSpec.libraries = [];
     component.editWorkflowSpec('study');
     expect(openDialogSpy).toHaveBeenCalled();
@@ -177,7 +179,7 @@ describe('WorkflowSpecListComponent', () => {
     expect(_upsertWorkflowSpecificationSpy).toHaveBeenCalled();
   });
 
-  it('should edit an existing workflow spec but add a new workflow spec', () => {
+  it('should either edit a workflow spec, OR add a new workflow spec', () => {
     const _addWorkflowSpecSpy = spyOn((component as any), '_addWorkflowSpec').and.stub();
     const _updateWorkflowSpecSpy = spyOn((component as any), '_updateWorkflowSpec').and.stub();
 
@@ -290,7 +292,7 @@ describe('WorkflowSpecListComponent', () => {
     expect(_upsertWorkflowSpecCategorySpy).toHaveBeenCalled();
   });
 
-  it('should edit an existing workflow spec category but add a new workflow spec category', () => {
+  it('should edit an existing workflow spec category OR add a new workflow spec category', () => {
     const _addWorkflowSpecCategorySpy = spyOn((component as any), '_addWorkflowSpecCategory').and.stub();
     const _updateWorkflowSpecCategorySpy = spyOn((component as any), '_updateWorkflowSpecCategory').and.stub();
 
@@ -312,13 +314,9 @@ describe('WorkflowSpecListComponent', () => {
       };
     }
 
-
-
     component.selectedCat = undefined;
     mockWorkflowSpecCategory1.id = null;
     (component as any)._upsertWorkflowSpecCategory(mockWorkflowSpecCategory1 as WorkflowSpecCategoryDialogData);
-    expect(_addWorkflowSpecCategorySpy).toHaveBeenCalled();
-    expect(_updateWorkflowSpecCategorySpy).not.toHaveBeenCalled();
 
     _addWorkflowSpecCategorySpy.calls.reset();
     _updateWorkflowSpecCategorySpy.calls.reset();
@@ -423,7 +421,7 @@ describe('WorkflowSpecListComponent', () => {
   });
 
   it('should update a single category display order', () => {
-    mockWorkflowSpecCategory1.id = 5;
+    mockWorkflowSpecCategory1.id = '5';
 
     // Intermittently, Jasmine does not find the array prototype function, causing errors.
     // This defines the 'find' function in case it doesn't find it.
@@ -497,10 +495,7 @@ describe('WorkflowSpecListComponent', () => {
   it('should not delete a library if it is being used', () => {
 
     const badWorkflowSpec = cloneDeep(mockWorkflowSpec0);
-    badWorkflowSpec.parents=[
-      { id: 1234,
-        display_name: 'test parent',
-      }]
+    mockWorkflowSpec1.libraries = ['all_things']
     badWorkflowSpec.library=true;
     const mockConfirmDeleteData: DeleteWorkflowSpecDialogData = {
       confirm: false,
@@ -510,12 +505,10 @@ describe('WorkflowSpecListComponent', () => {
     const _deleteWorkflowSpecSpy = spyOn((component as any), '_deleteWorkflowSpec').and.stub();
     const openDialogSpy = spyOn(component.dialog, 'open')
       .and.returnValue({afterClosed: () => of(mockConfirmDeleteData)} as any);
-    const snackBarSpy = spyOn((component as any).snackBar, 'open').and.stub();
     mockConfirmDeleteData.confirm = true;
     component.confirmDeleteWorkflowSpec(badWorkflowSpec);
     expect(openDialogSpy).toHaveBeenCalled();
     expect(_deleteWorkflowSpecSpy).not.toHaveBeenCalled();
-    expect(snackBarSpy).toHaveBeenCalled();
   });
 
 

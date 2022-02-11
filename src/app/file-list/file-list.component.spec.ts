@@ -24,6 +24,7 @@ import {DeleteFileDialogComponent} from '../_dialogs/delete-file-dialog/delete-f
 import {DeleteFileDialogData} from '../_interfaces/dialog-data';
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {FileListComponent} from './file-list.component';
+import * as http from "http";
 
 
 describe('FileListComponent', () => {
@@ -81,10 +82,14 @@ describe('FileListComponent', () => {
     fixture.detectChanges();
 
 
-    const fmsReq = httpMock.expectOne(`apiRoot/spec_file?workflow_spec_id=${mockWorkflowSpec0.id}`);
+    const fmsReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}/file?workflow_spec_id=${mockWorkflowSpec0.id}`);
     expect(fmsReq.request.method).toEqual('GET');
     fmsReq.flush(mockFileMetas);
     expect(component.fileMetas.length).toBeGreaterThan(0);
+
+    const wfsReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}`);
+    expect(fmsReq.request.method).toEqual('GET');
+    wfsReq.flush(mockWorkflowSpec0);
 
   });
 
@@ -133,7 +138,7 @@ describe('FileListComponent', () => {
   it('should delete a file', () => {
     const loadFileMetasSpy = spyOn((component as any), '_loadFileMetas').and.stub();
     (component as any)._deleteFile(mockFileMeta0);
-    const fmsReq = httpMock.expectOne(`apiRoot/spec_file/${mockFileMeta0.id}`);
+    const fmsReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}/file/${mockFileMeta0.name}`);
     expect(fmsReq.request.method).toEqual('DELETE');
     fmsReq.flush(null);
 
@@ -144,13 +149,13 @@ describe('FileListComponent', () => {
     const routerNavigateSpy = spyOn((component as any).router, 'navigate');
     component.workflowSpec = mockWorkflowSpec0;
     component.editFile(mockFileMeta0);
-    expect(routerNavigateSpy).toHaveBeenCalledWith([`/modeler/${mockWorkflowSpec0.id}/${mockFileMeta0.id}`]);
+    expect(routerNavigateSpy).toHaveBeenCalledWith([`/modeler/${mockWorkflowSpec0.id}/file/${mockFileMeta0.name}`]);
 
     routerNavigateSpy.calls.reset();
     const mockDmnMeta = cloneDeep(mockFileMeta0);
     mockDmnMeta.type = FileType.DMN;
     component.editFile(mockDmnMeta);
-    expect(routerNavigateSpy).toHaveBeenCalledWith([`/modeler/${mockWorkflowSpec0.id}/${mockDmnMeta.id}`]);
+    expect(routerNavigateSpy).toHaveBeenCalledWith([`/modeler/${mockWorkflowSpec0.id}/file/${mockDmnMeta.name}`]);
   });
 
   it('should open file metadata dialog for non-BPMN files', () => {
@@ -181,7 +186,7 @@ describe('FileListComponent', () => {
       type: mockDocMeta.content_type,
       lastModified: timeCode
     });
-    const fReq = httpMock.expectOne(`apiRoot/spec_file/${mockDocMeta.id}/data`);
+    const fReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}/file/${mockDocMeta.name}/data`);
 
     const mockHeaders = new HttpHeaders()
       .append('last-modified', expectedFile.lastModified.toString())
@@ -204,8 +209,8 @@ describe('FileListComponent', () => {
     component.workflowSpec = mockWorkflowSpec0;
 
     (component as any)._openFileDialog();
-    const addReq = httpMock.expectOne(`apiRoot/spec_file?workflow_spec_id=${mockWorkflowSpec0.id}`);
-    expect(addReq.request.method).toEqual('POST');
+    const addReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}/file?workflow_spec_id=${mockWorkflowSpec0.id}`);
+
     addReq.flush(mockFileMeta0);
 
     expect(openDialogSpy).toHaveBeenCalled();
@@ -219,8 +224,7 @@ describe('FileListComponent', () => {
     component.workflowSpec = mockWorkflowSpec0;
 
     (component as any)._openFileDialog(mockFileMeta0, mockFile0);
-    const updateReq = httpMock.expectOne(`apiRoot/spec_file/${mockFileMeta0.id}/data`);
-    expect(updateReq.request.method).toEqual('PUT');
+    const updateReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}/file/${mockFileMeta0.name}/data`);
     updateReq.flush(mockFileMeta0);
 
     expect(openDialogSpy).toHaveBeenCalled();
@@ -228,14 +232,14 @@ describe('FileListComponent', () => {
   });
 
   it('should flag a file as primary', () => {
-    const updateFileMetaSpy = spyOn((component as any).api, 'updateFileMeta').and.returnValue(of(mockFileMeta0));
     const _loadFileMetasSpy = spyOn((component as any), '_loadFileMetas').and.stub();
     expect(component.fileMetas.length).toEqual(mockFileMetas.length);
     component.makePrimary(mockFileMeta0);
 
-    expect(updateFileMetaSpy).toHaveBeenCalledTimes(mockFileMetas.length);
+    const updateReq = httpMock.expectOne(`apiRoot/workflow-specification/${mockWorkflowSpec0.id}/file/${mockFileMeta0.name}?is_primary=true`);
+    updateReq.flush(mockFileMeta0);
+
     expect(component.fileMetas.length).toEqual(mockFileMetas.length);
-    expect(component.fileMetas.reduce((sum, fm) => fm.primary ? sum + 1 : sum, 0)).toEqual(1);
     expect(_loadFileMetasSpy).toHaveBeenCalled();
   });
 });
