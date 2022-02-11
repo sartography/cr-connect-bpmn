@@ -318,7 +318,6 @@ export class WorkflowSpecListComponent implements OnInit {
           if (selectedSpecName && selectedSpecName === ws.id) {
             this.selectedSpec = ws;
             this.selectedCatID = ws.category_id;
-            // TODO: maybe fix expression changes after init error
             this.setCatByID(ws.category_id);
           }
         });
@@ -361,9 +360,8 @@ export class WorkflowSpecListComponent implements OnInit {
       };
         this._updateWorkflowSpecCategory(data.id, newCat);
       } else {
-        // TODO: prompt user for somethin about the id generation
         const newCat: WorkflowSpecCategory = {
-          id: data.display_name,
+          id: data.id,
           display_name: data.display_name,
           admin: data.admin,
       };
