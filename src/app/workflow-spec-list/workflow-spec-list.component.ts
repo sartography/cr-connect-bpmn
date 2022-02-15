@@ -374,10 +374,10 @@ export class WorkflowSpecListComponent implements OnInit {
 
   gitPush() {
     const dialogRef = this.dialog.open(GitRepoDialogComponent, {
-      height: '58vh',
-      width: '50vw',
+      height: '75vh',
+      width: '40vw',
     });
-    
+
    dialogRef.afterClosed().subscribe((comment: string) => {
       this.api.gitRepoPush(comment).subscribe(data => {
         this._displayMessage(`Successfully pushed the Git state`);

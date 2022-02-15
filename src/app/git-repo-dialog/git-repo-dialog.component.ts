@@ -32,7 +32,17 @@ export class GitRepoDialogComponent {
           defaultValue: this.listify(data.changes),
           templateOptions: {
             label: 'These are the changed files',
-            rows: 5,
+            rows: 4,
+            readonly: true,
+          }
+        },
+        {
+          key: 'untracked',
+          type: 'textarea',
+          defaultValue: this.listify(data.untracked),
+          templateOptions: {
+            label: 'These are the untracked files. ',
+            rows: 4,
             readonly: true,
           }
         },
