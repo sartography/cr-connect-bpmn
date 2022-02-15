@@ -1,0 +1,12 @@
+<div mat-dialog-title>
+  <h1>Git Repo</h1>
+</div>
+
+<form [formGroup]="form">
+    <formly-form [model]="model" [fields]="fields" [options]="options" [form]="form"></formly-form>
+</form>
+
+<div mat-dialog-actions>
+  <button [disabled]="form.invalid" (click)="onSubmit()" color="primary" mat-flat-button>Save</button>
+  <button (click)="onNoClick()" mat-flat-button>Cancel</button>
+</div>

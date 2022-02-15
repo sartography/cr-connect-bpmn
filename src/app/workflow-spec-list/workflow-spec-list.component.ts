@@ -30,6 +30,7 @@ import { environment } from '../../environments/environment.runtime';
 import { FormControl } from '@angular/forms';
 import { SettingsService } from '../settings.service';
  import { MatButtonModule } from '@angular/material/button';
+import {GitRepoDialogComponent} from "../git-repo-dialog/git-repo-dialog.component";
 
 
 export interface WorkflowSpecCategoryGroup {
@@ -376,9 +377,22 @@ export class WorkflowSpecListComponent implements OnInit {
     this.api.gitRepo().subscribe(data =>{
 
     });
+    const dialogRef = this.dialog.open(GitRepoDialogComponent, {
+      height: '65vh',
+      width: '50vw',
+    });
     // display to user the changed files
+    let comment = '';
+    let branch = 'dan'; // I think this can be set from the gitrepo call above
 
+    /**
     // if they accept, call gitPush and gitMerge (i think)
+    this.api.gitRepoPush(comment).subscribe(data => {
+      this.api.gitRepoMerge(branch).subscribe(merge => {
+
+      });
+    });
+     */
   }
 
   gitPull() {
