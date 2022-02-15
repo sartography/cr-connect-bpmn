@@ -39,6 +39,7 @@ import { NewFileDialogComponent } from './_dialogs/new-file-dialog/new-file-dial
 import { OpenFileDialogComponent } from './_dialogs/open-file-dialog/open-file-dialog.component';
 import { WorkflowSpecCategoryDialogComponent } from './_dialogs/workflow-spec-category-dialog/workflow-spec-category-dialog.component';
 import { WorkflowSpecDialogComponent } from './_dialogs/workflow-spec-dialog/workflow-spec-dialog.component';
+import { GitRepoDialogComponent} from "./git-repo-dialog/git-repo-dialog.component";
 import { GetIconCodePipe } from './_pipes/get-icon-code.pipe';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -107,6 +108,7 @@ export const getBaseHref = (platformLocation: PlatformLocation): string => platf
     ReferenceFilesComponent,
     ConfirmDialogComponent,
     SettingsComponent,
+    GitRepoDialogComponent,
   ],
   imports: [
     BrowserAnimationsModule,
