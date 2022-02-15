@@ -29,7 +29,7 @@ export class GitRepoDialogComponent {
         {
           key: 'changed',
           type: 'textarea',
-          defaultValue: this.listify(mockChanges),
+          defaultValue: this.listify(data.changes),
           templateOptions: {
             label: 'These are the changed files',
             rows: 5,
