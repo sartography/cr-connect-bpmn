@@ -35,6 +35,13 @@ export class GitRepoDialogComponent {
             rows: 5,
             readonly: true,
           }
+        },
+        {
+          key: 'comment',
+          type:'input',
+          templateOptions: {
+            label: 'Enter a comment for this commit: '
+          }
         }
       ]
     });
@@ -63,7 +70,7 @@ export class GitRepoDialogComponent {
 
   onSubmit() {
     // I think all we actually will return here is the comment
-    this.dialogRef.close(this.model);
+    this.dialogRef.close(this.model.comment);
   }
 
 }
