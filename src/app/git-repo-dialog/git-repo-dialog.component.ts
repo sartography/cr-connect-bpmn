@@ -22,29 +22,38 @@ export class GitRepoDialogComponent {
   ) {
 
     this.api.gitRepo().subscribe(data => {
-      let mockChanges = ['file1', 'file2']
+      // Delete and replace with data.changes
+      let mockChanges = ['file1', 'file2', 'file3', 'file4', 'file5', 'file6']
 
       this.fields = [
         {
           key: 'changed',
-          type: 'select',
+          type: 'textarea',
+          defaultValue: this.listify(mockChanges),
           templateOptions: {
-            multiple: true,
             label: 'These are the changed files',
             rows: 5,
-            options: this.listify(mockChanges),
+            readonly: true,
           }
         }
       ]
     });
   }
 
-  listify(list: string[]) {
-    let dict = []
+  dictify(list: string[]) {
+    let dict = [];
     for (let item in list) {
       dict.push({label: list[item], value: item});
     }
     return dict;
+  }
+
+  listify(list: string[]) {
+    let str = '';
+    for (let item in list) {
+      str += list[item] + '\n';
+    }
+    return str;
   }
 
   onNoClick() {

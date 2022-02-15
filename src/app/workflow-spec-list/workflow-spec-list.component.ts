@@ -378,7 +378,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
     });
     const dialogRef = this.dialog.open(GitRepoDialogComponent, {
-      height: '65vh',
+      height: '50vh',
       width: '50vw',
     });
     // display to user the changed files
