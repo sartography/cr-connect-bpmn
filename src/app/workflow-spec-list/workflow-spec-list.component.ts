@@ -394,14 +394,16 @@ export class WorkflowSpecListComponent implements OnInit {
         });
       });
       )};
+           this._displayMessage(`Successfully pushed the Git state`);
            */
+
   }
 
   gitPull() {
     this.api.gitRepoPull().subscribe(data => {
 
     });
-
+      this._displayMessage(`Successfully pulled the Git state`);
   }
 
   private _updateWorkflowSpec(specId: string, newSpec: WorkflowSpec) {
