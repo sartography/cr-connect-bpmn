@@ -377,10 +377,7 @@ export class WorkflowSpecListComponent implements OnInit {
       height: '58vh',
       width: '50vw',
     });
-    // display to user the changed files
-    let comment = '';
-    let branch = 'alicia'; // I think this can be set from the gitrepo call above
-
+    
    dialogRef.afterClosed().subscribe((comment: string) => {
       this.api.gitRepoPush(comment).subscribe(data => {
         this._displayMessage(`Successfully pushed the Git state`);
