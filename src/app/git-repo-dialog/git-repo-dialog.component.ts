@@ -80,7 +80,7 @@ export class GitRepoDialogComponent {
 
   onSubmit() {
     // I think all we actually will return here is the comment
-    this.dialogRef.close(this.model.comment);
+    this.dialogRef.close(this.model);
   }
 
 }

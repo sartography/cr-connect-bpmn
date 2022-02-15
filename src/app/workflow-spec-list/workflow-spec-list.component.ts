@@ -31,6 +31,7 @@ import { FormControl } from '@angular/forms';
 import { SettingsService } from '../settings.service';
  import { MatButtonModule } from '@angular/material/button';
 import {GitRepoDialogComponent} from "../git-repo-dialog/git-repo-dialog.component";
+import {GitRepo} from "sartography-workflow-lib/lib/types/git";
 
 
 export interface WorkflowSpecCategoryGroup {
@@ -171,6 +172,7 @@ export class WorkflowSpecListComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((data: WorkflowSpecCategoryDialogData) => {
       if (data && data.display_name) {
+        console.log('here!')
         this._upsertWorkflowSpecCategory(data);
       }
     });
@@ -378,12 +380,14 @@ export class WorkflowSpecListComponent implements OnInit {
       width: '40vw',
     });
 
-   dialogRef.afterClosed().subscribe((comment: string) => {
-      this.api.gitRepoPush(comment).subscribe(data => {
-        this._displayMessage(`Successfully pushed the Git state`);
-      });
+   dialogRef.afterClosed().subscribe((data) => {
+     if (data) {
+       let comment = data.comment || '';
+       this.api.gitRepoPush(comment).subscribe(data => {
+         this._displayMessage(`Successfully pushed the Git state`);
+       });
+     }
    });
-
   }
 
   gitPull() {
