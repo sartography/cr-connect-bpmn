@@ -373,29 +373,19 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   gitPush() {
-    // get the state of the repo
-    this.api.gitRepo().subscribe(data =>{
-
-    });
     const dialogRef = this.dialog.open(GitRepoDialogComponent, {
       height: '58vh',
       width: '50vw',
     });
     // display to user the changed files
     let comment = '';
-    let branch = 'dan'; // I think this can be set from the gitrepo call above
+    let branch = 'alicia'; // I think this can be set from the gitrepo call above
 
-          /** WIP - actually do the push and merge
-    dialogRef.afterClosed().subscribe((comment: string) => {
-      // if they accept, call gitPush and gitMerge (i think)
+   dialogRef.afterClosed().subscribe((comment: string) => {
       this.api.gitRepoPush(comment).subscribe(data => {
-        this.api.gitRepoMerge(branch).subscribe(merge => {
-
-        });
+        this._displayMessage(`Successfully pushed the Git state`);
       });
-      )};
-           this._displayMessage(`Successfully pushed the Git state`);
-           */
+   });
 
   }
 
