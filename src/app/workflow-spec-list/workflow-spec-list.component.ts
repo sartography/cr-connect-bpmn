@@ -29,6 +29,7 @@ import { Location } from '@angular/common';
 import { environment } from '../../environments/environment.runtime';
 import { FormControl } from '@angular/forms';
 import { SettingsService } from '../settings.service';
+ import { MatButtonModule } from '@angular/material/button';
 
 
 export interface WorkflowSpecCategoryGroup {
@@ -368,6 +369,24 @@ export class WorkflowSpecListComponent implements OnInit {
         this._addWorkflowSpecCategory(newCat);
       }
     }
+  }
+
+  gitPush() {
+    // get the state of the repo
+    this.api.gitRepo().subscribe(data =>{
+
+    });
+    // display to user the changed files
+
+    // if they accept, call gitPush and gitMerge (i think)
+  }
+
+  gitPull() {
+    // this won't have a popup or nothing i don't think
+    this.api.gitRepoPull().subscribe(data => {
+
+    });
+
   }
 
   private _updateWorkflowSpec(specId: string, newSpec: WorkflowSpec) {
