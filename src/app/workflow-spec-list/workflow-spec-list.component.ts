@@ -98,9 +98,11 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   setCatByID(cat_id: string) {
-    this.api.getWorkflowSpecCategory(cat_id).subscribe( cat => {
-      this.selectedCat = cat;
-    })
+    if (cat_id != '') {
+      this.api.getWorkflowSpecCategory(cat_id).subscribe(cat => {
+        this.selectedCat = cat;
+      });
+    }
   }
 
   isSelected(cat: WorkflowSpecCategoryGroup) {
