@@ -88,7 +88,7 @@ export class FileListComponent implements OnInit, OnChanges {
   }
 
   downloadFile(fm: FileMeta) {
-    this.api.getFileData(fm.id).subscribe(response => {
+    this.api.getSpecFileData(this.workflowSpec, fm.name).subscribe(response => {
       const blob = new Blob([response.body], {type: fm.content_type});
       fileSaver.saveAs(blob, fm.name);
     });
