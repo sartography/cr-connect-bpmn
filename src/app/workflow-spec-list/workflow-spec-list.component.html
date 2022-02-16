@@ -11,6 +11,7 @@
     <div fxLayoutAlign="end center" fxLayoutGap="5px">
       <button mat-raised-button color="accent" (click)="gitPush()" >Push</button>
       <button mat-raised-button color="accent" (click)="gitPull()"> Pull</button>
+      <button mat-raised-button color="primary" (click)="gitMerge()"> Merge from {{merge_branch}}</button>
     </div>
   </div>
   <mat-drawer-container class="example-container" autosize>

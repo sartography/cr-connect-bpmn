@@ -32,6 +32,7 @@ import { SettingsService } from '../settings.service';
  import { MatButtonModule } from '@angular/material/button';
 import {GitRepoDialogComponent} from "../git-repo-dialog/git-repo-dialog.component";
 import {GitRepo} from "sartography-workflow-lib/lib/types/git";
+import {GitMergeDialogComponent} from "../git-merge-dialog/git-merge-dialog.component";
 
 
 export interface WorkflowSpecCategoryGroup {
@@ -58,6 +59,7 @@ export class WorkflowSpecListComponent implements OnInit {
   categories: WorkflowSpecCategory[];
   searchField: FormControl;
   library_toggle: boolean;
+  merge_branch: string = 'branch'
 
   constructor(
     private api: ApiService,
@@ -78,6 +80,12 @@ export class WorkflowSpecListComponent implements OnInit {
         this._loadWorkflowSpecCategories();
       }
     });
+
+    this.api.gitRepo().subscribe(gitRepo => {
+      if (gitRepo.merge_branch && gitRepo.merge_branch != 'all') {
+        this.merge_branch = gitRepo.merge_branch;
+      }
+    })
 
     this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe(value => {
@@ -392,9 +400,23 @@ export class WorkflowSpecListComponent implements OnInit {
 
   gitPull() {
     this.api.gitRepoPull().subscribe(data => {
-
     });
       this._displayMessage(`Successfully pulled the Git state`);
+  }
+
+  gitMerge() {
+    const dialogRef = this.dialog.open(GitMergeDialogComponent, {
+      height: '75vh',
+      width: '40vw',
+    });
+
+   dialogRef.afterClosed().subscribe((data) => {
+     if (data) {
+         this.api.gitRepoMerge(data.merge_branch).subscribe(res => {
+           this._displayMessage('Merged in new branch.');
+         });
+     }
+   });
   }
 
   private _updateWorkflowSpec(specId: string, newSpec: WorkflowSpec) {
@@ -448,4 +470,3 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
 }
-
