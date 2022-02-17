@@ -98,9 +98,11 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   setCatByID(cat_id: string) {
-    this.api.getWorkflowSpecCategory(cat_id).subscribe( cat => {
-      this.selectedCat = cat;
-    })
+    if (cat_id != '') {
+      this.api.getWorkflowSpecCategory(cat_id).subscribe(cat => {
+        this.selectedCat = cat;
+      });
+    }
   }
 
   isSelected(cat: WorkflowSpecCategoryGroup) {
@@ -285,7 +287,6 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   private _loadWorkflowSpecs(selectedSpecName: string = null, searchSpecName: string = null) {
-
     this.api.getWorkflowSpecList().subscribe(wfs => {
       this.workflowSpecs = wfs;
       // Populate categories with their specs
@@ -372,8 +373,8 @@ export class WorkflowSpecListComponent implements OnInit {
 
   private _updateWorkflowSpec(specId: string, newSpec: WorkflowSpec) {
     this.api.updateWorkflowSpecification(specId, newSpec).subscribe(_ => {
-      this._loadWorkflowLibraries();
-      this._loadWorkflowSpecs();
+      this._loadWorkflowLibraries(newSpec.id);
+      this._loadWorkflowSpecs(newSpec.id);
       this._displayMessage('Saved changes to workflow spec.');
     });
   }
