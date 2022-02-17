@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ApiService} from "../../../../sartography-libraries/dist/sartography-workflow-lib";
+import {ApiService} from 'sartography-workflow-lib';
 import {MatDialogRef} from "@angular/material/dialog";
 import {FormGroup} from "@angular/forms";
 import {FormlyFieldConfig, FormlyFormOptions} from "@ngx-formly/core";
