@@ -137,6 +137,9 @@ describe('WorkflowSpecListComponent', () => {
     specReq.flush(mockWorkflowSpecs);
     fixture.detectChanges();
     expect(component.workflowSpecs.length).toBeGreaterThan(0);
+
+    const gitReq = httpMock.expectOne('apiRoot/git_repo');
+    expect(gitReq.request.method).toEqual('GET');
   });
 
   afterEach(() => {

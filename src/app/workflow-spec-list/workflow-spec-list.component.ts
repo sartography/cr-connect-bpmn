@@ -6,7 +6,6 @@ import { cloneDeep } from 'lodash';
 import {
   ApiErrorsComponent,
   ApiService,
-  isNumberDefined,
   // moveArrayElementDown,
   // moveArrayElementUp,
   WorkflowSpec,
@@ -60,6 +59,7 @@ export class WorkflowSpecListComponent implements OnInit {
   searchField: FormControl;
   library_toggle: boolean;
   merge_branch: string = 'branch'
+  branch: string = 'branch'
 
   constructor(
     private api: ApiService,
@@ -82,8 +82,11 @@ export class WorkflowSpecListComponent implements OnInit {
     });
 
     this.api.gitRepo().subscribe(gitRepo => {
-      if (gitRepo.merge_branch && gitRepo.merge_branch != 'all') {
+      if (gitRepo.merge_branch) {
         this.merge_branch = gitRepo.merge_branch;
+      }
+      if (gitRepo.branch) {
+        this.branch = gitRepo.branch;
       }
     })
 
@@ -109,9 +112,11 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   setCatByID(cat_id: string) {
-    this.api.getWorkflowSpecCategory(cat_id).subscribe( cat => {
-      this.selectedCat = cat;
-    })
+    if (cat_id) {
+      this.api.getWorkflowSpecCategory(cat_id).subscribe(cat => {
+        this.selectedCat = cat;
+      })
+    }
   }
 
   isSelected(cat: WorkflowSpecCategoryGroup) {
@@ -129,7 +134,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
   editWorkflowSpec(state: String, selectedSpec?: WorkflowSpec) {
 
-    const hasDisplayOrder = selectedSpec && isNumberDefined(selectedSpec.display_order);
+    const hasDisplayOrder = selectedSpec && selectedSpec.display_order;
     const dialogData: WorkflowSpecDialogData = {
       id: selectedSpec ? selectedSpec.id : '',
       display_name: selectedSpec ? selectedSpec.display_name : '',
@@ -246,9 +251,13 @@ export class WorkflowSpecListComponent implements OnInit {
   editCategoryDisplayOrder(catId: string, direction: string) {
     this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
         this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
-          let new_cat = (cat_change.find(i2 => i2.id === cat.id));
-          cat.display_order = new_cat.display_order;
-          return cat;
+          if (typeof cat_change.find == 'function') {
+            let new_cat = cat_change.find(i2 => i2.id === cat.id);
+            cat.display_order = new_cat.display_order;
+            return cat;
+          } else {
+            return cat;
+          }
         });
         this.workflowSpecsByCategory.sort((x,y) => x.display_order - y.display_order);
     });
@@ -404,7 +413,7 @@ export class WorkflowSpecListComponent implements OnInit {
       this._displayMessage(`Successfully pulled the Git state`);
   }
 
-  gitMerge() {
+  gitMerge(pull?: boolean) {
     const dialogRef = this.dialog.open(GitMergeDialogComponent, {
       height: '75vh',
       width: '40vw',
@@ -415,6 +424,9 @@ export class WorkflowSpecListComponent implements OnInit {
          this.api.gitRepoMerge(data.merge_branch).subscribe(res => {
            this._displayMessage('Merged in new branch.');
          });
+     }
+     if (pull) {
+       this.gitPull();
      }
    });
   }

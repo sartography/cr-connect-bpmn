@@ -8,10 +8,20 @@
           <label><input matInput type="search" placeholder="Search Workflows" fxLayoutAlign="start" style="margin-top: 0;" class="form-control" [formControl]="searchField"></label>
         </mat-form-field>
     </div>
-    <div fxLayoutAlign="end center" fxLayoutGap="5px">
-      <button mat-raised-button color="accent" (click)="gitPush()" >Push</button>
-      <button mat-raised-button color="accent" (click)="gitPull()"> Pull</button>
-      <button mat-raised-button color="primary" (click)="gitMerge()"> Merge from {{merge_branch}}</button>
+    <div fxLayoutAlign="end center" fxLayoutGap="5px" *ngIf="branch === 'testing'">
+      <button mat-raised-button color="accent" (click)="gitPush()" >Publish</button>
+    </div>
+    <div fxLayoutAlign="end center" fxLayoutGap="5px" *ngIf="branch === 'staging'">
+      <button mat-raised-button color="accent" (click)="gitPush()" >Publish</button>
+      <button mat-raised-button color="primary" (click)="gitMerge(true)"> Pull Testing State</button>
+    </div>
+    <div fxLayoutAlign="end center" fxLayoutGap="5px" *ngIf="branch === 'production'">
+      <button mat-raised-button color="accent" (click)="gitMerge(true)"> Pull Staging State</button>
+    </div>
+    <div fxLayoutAlign="end center" fxLayoutGap="5px" *ngIf="branch !=='production' && branch !=='staging' && branch !=='testing'">
+       <button mat-raised-button color="accent" (click)="gitPush()" >Push</button>
+       <button mat-raised-button color="accent" (click)="gitPull()"> Pull</button>
+       <button mat-raised-button color="primary" (click)="gitMerge(false)"> Merge </button>
     </div>
   </div>
   <mat-drawer-container class="example-container" autosize>
