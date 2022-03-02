@@ -34,7 +34,7 @@ export class GitMergeDialogComponent {
         {
           key: 'merge_branch',
           type: 'textarea',
-          defaultValue: gitRepo.merge_branch,
+          defaultValue: gitRepo.merge_branch == 'all' ? '' : gitRepo.merge_branch,
           templateOptions: {
             label: 'This is the merge branch',
             rows: 1,
