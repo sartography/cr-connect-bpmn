@@ -8,20 +8,13 @@
           <label><input matInput type="search" placeholder="Search Workflows" fxLayoutAlign="start" style="margin-top: 0;" class="form-control" [formControl]="searchField"></label>
         </mat-form-field>
     </div>
-    <div fxLayoutAlign="end center" fxLayoutGap="5px" *ngIf="branch === 'testing'">
-      <button mat-raised-button color="accent" (click)="gitPush()" >Publish</button>
-    </div>
-    <div fxLayoutAlign="end center" fxLayoutGap="5px" *ngIf="branch === 'staging'">
-      <button mat-raised-button color="accent" (click)="gitPush()" >Publish</button>
-      <button mat-raised-button color="primary" (click)="gitMerge(true)"> Pull Testing State</button>
-    </div>
-    <div fxLayoutAlign="end center" fxLayoutGap="5px" *ngIf="branch === 'production'">
-      <button mat-raised-button color="accent" (click)="gitMerge(true)"> Pull Staging State</button>
-    </div>
-    <div fxLayoutAlign="end center" fxLayoutGap="5px" *ngIf="branch !=='production' && branch !=='staging' && branch !=='testing'">
-       <button mat-raised-button color="accent" (click)="gitPush()" >Push</button>
-       <button mat-raised-button color="accent" (click)="gitPull()"> Pull</button>
-       <button mat-raised-button color="primary" (click)="gitMerge(false)"> Merge </button>
+    <div fxLayoutAlign="end center" fxLayoutGap="5px">
+      <div *ngIf="gitRepo && gitRepo.display_push">
+        <button mat-raised-button color="accent" (click)="gitPush()" >Publish</button>
+      </div>
+      <div *ngIf="gitRepo && gitRepo.display_merge && gitRepo.merge_branch!=='none'">
+        <button mat-raised-button color="primary" (click)="gitMerge()"> Pull State</button>
+      </div>
     </div>
   </div>
   <mat-drawer-container class="example-container" autosize>

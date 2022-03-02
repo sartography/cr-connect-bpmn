@@ -58,8 +58,7 @@ export class WorkflowSpecListComponent implements OnInit {
   categories: WorkflowSpecCategory[];
   searchField: FormControl;
   library_toggle: boolean;
-  merge_branch: string = 'branch'
-  branch: string = 'branch'
+  gitRepo: GitRepo;
 
   constructor(
     private api: ApiService,
@@ -82,12 +81,7 @@ export class WorkflowSpecListComponent implements OnInit {
     });
 
     this.api.gitRepo().subscribe(gitRepo => {
-      if (gitRepo.merge_branch) {
-        this.merge_branch = gitRepo.merge_branch;
-      }
-      if (gitRepo.branch) {
-        this.branch = gitRepo.branch;
-      }
+      this.gitRepo = gitRepo;
     })
 
     this.searchField = new FormControl();
@@ -400,7 +394,7 @@ export class WorkflowSpecListComponent implements OnInit {
    dialogRef.afterClosed().subscribe((data) => {
      if (data) {
        let comment = data.comment || '';
-       this.api.gitRepoPush(comment).subscribe(data => {
+       this.api.gitRepoPush(comment).subscribe(_ => {
          this._displayMessage(`Successfully pushed the Git state`);
        });
      }
@@ -408,28 +402,33 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   gitPull() {
-    this.api.gitRepoPull().subscribe(data => {
+    this.api.gitRepoPull().subscribe(_ => {
+      this.api.gitRepoPush('').subscribe(_ => {
+        this._displayMessage(`Successfully pulled the Git state`);
+      })
     });
-      this._displayMessage(`Successfully pulled the Git state`);
   }
 
-  gitMerge(pull?: boolean) {
-    const dialogRef = this.dialog.open(GitMergeDialogComponent, {
-      height: '75vh',
-      width: '40vw',
-    });
+  gitMerge() {
+    // If the merge branch is 'all', open the repo popup.
+    if (this.gitRepo.merge_branch == 'all') {
+      const dialogRef = this.dialog.open(GitMergeDialogComponent, {
+        height: '75vh',
+        width: '40vw',
+      });
 
-   dialogRef.afterClosed().subscribe((data) => {
-     if (data) {
-         this.api.gitRepoMerge(data.merge_branch).subscribe(res => {
-           this._displayMessage('Merged in new branch.');
-         });
-     }
-     if (pull) {
-       this.gitPull();
-     }
-   });
-  }
+      dialogRef.afterClosed().subscribe((data) => {
+        if (data) {
+          this.api.gitRepoMerge(data.merge_branch).subscribe(_ => {
+            this.gitPull();
+          });
+        }
+      });
+    } else {
+    this.api.gitRepoMerge(this.gitRepo.merge_branch).subscribe(_ => {
+        this.gitPull();
+    });}
+  };
 
   private _updateWorkflowSpec(specId: string, newSpec: WorkflowSpec) {
     this.api.updateWorkflowSpecification(specId, newSpec).subscribe(_ => {
