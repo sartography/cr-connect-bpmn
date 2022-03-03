@@ -514,5 +514,13 @@ describe('WorkflowSpecListComponent', () => {
     expect(_deleteWorkflowSpecSpy).not.toHaveBeenCalled();
   });
 
+    it('should call gitPush', () => {
+    const mockComment = 'my comment';
+    const gitPushSpy = spyOn((component as any), 'gitPush').and.stub();
+    const dialogSpy = spyOn(component.dialog, 'open')
+      .and.returnValue({afterClosed: () => of (mockComment)} as any);
+    component.gitPush();
+  });
+
 
 });
