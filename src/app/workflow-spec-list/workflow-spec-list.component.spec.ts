@@ -37,6 +37,7 @@ import {
 import {GetIconCodePipe} from '../_pipes/get-icon-code.pipe';
 import {FileListComponent} from '../file-list/file-list.component';
 import {WorkflowSpecCategoryGroup, WorkflowSpecListComponent} from './workflow-spec-list.component';
+import {GitRepoDialogComponent} from "../git-repo-dialog/git-repo-dialog.component";
 
 
 export class MdDialogMock {
@@ -519,7 +520,10 @@ describe('WorkflowSpecListComponent', () => {
     const gitPushSpy = spyOn((component as any), 'gitPush').and.stub();
     const dialogSpy = spyOn(component.dialog, 'open')
       .and.returnValue({afterClosed: () => of (mockComment)} as any);
+
     component.gitPush();
+    expect(gitPushSpy).toHaveBeenCalled();
+    expect(dialogSpy).toHaveBeenCalled();
   });
 
 

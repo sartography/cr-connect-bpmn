@@ -72,6 +72,10 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.api.gitRepo().subscribe(gitRepo => {
+      this.gitRepo = gitRepo;
+    });
+
     this.route.paramMap.subscribe(paramMap => {
       if (paramMap.has('spec')) {
         this._loadWorkflowSpecCategories(paramMap.get('spec'));
@@ -79,10 +83,6 @@ export class WorkflowSpecListComponent implements OnInit {
         this._loadWorkflowSpecCategories();
       }
     });
-
-    this.api.gitRepo().subscribe(gitRepo => {
-      this.gitRepo = gitRepo;
-    })
 
     this.searchField = new FormControl();
     this.searchField.valueChanges.subscribe(value => {
