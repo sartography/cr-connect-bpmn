@@ -197,11 +197,11 @@ export class ModelerComponent implements AfterViewInit {
       });
       dialogRef.afterClosed().subscribe(dialogResult => {
         if (dialogResult) {
-          this.router.navigate(['/modeler', this.workflowSpecId, b.id]);
+          this.router.navigate(['/modeler', this.workflowSpecId, 'file', b.name]);
         }
       });
     } else {
-      this.router.navigate(['/modeler', this.workflowSpecId, b.id])
+      this.router.navigate(['/modeler', this.workflowSpecId, 'file', b.name])
     }
   }
 
