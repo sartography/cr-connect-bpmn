@@ -416,7 +416,8 @@ describe('WorkflowSpecListComponent', () => {
       task_data: {},
       line_number: 12,
       offset: 0,
-      error_line: 'x != y'
+      error_line: 'x != y',
+      task_trace: []
     };
     invalidReq.flush([mockError]);
     expect(bottomSheetSpy).toHaveBeenCalled();
