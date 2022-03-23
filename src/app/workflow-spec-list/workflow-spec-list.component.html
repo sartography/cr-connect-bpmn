@@ -1,11 +1,21 @@
 <div class="workflow-specs" fxLayout="column" fxLayoutGap="10px">
-  <div class="buttons" fxLayout="row" fxLayoutGap="20px">
-    <div>
-      <h1 style="margin-top: 16px">Workflow Specifications</h1>
+  <div class="buttons" fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="space-between center">
+    <div fxLayout="row" fxLayoutGap="20px">
+      <div>
+        <h1 style="margin-top: 16px">Workflow Specifications</h1>
+      </div>
+        <mat-form-field appearance="outline" style="padding:0">
+          <label><input matInput type="search" placeholder="Search Workflows" fxLayoutAlign="start" style="margin-top: 0;" class="form-control" [formControl]="searchField"></label>
+        </mat-form-field>
     </div>
-      <mat-form-field appearance="outline" style="padding:0">
-        <label><input matInput type="search" placeholder="Search Workflows" fxLayoutAlign="start" style="margin-top: 0;" class="form-control" [formControl]="searchField"></label>
-      </mat-form-field>
+    <div fxLayoutAlign="end center" fxLayoutGap="5px">
+      <div *ngIf="gitRepo && gitRepo.display_push">
+        <button mat-raised-button color="accent" (click)="gitPush()" >Publish</button>
+      </div>
+      <div *ngIf="gitRepo && gitRepo.display_merge && gitRepo.merge_branch!=='none'">
+        <button mat-raised-button color="primary" (click)="gitMerge()"> Pull State</button>
+      </div>
+    </div>
   </div>
   <mat-drawer-container class="example-container" autosize>
     <mat-drawer #drawer class="example-sidenav" mode="side" opened="true">

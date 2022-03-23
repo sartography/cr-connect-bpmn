@@ -1,6 +1,6 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, waitForAsync} from '@angular/core/testing';
 import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef} from '@angular/material/bottom-sheet';
 import {MatCardModule} from '@angular/material/card';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
@@ -10,24 +10,27 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
-import { cloneDeep } from 'lodash';
+import {cloneDeep} from 'lodash';
 import {of} from 'rxjs';
 import {
   ApiErrorsComponent,
   ApiService,
-  MockEnvironment, mockWorkflowMeta1,
+  MockEnvironment,
+  mockWorkflowMeta1,
   mockWorkflowSpec0,
   mockWorkflowSpec1,
-  mockWorkflowSpec2, mockWorkflowSpec3,
+  mockWorkflowSpec3,
   mockWorkflowSpecCategories,
   mockWorkflowSpecCategory0,
   mockWorkflowSpecCategory1,
-  mockWorkflowSpecCategory2,
   mockWorkflowSpecs,
   WorkflowSpec
 } from 'sartography-workflow-lib';
+import {GitRepo} from "sartography-workflow-lib/lib/types/git";
 import {ApiError} from 'sartography-workflow-lib/lib/types/api';
-import {DeleteWorkflowSpecDialogComponent} from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
+import {
+  DeleteWorkflowSpecDialogComponent
+} from '../_dialogs/delete-workflow-spec-dialog/delete-workflow-spec-dialog.component';
 import {
   DeleteWorkflowSpecCategoryDialogData,
   DeleteWorkflowSpecDialogData,
@@ -137,6 +140,9 @@ describe('WorkflowSpecListComponent', () => {
     specReq.flush(mockWorkflowSpecs);
     fixture.detectChanges();
     expect(component.workflowSpecs.length).toBeGreaterThan(0);
+
+    const gitReq = httpMock.expectOne('apiRoot/git_repo');
+    expect(gitReq.request.method).toEqual('GET');
   });
 
   afterEach(() => {
@@ -511,6 +517,27 @@ describe('WorkflowSpecListComponent', () => {
     expect(openDialogSpy).toHaveBeenCalled();
     expect(_deleteWorkflowSpecSpy).not.toHaveBeenCalled();
   });
+
+    it('should call gitPush', () => {
+    const mockComment = '';
+    component.gitRepo = {branch: "", directory: "", merge_branch: "", display_merge: true, display_push: true};
+    const gitPushSpy = spyOn((component as any), 'gitPush').and.callThrough();
+    const dialogSpy = spyOn(component.dialog, 'open')
+      .and.returnValue({afterClosed: () => of (mockComment)} as any);
+    component.gitPush();
+    expect(gitPushSpy).toHaveBeenCalled();
+    expect(dialogSpy).toHaveBeenCalled();
+  });
+
+    it('should call git merge', () => {
+      component.gitRepo = {branch: "", directory: "", merge_branch: "all", display_merge: true, display_push: true};
+      const gitMergeSpy = spyOn((component as any), 'gitMerge').and.callThrough();
+      const dialogSpy = spyOn(component.dialog, 'open')
+        .and.returnValue({afterClosed: () => of ()} as any);
+      component.gitMerge();
+      expect(gitMergeSpy).toHaveBeenCalled();
+      expect(dialogSpy).toHaveBeenCalled();
+    });
 
 
 });

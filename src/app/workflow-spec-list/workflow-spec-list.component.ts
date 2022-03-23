@@ -6,7 +6,6 @@ import { cloneDeep } from 'lodash';
 import {
   ApiErrorsComponent,
   ApiService,
-  isNumberDefined,
   // moveArrayElementDown,
   // moveArrayElementUp,
   WorkflowSpec,
@@ -29,6 +28,10 @@ import { Location } from '@angular/common';
 import { environment } from '../../environments/environment.runtime';
 import { FormControl } from '@angular/forms';
 import { SettingsService } from '../settings.service';
+ import { MatButtonModule } from '@angular/material/button';
+import {GitRepoDialogComponent} from "../git-repo-dialog/git-repo-dialog.component";
+import {GitRepo} from "sartography-workflow-lib/lib/types/git";
+import {GitMergeDialogComponent} from "../git-merge-dialog/git-merge-dialog.component";
 
 
 export interface WorkflowSpecCategoryGroup {
@@ -55,6 +58,7 @@ export class WorkflowSpecListComponent implements OnInit {
   categories: WorkflowSpecCategory[];
   searchField: FormControl;
   library_toggle: boolean;
+  gitRepo: GitRepo;
 
   constructor(
     private api: ApiService,
@@ -68,6 +72,10 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.api.gitRepo().subscribe(gitRepo => {
+      this.gitRepo = gitRepo;
+    });
+
     this.route.paramMap.subscribe(paramMap => {
       if (paramMap.has('spec')) {
         this._loadWorkflowSpecCategories(paramMap.get('spec'));
@@ -120,7 +128,7 @@ export class WorkflowSpecListComponent implements OnInit {
 
   editWorkflowSpec(state: String, selectedSpec?: WorkflowSpec) {
 
-    const hasDisplayOrder = selectedSpec && isNumberDefined(selectedSpec.display_order);
+    const hasDisplayOrder = selectedSpec && selectedSpec.display_order;
     const dialogData: WorkflowSpecDialogData = {
       id: selectedSpec ? selectedSpec.id : '',
       display_name: selectedSpec ? selectedSpec.display_name : '',
@@ -171,6 +179,7 @@ export class WorkflowSpecListComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((data: WorkflowSpecCategoryDialogData) => {
       if (data && data.display_name) {
+        console.log('here!')
         this._upsertWorkflowSpecCategory(data);
       }
     });
@@ -236,9 +245,13 @@ export class WorkflowSpecListComponent implements OnInit {
   editCategoryDisplayOrder(catId: string, direction: string) {
     this.api.reorderWorkflowCategory(catId, direction).subscribe(cat_change => {
         this.workflowSpecsByCategory = this.workflowSpecsByCategory.map(cat => {
-          let new_cat = (cat_change.find(i2 => i2.id === cat.id));
-          cat.display_order = new_cat.display_order;
-          return cat;
+          if (typeof cat_change.find == 'function') {
+            let new_cat = cat_change.find(i2 => i2.id === cat.id);
+            cat.display_order = new_cat.display_order;
+            return cat;
+          } else {
+            return cat;
+          }
         });
         this.workflowSpecsByCategory.sort((x,y) => x.display_order - y.display_order);
     });
@@ -371,6 +384,51 @@ export class WorkflowSpecListComponent implements OnInit {
     }
   }
 
+  gitPush() {
+    const dialogRef = this.dialog.open(GitRepoDialogComponent, {
+      height: '75vh',
+      width: '40vw',
+    });
+
+   dialogRef.afterClosed().subscribe((data) => {
+     if (data) {
+       let comment = data.comment || '';
+       this.api.gitRepoPush(comment).subscribe(_ => {
+         this._displayMessage(`Successfully pushed the Git state`);
+       });
+     }
+   });
+  }
+
+  gitPull() {
+    this.api.gitRepoPull().subscribe(_ => {
+      this.api.gitRepoPush('').subscribe(_ => {
+        this._displayMessage(`Successfully pulled the Git state`);
+      })
+    });
+  }
+
+  gitMerge() {
+    // If the merge branch is 'all', open the repo popup.
+    if (this.gitRepo.merge_branch == 'all') {
+      const dialogRef = this.dialog.open(GitMergeDialogComponent, {
+        height: '75vh',
+        width: '40vw',
+      });
+
+      dialogRef.afterClosed().subscribe((data) => {
+        if (data) {
+          this.api.gitRepoMerge(data.merge_branch).subscribe(_ => {
+            this.gitPull();
+          });
+        }
+      });
+    } else {
+    this.api.gitRepoMerge(this.gitRepo.merge_branch).subscribe(_ => {
+        this.gitPull();
+    });}
+  };
+
   private _updateWorkflowSpec(specId: string, newSpec: WorkflowSpec) {
     this.api.updateWorkflowSpecification(specId, newSpec).subscribe(_ => {
       this._loadWorkflowLibraries(newSpec.id);
@@ -422,4 +480,3 @@ export class WorkflowSpecListComponent implements OnInit {
   }
 
 }
-
