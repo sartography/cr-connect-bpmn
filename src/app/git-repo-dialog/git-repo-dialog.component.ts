@@ -29,9 +29,19 @@ export class GitRepoDialogComponent {
         {
           key: 'changed',
           type: 'textarea',
-          defaultValue: this.listify(data.changes),
+          defaultValue: this.listify(data.modified),
           templateOptions: {
             label: 'These are the changed files',
+            rows: 4,
+            readonly: true,
+          }
+        },
+        {
+          key: 'deleted',
+          type: 'textarea',
+          defaultValue: this.listify(data.deleted),
+          templateOptions: {
+            label: 'These are the deleted files',
             rows: 4,
             readonly: true,
           }
