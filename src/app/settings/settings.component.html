@@ -6,6 +6,7 @@
     <mat-label>Select Study</mat-label>
     <mat-hint>Here you can specify a default study to use when performing validation.</mat-hint>
     <mat-select matNativeControl required [(value)]="selectedStudyId" (selectionChange)="selectStudy($event.value)">
+      <mat-option [value]="null"> No study selected </mat-option>
       <mat-option *ngFor="let s of studies" [value]="s.id">
         {{s.id}} - {{s.title}}
       </mat-option>

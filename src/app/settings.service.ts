@@ -10,7 +10,11 @@ export class SettingsService {
   constructor() { }
 
   setStudyIdForValidation(id: number) {
-    localStorage.setItem(this.studyIdKey, id.toString());
+    if (id != null) {
+      localStorage.setItem(this.studyIdKey, id.toString());
+    } else {
+      localStorage.removeItem(this.studyIdKey)
+    }
   }
 
   getStudyIdForValidation() {
