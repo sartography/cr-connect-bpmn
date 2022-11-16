@@ -68,7 +68,7 @@
       <button mat-menu-item (click)="diagram.saveXML()"><mat-icon>code</mat-icon> Download XML File</button>
     </mat-menu>
 
-    <button mat-button *ngIf="diagramFile" (click)="editFileMeta()">
+    <button mat-button *ngIf="!hasChanged()" (click)="editFileMeta()">
       <mat-icon>edit</mat-icon>
       {{getFileName()}}
     </button>

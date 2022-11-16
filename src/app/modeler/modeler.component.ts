@@ -327,7 +327,11 @@ export class ModelerComponent implements AfterViewInit {
 
     dialogRef.afterClosed().subscribe((data: FileMetaDialogData) => {
       if (data && data.fileName) {
-        this._upsertFileMeta(data);
+        if (this.diagramFileMeta) {
+          this._updateFileFilename(data);
+        } else {
+          this._upsertFileMeta(data);
+        }
       }
     });
   }
@@ -379,6 +383,17 @@ export class ModelerComponent implements AfterViewInit {
     });
   }
 
+  private _updateFileFilename(data: FileMetaDialogData) {
+    // If it's the first time, we don't have this.fileMetaName
+    if ((!this.fileMetaName) || ((data.fileName) && (this.fileMetaName !== data.fileName))) {
+      this.api.updateSpecFileFilename(this.workflowSpec, this.diagramFileMeta, data.fileName).subscribe(newFileMeta => {
+        this.diagramFileMeta = newFileMeta;
+        this.router.navigate(['/modeler', this.workflowSpec.id, 'file', data.fileName]);
+        this.snackBar.open(`Renamed file to ${this.diagramFileMeta.name}.`, 'Ok', {duration: 5000});
+      });
+    }
+  }
+
   private _upsertFileMeta(data: FileMetaDialogData) {
     if (data.fileName) {
       this.xml = this.draftXml;
@@ -391,7 +406,7 @@ export class ModelerComponent implements AfterViewInit {
       };
       this.diagramFile = new File([this.xml], data.fileName, {type: 'text/xml'});
 
-        if (this.bpmnFiles.find(x => x.name === data.fileName)) {
+      if (this.bpmnFiles.find(x => x.name === data.fileName)) {
         // Update the existing file meta
         this.api.updateSpecFileData(this.workflowSpec, this.diagramFileMeta, this.diagramFile).subscribe(() => {
           this.api.updateSpecFileMeta(this.workflowSpec, this.diagramFileMeta, false).subscribe(() => {
@@ -400,13 +415,9 @@ export class ModelerComponent implements AfterViewInit {
           });
         });
       } else {
-        // If the filename has changed, delete the old version
+        // The filename has changed
         if (this.fileMetaName !== data.fileName && this.fileMetaName !== null) {
-          this.api.deleteSpecFileMeta(this.workflowSpec, this.fileMetaName).subscribe(() => {
-            this.api.getSpecFileMetas(this.workflowSpec.id).subscribe(fms => {
-              this.bpmnFiles = fms.sort((a, b) => (a.name > b.name) ? 1 : -1);
-            });
-          });
+          this._updateFileFilename(data);
         }
         this.api.addSpecFile(this.workflowSpec, this.diagramFileMeta, this.diagramFile).subscribe(fileMeta => {
           this.router.navigate(['/modeler', this.workflowSpec.id, 'file', fileMeta.name]);
