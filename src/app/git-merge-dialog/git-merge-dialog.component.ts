@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiService} from 'sartography-workflow-lib';
 import {MatDialogRef} from "@angular/material/dialog";
-import {FormGroup} from "@angular/forms";
+import {UntypedFormGroup} from "@angular/forms";
 import {FormlyFieldConfig, FormlyFormOptions} from "@ngx-formly/core";
 
 @Component({
@@ -10,7 +10,7 @@ import {FormlyFieldConfig, FormlyFormOptions} from "@ngx-formly/core";
   styleUrls: ['./git-merge-dialog.component.scss']
 })
 export class GitMergeDialogComponent {
-  form: FormGroup = new FormGroup({});
+  form: UntypedFormGroup = new UntypedFormGroup({});
   model: any = {};
   options: FormlyFormOptions = {};
   fields: FormlyFieldConfig[] = [];

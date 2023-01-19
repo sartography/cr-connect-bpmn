@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {FormControl, FormGroup, ValidationErrors} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, ValidationErrors} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormlyFieldConfig, FormlyFormOptions, FormlyTemplateOptions} from '@ngx-formly/core';
 import {ApiService, toSnakeCase} from 'sartography-workflow-lib';
@@ -13,7 +13,7 @@ import {of} from "rxjs";
 })
 
 export class WorkflowSpecDialogComponent {
-  form: FormGroup = new FormGroup({});
+  form: UntypedFormGroup = new UntypedFormGroup({});
   model: any = {};
   options: FormlyFormOptions = {};
   fields: FormlyFieldConfig[] = [];
@@ -88,7 +88,7 @@ export class WorkflowSpecDialogComponent {
           },
           asyncValidators: {
             uniqueID: {
-              expression: (control: FormControl) => {
+              expression: (control: UntypedFormControl) => {
 
                 return of(this.specs.indexOf(control.value) === -1);
               },

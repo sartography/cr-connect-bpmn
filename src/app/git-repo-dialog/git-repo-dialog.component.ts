@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {UntypedFormGroup} from "@angular/forms";
 import {FormlyFieldConfig, FormlyFormOptions} from "@ngx-formly/core";
 import {MatDialogRef} from "@angular/material/dialog";
 import {ApiService} from 'sartography-workflow-lib';
@@ -11,7 +11,7 @@ import {ApiService} from 'sartography-workflow-lib';
   styleUrls: ['./git-repo-dialog.component.scss']
 })
 export class GitRepoDialogComponent {
-  form: FormGroup = new FormGroup({});
+  form: UntypedFormGroup = new UntypedFormGroup({});
   model: any = {};
   options: FormlyFormOptions = {};
   fields: FormlyFieldConfig[] = [];

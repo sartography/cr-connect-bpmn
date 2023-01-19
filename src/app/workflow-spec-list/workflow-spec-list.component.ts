@@ -26,7 +26,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { environment } from '../../environments/environment.runtime';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { SettingsService } from '../settings.service';
  import { MatButtonModule } from '@angular/material/button';
 import {GitRepoDialogComponent} from "../git-repo-dialog/git-repo-dialog.component";
@@ -56,7 +56,7 @@ export class WorkflowSpecListComponent implements OnInit {
   selectedCat: WorkflowSpecCategory;
   workflowSpecsByCategory: WorkflowSpecCategoryGroup[] = [];
   categories: WorkflowSpecCategory[];
-  searchField: FormControl;
+  searchField: UntypedFormControl;
   library_toggle: boolean;
   gitRepo: GitRepo;
 
@@ -84,7 +84,7 @@ export class WorkflowSpecListComponent implements OnInit {
       }
     });
 
-    this.searchField = new FormControl();
+    this.searchField = new UntypedFormControl();
     this.searchField.valueChanges.subscribe(value => {
       this._loadWorkflowSpecs(null, value);
     });

@@ -1,8 +1,8 @@
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 import {ValidateEmail} from './email.validator';
 
 describe('ValidateEmail', () => {
-  const control = new FormControl();
+  const control = new UntypedFormControl();
 
   it('should return an error for an invalid email address', () => {
     const emailsToTest = [

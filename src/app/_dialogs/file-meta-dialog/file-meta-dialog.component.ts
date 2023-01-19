@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Inject, ViewChild} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormControl, UntypedFormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {cleanUpFilename, FileType, FileFieldComponent, ApiService} from 'sartography-workflow-lib';
@@ -11,7 +11,7 @@ import {FileMetaDialogData} from '../../_interfaces/dialog-data';
   styleUrls: ['./file-meta-dialog.component.scss']
 })
 export class FileMetaDialogComponent {
-  form: FormGroup = new FormGroup({});
+  form: UntypedFormGroup = new UntypedFormGroup({});
   model: any = {};
   options: FormlyFormOptions = {};
   fields: FormlyFieldConfig[] = [];

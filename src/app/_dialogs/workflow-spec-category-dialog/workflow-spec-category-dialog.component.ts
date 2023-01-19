@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {ApiService, toSnakeCase} from 'sartography-workflow-lib';
@@ -12,7 +12,7 @@ import {of} from "rxjs";
   styleUrls: ['./workflow-spec-category-dialog.component.scss']
 })
 export class WorkflowSpecCategoryDialogComponent {
-  form: FormGroup = new FormGroup({});
+  form: UntypedFormGroup = new UntypedFormGroup({});
   model: any = {};
   options: FormlyFormOptions = {};
   fields: FormlyFieldConfig[] = [];
@@ -78,7 +78,7 @@ export class WorkflowSpecCategoryDialogComponent {
           },
           asyncValidators: {
             uniqueID: {
-              expression: (control: FormControl) => {
+              expression: (control: UntypedFormControl) => {
 
                 return of(this.categories.indexOf(control.value) === -1);
               },

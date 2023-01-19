@@ -1,15 +1,15 @@
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {FieldType} from '@ngx-formly/material';
 import * as Validators from './formly.validator';
 
 describe('Formly Validators', () => {
-  let control: FormControl;
+  let control: UntypedFormControl;
   let err: Error;
   let field: FormlyFieldConfig;
 
   beforeEach(() => {
-    control = new FormControl();
+    control = new UntypedFormControl();
     err = new Error('some error');
     field = {
       type: 'email',
