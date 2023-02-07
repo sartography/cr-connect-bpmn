@@ -33,12 +33,12 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules/bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css",
+              "node_modules/bpmn-js-properties-panel/dist/assets/properties-panel.css",
               "node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css",
               "node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css",
               "node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn.css",
               "node_modules/bpmn-js/dist/assets/diagram-js.css",
-              "node_modules/dmn-js-properties-panel/dist/assets/dmn-js-properties-panel.css",
+              "node_modules/dmn-js-properties-panel/dist/assets/properties-panel.css",
               "node_modules/diagram-js-minimap/assets/diagram-js-minimap.css",
               "node_modules/dmn-js/dist/assets/diagram-js.css",
               "node_modules/dmn-js/dist/assets/dmn-font/css/dmn-codes.css",

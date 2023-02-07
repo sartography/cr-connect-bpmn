@@ -1,5 +1,10 @@
-import propertiesPanelModule from 'bpmn-js-properties-panel';
-import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda';
+import {
+  BpmnPropertiesPanelModule,
+  BpmnPropertiesProviderModule,
+  CamundaPlatformPropertiesProviderModule
+} from 'bpmn-js-properties-panel';
+// use Camunda Platform properties provider
+
 import * as camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.json';
 import minimapModule from 'diagram-js-minimap';
 import codeModule from 'diagram-js-code-editor';
@@ -7,10 +12,12 @@ import {ModelerConfig} from '../_interfaces/modeler-config';
 
 export const bpmnModelerConfig: ModelerConfig = {
   additionalModules: [
-     propertiesProviderModule,
-     propertiesPanelModule,
-    minimapModule,
-    codeModule,
+     BpmnPropertiesPanelModule,
+     BpmnPropertiesProviderModule,
+     CamundaPlatformPropertiesProviderModule,
+//     CamundaExtensionModule,
+     minimapModule,
+     codeModule,
   ],
   moddleExtensions: {
     camunda: camundaModdleDescriptor
