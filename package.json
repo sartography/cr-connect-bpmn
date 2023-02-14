@@ -14,7 +14,7 @@
     "build:dev": "ng build --configuration=development",
     "build:test": "ng build --configuration=test",
     "test": "ng test",
-    "test:coverage": "ng test --codeCoverage=true --watch=false --browsers=ChromeHeadless",
+    "test:coverage": "ng test --code-coverage=true --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "e2e": "./node_modules/protractor/bin/webdriver-manager update && ng e2e",
     "e2e:with-backend": "npm run backend && ng e2e && npm run backend:stop",
