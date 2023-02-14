@@ -1,5 +1,5 @@
 ### STAGE 1: Build ###
-FROM quay.io/sartography/node:latest AS builder
+FROM node:alpine AS builder
 RUN mkdir /app
 WORKDIR /app
 ADD package.json /app/
